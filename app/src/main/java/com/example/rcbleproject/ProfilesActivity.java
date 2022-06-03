@@ -28,13 +28,14 @@ public class ProfilesActivity extends BaseAppActivity implements Removable {
         setContentView(R.layout.activity_profiles);
         setSupportActionBar(findViewById(R.id.tb_activity_profiles));
         ((TextView)findViewById(R.id.tv_label)).setText(R.string.profiles_control);
-        findViewById(R.id.bt_go).setVisibility(View.GONE);
+        findViewById(R.id.bt_back).setVisibility(View.GONE);
+        findViewById(R.id.bt_add_device).setVisibility(View.GONE);
 
-        findViewById(R.id.bt_go).setOnClickListener(v -> {
-            Intent intent = new Intent(this, AddDevicesActivity.class);
+        /*findViewById(R.id.bt_back).setOnClickListener(v -> {
+            Intent intent = new Intent(this, AddingDevicesActivity.class);
             startActivity(intent);
             finish();
-        });
+        });*/
 
         lvProfiles = findViewById(R.id.lv_profiles);
 
@@ -71,7 +72,7 @@ public class ProfilesActivity extends BaseAppActivity implements Removable {
             Intent intent = new Intent(this, ProfileControlActivity.class);
             intent.putExtra("profile_id", id);
             startActivity(intent);
-            finish();
+            //finish();
         });
 
         lvProfiles.setOnScrollListener(new AbsListView.OnScrollListener() {

@@ -5,7 +5,6 @@ import android.bluetooth.BluetoothDevice;
 import android.graphics.Color;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -22,9 +21,9 @@ public class FoundDevicesAdapter extends ArrayAdapter<BluetoothDeviceApp> {
     private final LayoutInflater inflater;
     private final int layout;
     private final List<BluetoothDeviceApp> devices;
-    private final AddDevicesActivity activity;
+    private final AddingDevicesActivity activity;
 
-    public FoundDevicesAdapter(AddDevicesActivity context, int resource, List<BluetoothDeviceApp> devices) {
+    public FoundDevicesAdapter(AddingDevicesActivity context, int resource, List<BluetoothDeviceApp> devices) {
         super(context, resource, devices);
         this.devices = devices;
         layout = resource;

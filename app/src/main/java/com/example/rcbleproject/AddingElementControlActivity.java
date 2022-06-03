@@ -4,13 +4,13 @@ import android.os.Bundle;
 import android.util.DisplayMetrics;
 
 import com.example.rcbleproject.Database.DatabaseAdapterElementsControl;
-import com.example.rcbleproject.databinding.ActivityAddElementControlBinding;
+import com.example.rcbleproject.databinding.ActivityAddingElementControlBinding;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class AddElementControlActivity extends BaseAppBluetoothActivity {
-    private ActivityAddElementControlBinding binding;
+public class AddingElementControlActivity extends BaseAppBluetoothActivity {
+    private ActivityAddingElementControlBinding binding;
     private long displayID;
     private DisplayMetrics displayMetrics;
     private DatabaseAdapterElementsControl dbAdapterElementsControl;
@@ -24,7 +24,7 @@ public class AddElementControlActivity extends BaseAppBluetoothActivity {
         displayMetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
 
-        binding = ActivityAddElementControlBinding.inflate(getLayoutInflater());
+        binding = ActivityAddingElementControlBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         binding.tbActivityAddElement.tvLabel.setText(getString(R.string.elements_control));
         List<BaseControlElement> list = initElementsControlList();
@@ -34,7 +34,7 @@ public class AddElementControlActivity extends BaseAppBluetoothActivity {
                                                                         R.layout.item_element_control,
                                                                         list);
         binding.lvElementsControl.setAdapter(adapter);
-        binding.tbActivityAddElement.btGo.setOnClickListener(v -> finish());
+        binding.tbActivityAddElement.btBack.setOnClickListener(v -> finish());
         binding.lvElementsControl.setOnItemClickListener((parent, view, position, id) -> {
             dbAdapterElementsControl.insert(elementNumber, displayID,
                                              adapter.getElementType(position),

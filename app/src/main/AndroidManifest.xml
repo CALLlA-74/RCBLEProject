@@ -27,9 +27,10 @@
         android:theme="@style/Theme.RCBLEProject" >
         <activity
             android:name=".SettingControlledPortsActivity"
+            android:screenOrientation="sensorLandscape"
             android:exported="false" />
         <activity
-            android:name=".AddElementControlActivity"
+            android:name=".AddingElementControlActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:exported="false"
             android:screenOrientation="sensorLandscape"
@@ -51,7 +52,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".AddDevicesActivity"
+            android:name=".AddingDevicesActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:exported="false"
             android:screenOrientation="sensorLandscape"

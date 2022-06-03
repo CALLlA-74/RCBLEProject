@@ -20,14 +20,13 @@ import com.example.rcbleproject.Database.DatabaseAdapterForDevices;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 public class ConnectedDevicesAdapter extends BaseAppCursorAdapter {
     private final DatabaseAdapterForDevices dbAdapter;
     private final Map<String, Boolean> availability = Collections.synchronizedMap(new HashMap<>());
-    AddDevicesActivity activity;
+    AddingDevicesActivity activity;
 
-    public ConnectedDevicesAdapter(AddDevicesActivity context, int resource,
+    public ConnectedDevicesAdapter(AddingDevicesActivity context, int resource,
                                    DatabaseAdapterForDevices adapter){
         super(context, resource, adapter.getConnectedDevices_cursor(), adapter.getColumns(),
                 new int[]{R.id.et_name, R.id.tv_name, R.id.bt_delete,

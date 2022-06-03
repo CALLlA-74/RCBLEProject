@@ -23,7 +23,4 @@
     <string name="controlled_ports" translatable="true">Controlled ports</string>
     <string name="binding_ports" translatable="true">Bind ports</string>
     <string name="axis_word" translatable="true">axis</string>
-    <string name="title_activity_set_controlled_ports">SetControlledPortsActivity</string>
-    <string name="dummy_button">Dummy Button</string>
-    <string name="dummy_content">DUMMY\nCONTENT</string>
 </resources>

@@ -1,11 +1,9 @@
 package com.example.rcbleproject;
 
 import android.view.LayoutInflater;
-import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -15,9 +13,9 @@ public class ElementsControlAdapter extends ArrayAdapter<BaseControlElement> {
     private final LayoutInflater inflater;
     private final int layout;
     private final List<BaseControlElement> elements;
-    private final AddElementControlActivity activity;
+    private final AddingElementControlActivity activity;
 
-    public ElementsControlAdapter(AddElementControlActivity context,
+    public ElementsControlAdapter(AddingElementControlActivity context,
                                   int resource, List<BaseControlElement> elements){
         super(context, resource, elements);
         inflater = LayoutInflater.from(context);

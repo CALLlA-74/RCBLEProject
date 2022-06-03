@@ -30,7 +30,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.example.rcbleproject.Database.DatabaseAdapterForDevices;
-import com.example.rcbleproject.databinding.ActivityAddDevicesBinding;
+import com.example.rcbleproject.databinding.ActivityAddingDevicesBinding;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -38,25 +38,27 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
-public class AddDevicesActivity extends BaseAppBluetoothActivity implements Removable {
+public class AddingDevicesActivity extends BaseAppBluetoothActivity implements Removable {
 
     private BluetoothLeScanner scanner;
     private UUID ServiceUUID;
     private FoundDevicesAdapter devicesAdapter;
     private DatabaseAdapterForDevices dbDeviceAdapter;
     private ConnectedDevicesAdapter lv_connected_devices_adapter;
-    private ActivityAddDevicesBinding binding;
+    private ActivityAddingDevicesBinding binding;
 
     private final HashMap<String, BluetoothGatt> gatts = new HashMap<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        binding = ActivityAddDevicesBinding.inflate(getLayoutInflater());
+        binding = ActivityAddingDevicesBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         setSupportActionBar(findViewById(R.id.tb_activity_profiles));
         setFullscreenMode(binding.layoutContent);
         ((TextView) findViewById(R.id.tv_label)).setText(getResources().getString(R.string.devices));
+        findViewById(R.id.bt_back).setOnClickListener((View v) -> finish());
+        findViewById(R.id.bt_add_device).setVisibility(View.GONE);
 
         ServiceUUID = UUID.fromString(getResources().getString(R.string.service_uuid));
         devicesAdapter = new FoundDevicesAdapter(this, R.layout.item_found_device, new ArrayList<>());

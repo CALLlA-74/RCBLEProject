@@ -11,7 +11,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
-import android.widget.ListView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
@@ -66,7 +65,7 @@ public class ProfileControlActivity extends BaseAppBluetoothActivity implements 
 
         binding.btBack.setOnClickListener((View v) -> finish());
         binding.btAddElementControl.setOnClickListener((View v) -> {
-            Intent intent = new Intent(this, AddElementControlActivity.class);
+            Intent intent = new Intent(this, AddingElementControlActivity.class);
             intent.putExtra("display_id", gameControllersDrawer.getCurrentDisplayID());
             //intent.putExtra("screen_number", gameControllersDrawer.getCurrentDisplayIndex());
             intent.putExtra("count_of_elements", gameControllersDrawer.getCountOfElements());
@@ -96,13 +95,19 @@ public class ProfileControlActivity extends BaseAppBluetoothActivity implements 
 
             String[] axesNames = gameControllersDrawer.getElementAxesNames();
             tvControlledPorts_1.setText(axesNames[0]);
-            btAddControlledPorts_1.setOnClickListener((View v2) -> {});
+            btAddControlledPorts_1.setOnClickListener((View v1) -> {
+                Intent intent = new Intent(this, SettingControlledPortsActivity.class);
+                startActivity(intent);
+            });
             if (axesNames.length == 1)
                 menu.findItem(R.id.item_controlled_ports_2).setVisible(false);
             else {
                 menu.findItem(R.id.item_controlled_ports_2).setVisible(true);
                 tvControlledPorts_2.setText(axesNames[1]);
-                btAddControlledPorts_2.setOnClickListener((View v2) -> {});
+                btAddControlledPorts_2.setOnClickListener((View v2) -> {
+                    Intent intent = new Intent(this, SettingControlledPortsActivity.class);
+                    startActivity(intent);
+                });
             }
 
             sizeChangerInitOrUpdate(true);
@@ -196,16 +201,6 @@ public class ProfileControlActivity extends BaseAppBluetoothActivity implements 
 
     }
 
-    /*protected void createElementSizeChanger(){
-        SeekBar sizeChanger = new SeekBar(this);
-        sizeChanger.getPro
-        Canvas c = new Canvas();
-        Paint p = new Paint();
-        p.setColor(getColor(R.color.white));
-        c.drawText("20",  0, 0, p);
-        binding.nwMenuProfileControl.getMenu().findItem(R.id.item_element_size).setActionView(sizeChanger);
-    }*/
-
     @SuppressLint("SetTextI18n")
     public void showCurrentDisplayNum(int currentDisplayNum, int countOfDisplays){
         binding.tvNumDisplay.setText((currentDisplayNum + 1) + " / " + countOfDisplays);
@@ -252,6 +247,7 @@ public class ProfileControlActivity extends BaseAppBluetoothActivity implements 
     protected void onResume(){
         super.onResume();
         setFullscreenMode(binding.dlMenuDrawer);
+        if (!checkBluetoothPeripherals()) return;
         gameControllersDrawer.updateElementsControl();
         menuItemsInit();
     }
