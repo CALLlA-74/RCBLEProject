@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TableLayout
+    android:id="@+id/layout_content"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:baselineAligned="false">
+
+    <include
+        android:id="@+id/tb_activity_add_devices"
+        layout="@layout/app_toolbar"/>
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:gravity="fill">
+
+        <ListView
+            android:id="@+id/lv_connected_devices"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            tools:listitem="@layout/app_list_item"/>
+
+        <ListView
+            android:id="@+id/lv_found_devices"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:background="@drawable/border_left"
+            android:layout_weight="1"
+            tools:listitem="@layout/item_found_device"/>
+    </TableRow>
+
+
+</TableLayout>

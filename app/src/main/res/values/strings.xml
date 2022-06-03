@@ -1,0 +1,29 @@
+<resources>
+    <string name="app_name" translatable="false">Geckos Control</string>
+    <string name="profiles_control" translatable="true">Profiles control</string>
+    <string name="devices" translatable="true">My devices</string>
+    <string name="default_profile_name" translatable="true">New profile</string>
+    <string name="yes" translatable="true">Yes</string>
+    <string name="no" translatable="true">No</string>
+    <string name="confirm_msg_profile" translatable="true">Delete the profile</string>
+    <string name="confirm_msg_device" translatable="true">Delete the device</string>
+    <string name="confirm_msg_display" translatable="true">Delete current display?</string>
+    <string name="confirm_msg_element_control" translatable="true">Delete chosen element control?</string>
+    <string name="service_uuid" translatable="false">4ad77a12-4a0b-4daa-a715-ae0cb0427ed3</string>
+    <string name="characteristic_uuid" translatable="false">39789f14-68f7-46f8-92f1-623cde4bdfc7</string>
+    <string name="elements_control" translatable="true">Choose an element to add</string>
+    <string name="joystick_xy_name" translatable="true">2-axis joystick</string>
+    <string name="grid_align" translatable="true">Grid alignment</string>
+    <string name="add_display" translatable="true">Add display</string>
+    <string name="remove_display" translatable="true">Remove current display</string>
+    <string name="remove_element_control" translatable="true">Remove element control</string>
+    <string name="element_blocking" translatable="true">Element blocking</string>
+    <string name="element_properties" translatable="true">Element properties</string>
+    <string name="element_size" translatable="true">Element size</string>
+    <string name="controlled_ports" translatable="true">Controlled ports</string>
+    <string name="binding_ports" translatable="true">Bind ports</string>
+    <string name="axis_word" translatable="true">axis</string>
+    <string name="title_activity_set_controlled_ports">SetControlledPortsActivity</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
+</resources>
