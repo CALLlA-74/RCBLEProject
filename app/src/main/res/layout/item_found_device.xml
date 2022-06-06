@@ -18,6 +18,19 @@
         app:layout_constraintEnd_toStartOf="@id/bt_add_device"
         style="@style/ItemTextStyle"/>
 
+    <!--Button
+        android:layout_width="30dip"
+        android:layout_height="30dip"
+        android:layout_marginEnd="16dp"
+        android:layout_gravity="center_vertical"
+        android:background="@null"
+        android:scaleType="fitCenter"
+        android:clickable="true"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:focusable="true"/-->
+
     <ImageButton
         android:id="@+id/bt_add_device"
         android:layout_width="30dip"
@@ -32,16 +45,4 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         android:focusable="true" />
-    <Button
-        android:layout_width="30dip"
-        android:layout_height="30dip"
-        android:layout_marginEnd="16dp"
-        android:layout_gravity="center_vertical"
-        android:background="@null"
-        android:scaleType="fitCenter"
-        android:clickable="true"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:focusable="true"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

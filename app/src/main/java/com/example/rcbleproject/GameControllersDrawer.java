@@ -161,6 +161,7 @@ public class GameControllersDrawer extends SurfaceView implements SurfaceHolder.
         return gridVisibility;
     }
     public String[] getElementAxesNames() { return focusableElement.getAxesNames(); }
+    public long getFocusableElementID() { return focusableElement.elementID; }
 
     public boolean getElementLocking() { return focusableElement.isElementLocked; }
     public void setElementLocking(boolean locking){ focusableElement.isElementLocked = locking; }
@@ -170,6 +171,7 @@ public class GameControllersDrawer extends SurfaceView implements SurfaceHolder.
 
     public int getElementSize() { return focusableElement.getElementSize(); }
     public void setElementSize(int newElementSize) {
+        if (focusableElement == null) return;
         focusableElement.setElementSize(newElementSize);
     }
 

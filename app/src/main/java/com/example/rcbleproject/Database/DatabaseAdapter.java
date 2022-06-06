@@ -19,4 +19,9 @@ public class DatabaseAdapter {
     public void close(){
         database.close();
     }
+
+    public boolean isOpen(){
+        if (database == null) return false;
+        return database.isOpen();
+    }
 }

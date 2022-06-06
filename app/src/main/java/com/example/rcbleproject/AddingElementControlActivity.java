@@ -9,7 +9,7 @@ import com.example.rcbleproject.databinding.ActivityAddingElementControlBinding;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AddingElementControlActivity extends BaseAppBluetoothActivity {
+public class AddingElementControlActivity extends BaseAppActivity {
     private ActivityAddingElementControlBinding binding;
     private long displayID;
     private DisplayMetrics displayMetrics;

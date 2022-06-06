@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -21,7 +22,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ConnectedDevicesAdapter extends BaseAppCursorAdapter {
+public class ConnectedDevicesAdapter extends BaseAppCursorAdapter implements IListViewAdapterForDevices {
     private final DatabaseAdapterForDevices dbAdapter;
     private final Map<String, Boolean> availability = Collections.synchronizedMap(new HashMap<>());
     AddingDevicesActivity activity;
@@ -54,17 +55,23 @@ public class ConnectedDevicesAdapter extends BaseAppCursorAdapter {
     public void bindView(View convertView, Context context, Cursor cursor){
         final ViewHolder holder = (ViewHolder) convertView.getTag();
         holder.id = cursor.getLong(cursor.getColumnIndexOrThrow(dbAdapter.ID));
+        Log.v("APP_TAG22", "device id = " + holder.id);
 
         holder.et_device_name.setOnEditorActionListener((v, actionId, event) -> {
             if (actionId == EditorInfo.IME_ACTION_DONE) resetEditingView();
             return false;
         });
 
-        if (availability.get(cursor.getString(cursor.getColumnIndexOrThrow(dbAdapter.DEVICE_ADDRESS))))
+        if (availability.get(cursor.getString(cursor.getColumnIndexOrThrow(dbAdapter.DEVICE_ADDRESS)))){
             holder.tv_device_name.setTextColor(Color.WHITE);
-        else holder.tv_device_name.setTextColor(activity.getColor(R.color.blue_ncs));
+            holder.bt_light_alarm.setVisibility(View.VISIBLE);
+        }
+        else {
+            holder.tv_device_name.setTextColor(activity.getColor(R.color.blue_ncs));
+            holder.bt_light_alarm.setVisibility(View.GONE);
+        }
 
-        holder.bt_delete_device.setOnClickListener(v -> {
+        holder.bt_delete_device.setOnClickListener((View v) -> {
             long id = ((ViewHolder)((View)v.getParent()).getTag()).id;
             Log.v("APP_TAG", "delete. id = " + id);
             Cursor c = dbAdapter.getDeviceById_cursor(id);
@@ -75,7 +82,13 @@ public class ConnectedDevicesAdapter extends BaseAppCursorAdapter {
             args.putString("message", activity.getResources().getString(R.string.confirm_msg_device) + " \"" +
                     c.getString(c.getColumnIndexOrThrow(dbAdapter.DEVICE_NAME)) + "\" ?");
             dialog.setArguments(args);
+            dialog.setCancelable(false);
             dialog.show(activity.getSupportFragmentManager(), activity.getResources().getString(R.string.app_name));
+        });
+
+        holder.bt_light_alarm.setOnClickListener(v -> {
+            String address = cursor.getString(cursor.getColumnIndexOrThrow(dbAdapter.DEVICE_ADDRESS));
+            activity.writeCharacteristic(address, "1");
         });
 
         holder.bt_cancel.setOnClickListener(v -> cancelEdit());
@@ -91,7 +104,7 @@ public class ConnectedDevicesAdapter extends BaseAppCursorAdapter {
     }
 
     @SuppressLint("MissingPermission")
-    public void addDevice(BluetoothDevice device){
+    public boolean addDevice(BluetoothDevice device){
         Cursor c = dbAdapter.getDeviceByAddress_cursor(device.getAddress());
         if (c.getCount() > 0) {
             c.moveToFirst();
@@ -103,21 +116,26 @@ public class ConnectedDevicesAdapter extends BaseAppCursorAdapter {
         }
         availability.put(device.getAddress(), true);
         swapCursor(dbAdapter.getConnectedDevices_cursor());
+        return true;
     }
 
-    public void removeDevice(String deviceAddress){
+    public boolean removeDevice(BluetoothDevice device){
+        String deviceAddress = device.getAddress();
         Cursor c = dbAdapter.getDeviceByAddress_cursor(deviceAddress);
+        //while (c == null) c =
         c.moveToFirst();
         dbAdapter.updateState(c.getLong(c.getColumnIndexOrThrow(dbAdapter.ID)), 0);
         swapCursor(dbAdapter.getConnectedDevices_cursor());
         availability.remove(deviceAddress);
         notifyDataSetChanged();
+        return true;
     }
 
-    public void setAvailability(boolean flag, BluetoothDevice device){
-        if (!availability.containsKey(device.getAddress())) return;
+    public boolean setAvailability(boolean flag, BluetoothDevice device){
+        if (!availability.containsKey(device.getAddress())) return false;
         availability.put(device.getAddress(), flag);
         notifyDataSetChanged();
+        return true;
     }
 
     public void resetEditingView(){
@@ -199,6 +217,7 @@ public class ConnectedDevicesAdapter extends BaseAppCursorAdapter {
         final ImageView bt_delete_device;
         final ImageView bt_ok;
         final ImageView bt_cancel;
+        final ImageView bt_light_alarm;
         long id = 0;
 
         ViewHolder(View view){
@@ -207,6 +226,7 @@ public class ConnectedDevicesAdapter extends BaseAppCursorAdapter {
             bt_delete_device = view.findViewById(R.id.bt_delete);
             bt_ok = view.findViewById(R.id.bt_ok);
             bt_cancel = view.findViewById(R.id.bt_cancel);
+            bt_light_alarm = view.findViewById(R.id.bt_alarm_light);
         }
     }
 }

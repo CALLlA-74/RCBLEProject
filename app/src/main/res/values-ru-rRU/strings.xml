@@ -21,4 +21,5 @@
     <string name="controlled_ports" translatable="true">Управляемые порты</string>
     <string name="binding_ports" translatable="true">Привязать порты</string>
     <string name="axis_word" translatable="true">ось</string>
+    <string name="add_controlled_port" translatable="true">Добавить порт управления</string>
 </resources>

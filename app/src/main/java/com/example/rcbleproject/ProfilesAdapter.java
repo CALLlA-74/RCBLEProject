@@ -14,14 +14,14 @@ import android.widget.TextView;
 
 import com.example.rcbleproject.Database.DatabaseAdapterProfilesControl;
 
-public class ProfileAdapter extends BaseAppCursorAdapter {
+public class ProfilesAdapter extends BaseAppCursorAdapter {
 
     private final DatabaseAdapterProfilesControl dbProfilesAdapter;
     private final ProfilesActivity activity;
     private final boolean isReverse;          // если true, профили будут выводить в обратном порядке
 
-    public ProfileAdapter(ProfilesActivity context, int resource, DatabaseAdapterProfilesControl adapter,
-                          boolean isReverse){
+    public ProfilesAdapter(ProfilesActivity context, int resource, DatabaseAdapterProfilesControl adapter,
+                           boolean isReverse){
         super(context, resource, adapter.getProfiles_cursor(isReverse), adapter.getColumns(),
                 new int[]{R.id.et_name, R.id.tv_name, R.id.bt_delete,
                             R.id.bt_cancel, R.id.bt_ok}, 0);

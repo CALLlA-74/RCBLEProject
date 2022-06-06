@@ -17,7 +17,7 @@ public class ProfilesActivity extends BaseAppActivity implements Removable {
     private ListView lvProfiles;
     private DatabaseAdapterProfilesControl dbAdapterProfilesControl;
     private DatabaseAdapterDisplays dbDisplays;
-    private ProfileAdapter lvAdapterProfilesControl;
+    private ProfilesAdapter lvAdapterProfilesControl;
     private int oldVisibleItem = 0;
     private ImageButton btAddProfile;
     private boolean isReverse = false;
@@ -45,7 +45,7 @@ public class ProfilesActivity extends BaseAppActivity implements Removable {
         dbDisplays = new DatabaseAdapterDisplays(this);
         dbDisplays.open();
 
-        lvAdapterProfilesControl = new ProfileAdapter(this,
+        lvAdapterProfilesControl = new ProfilesAdapter(this,
                 R.layout.app_list_item,
                 dbAdapterProfilesControl, isReverse);
         lvProfiles.setAdapter(lvAdapterProfilesControl);

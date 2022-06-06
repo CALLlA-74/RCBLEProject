@@ -22,7 +22,7 @@
         <item
             android:id="@+id/item_remove_display"
             android:title="@string/remove_display"
-            android:icon="@drawable/baseline_delete_white_18dp_36"
+            android:icon="@drawable/baseline_delete_20"
             android:layout_height="30dp"/>
     </group>
     <group
@@ -74,7 +74,7 @@
         <item
             android:id="@+id/item_remove_element_control"
             android:title="@string/remove_element_control"
-            android:icon="@drawable/baseline_delete_white_18dp_36"
+            android:icon="@drawable/baseline_delete_20"
             android:layout_height="30dp"
             android:checkable="true"/>
     </group>

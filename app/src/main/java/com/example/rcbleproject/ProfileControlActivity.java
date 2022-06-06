@@ -97,6 +97,10 @@ public class ProfileControlActivity extends BaseAppBluetoothActivity implements 
             tvControlledPorts_1.setText(axesNames[0]);
             btAddControlledPorts_1.setOnClickListener((View v1) -> {
                 Intent intent = new Intent(this, SettingControlledPortsActivity.class);
+                intent.putExtra("profile_id", profileID);
+                intent.putExtra("display_id", gameControllersDrawer.getCurrentDisplayID());
+                intent.putExtra("element_id", gameControllersDrawer.getFocusableElementID());
+                intent.putExtra("axis_num", 0);
                 startActivity(intent);
             });
             if (axesNames.length == 1)
@@ -106,6 +110,10 @@ public class ProfileControlActivity extends BaseAppBluetoothActivity implements 
                 tvControlledPorts_2.setText(axesNames[1]);
                 btAddControlledPorts_2.setOnClickListener((View v2) -> {
                     Intent intent = new Intent(this, SettingControlledPortsActivity.class);
+                    intent.putExtra("profile_id", profileID);
+                    intent.putExtra("display_id", gameControllersDrawer.getCurrentDisplayID());
+                    intent.putExtra("element_id", gameControllersDrawer.getFocusableElementID());
+                    intent.putExtra("axis_num", 1);
                     startActivity(intent);
                 });
             }

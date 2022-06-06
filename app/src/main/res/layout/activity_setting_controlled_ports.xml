@@ -4,15 +4,36 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".SettingControlledPortsActivity">
+    tools:context=".SettingControlledPortsActivity"
+    android:orientation="vertical">
 
     <include
         android:id="@+id/tb_activity_setting_controlled_ports"
         layout="@layout/app_toolbar"/>
-
-    <ListView
-        android:id="@+id/lv_controlled_ports"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:listitem="@layout/"/>
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_margin="0dp"
+        android:layout_weight="1">
+        <ListView
+            android:id="@+id/lv_controlled_ports"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:listitem="@layout/item_controlled_port"/>
+    </LinearLayout>
+    <Button
+        android:id="@+id/bt_add_controlled_port"
+        android:layout_width="wrap_content"
+        android:layout_height="30dip"
+        android:layout_gravity="center_horizontal|bottom"
+        android:layout_marginBottom="10dp"
+        android:layout_marginTop="10dp"
+        android:textColor="@color/black"
+        android:fontFamily="serif"
+        android:textSize="11sp"
+        android:text="@string/add_controlled_port"
+        android:background="@drawable/background_for_bt_add_ports"
+        android:paddingStart="15dp"
+        android:paddingEnd="15dp"/>
 </LinearLayout>

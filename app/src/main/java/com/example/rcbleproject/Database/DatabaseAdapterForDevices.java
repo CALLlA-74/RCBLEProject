@@ -1,9 +1,15 @@
 package com.example.rcbleproject.Database;
 
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+
+import com.example.rcbleproject.BluetoothDeviceApp;
+
+import java.util.ArrayList;
 
 public class DatabaseAdapterForDevices extends DatabaseAdapter{
     public static final String TABLE_NAME = "devices";
@@ -32,6 +38,18 @@ public class DatabaseAdapterForDevices extends DatabaseAdapter{
     public Cursor getConnectedDevices_cursor(){
         return database.query(TABLE_NAME, getColumns(), DEVICE_STATE_CONNECTION + " = 1",
                 null, null, null, null);
+    }
+
+    public ArrayList<BluetoothDeviceApp> getConnectedDevices(BluetoothAdapter bluetoothAdapter){
+        Cursor cursor = getConnectedDevices_cursor();
+        ArrayList<BluetoothDeviceApp> devices = new ArrayList<>();
+
+        while (cursor.moveToNext()){
+            String address = cursor.getString(cursor.getColumnIndexOrThrow(DEVICE_ADDRESS));
+            final BluetoothDevice device = bluetoothAdapter.getRemoteDevice(address);
+            BluetoothDeviceApp deviceApp = new BluetoothDeviceApp(device);
+        }
+        return devices;
     }
 
     public long insert(String name, String address, int state){

@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class FoundDevicesAdapter extends ArrayAdapter<BluetoothDeviceApp> {
+public class FoundDevicesAdapter extends ArrayAdapter<BluetoothDeviceApp> implements IListViewAdapterForDevices {
     public enum Activeness {active, inactive}
 
     private final LayoutInflater inflater;
@@ -62,7 +62,7 @@ public class FoundDevicesAdapter extends ArrayAdapter<BluetoothDeviceApp> {
         if (deviceApp.isActive) setActiveness(Activeness.active,holder);
         else setActiveness(Activeness.inactive, holder);
 
-        holder.bt_add_device.setOnClickListener(v -> {
+        holder.bt_add_device.setOnClickListener((View v) -> {
             ViewHolder vh = (ViewHolder) ((View)v.getParent()).getTag();
             Log.v("APP_TAG2", "connecting to " + devices.get(vh.position).getDevice().getAddress());
             vh.bt_add_device.setVisibility(View.GONE);
@@ -71,19 +71,20 @@ public class FoundDevicesAdapter extends ArrayAdapter<BluetoothDeviceApp> {
         return convertView;
     }
 
-    public void addDevice(BluetoothDevice device){
-        if (device == null) return;
+    public boolean addDevice(BluetoothDevice device){
+        if (device == null) return false;
         int pos = containsDevice(device);
         if (pos >= 0){
             devices.get(pos).lastTimeAdv = System.currentTimeMillis();
             devices.get(pos).isActive = true;
             notifyDataSetChanged();
-            return;
+            return false;
         }
         BluetoothDeviceApp deviceApp = new BluetoothDeviceApp(device);
         deviceApp.lastTimeAdv = System.currentTimeMillis();
         add(deviceApp);
         notifyDataSetChanged();
+        return true;
     }
 
     /**
@@ -98,6 +99,8 @@ public class FoundDevicesAdapter extends ArrayAdapter<BluetoothDeviceApp> {
         }
         return false;
     }
+
+    public boolean setAvailability(boolean flag, BluetoothDevice device){ return true; }
 
     private int containsDevice(BluetoothDevice device){
         for (int i = 0; i < devices.size(); i++){
