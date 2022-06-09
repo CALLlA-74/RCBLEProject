@@ -147,7 +147,10 @@ public class ProfilesAdapter extends BaseAppCursorAdapter {
 
     private void saveChanges(ViewHolder vh){
         String newName = vh.et_profile_name.getText().toString();
-        if (newName.length() <= 0) return;
+        if (newName.length() <= 0){
+            setMode(Mode.view_mode, vh);
+            return;
+        }
         vh.tv_profile_name.setText(newName);
         dbProfilesAdapter.updateProfileName(vh.id, newName);
         setMode(Mode.view_mode, vh);

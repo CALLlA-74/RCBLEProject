@@ -156,7 +156,10 @@ public class ConnectedDevicesAdapter extends BaseAppCursorAdapter implements ILi
 
     protected void saveChanges(ViewHolder vh){
         String newName = vh.et_device_name.getText().toString();
-        if (newName.length() <= 0) return;
+        if (newName.length() <= 0){
+            setMode(Mode.view_mode, vh);
+            return;
+        }
         vh.tv_device_name.setText(newName);
         dbAdapter.updateName(vh.id, newName);
         setMode(Mode.view_mode, vh);
@@ -172,6 +175,7 @@ public class ConnectedDevicesAdapter extends BaseAppCursorAdapter implements ILi
                 vh.bt_cancel.setVisibility(View.GONE);
                 vh.tv_device_name.setVisibility(View.VISIBLE);
                 vh.bt_delete_device.setVisibility(View.VISIBLE);
+                vh.bt_light_alarm.setVisibility(View.VISIBLE);
                 activity.setFullscreenMode();
                 break;
             case edit_mode:
@@ -180,6 +184,7 @@ public class ConnectedDevicesAdapter extends BaseAppCursorAdapter implements ILi
                 vh.bt_ok.setVisibility(View.VISIBLE);
                 vh.bt_cancel.setVisibility(View.VISIBLE);
                 vh.et_device_name.setVisibility(View.VISIBLE);
+                vh.bt_light_alarm.setVisibility(View.GONE);
         }
     }
 

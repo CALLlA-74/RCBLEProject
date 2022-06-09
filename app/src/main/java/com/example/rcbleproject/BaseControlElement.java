@@ -13,6 +13,7 @@ import java.util.ArrayList;
 
 public abstract class BaseControlElement {
     protected Context context;
+    protected int touchedPointerID = -1;
 
     protected volatile float posX, posY;
     public volatile int elementSize;
@@ -47,9 +48,10 @@ public abstract class BaseControlElement {
     public abstract ControlElementType getType();
     public abstract String getName();
 
-    public abstract void onDraw(Canvas canvas);
+    public abstract void onDraw(Canvas canvas, ProfileControlActivity.MODE_TYPE mode);
     public abstract boolean contains(float pointerX, float pointerY);
     public abstract void onTouch(MotionEvent event, boolean isGridVisible);
+    public abstract void onControl(MotionEvent event);
     public abstract void alignToTheGrid();
     public abstract void setElementSize(int newElementSize);
     public abstract int getNumberOfAxes();

@@ -116,8 +116,11 @@
         android:layout_width="65mm"
         android:layout_height="match_parent"
         android:layout_gravity="end"
-        android:background="@color/honolulu_blue"
-        android:backgroundTint="@color/honolulu_blue"
+        android:paddingTop="0dp"
+        android:paddingBottom="0dp"
+        android:paddingEnd="0dp"
+        android:background="@color/maximum_blue"
+        android:backgroundTint="@color/maximum_blue"
         android:backgroundTintMode="screen"
         android:theme="@style/MenuItemStyle"
         app:menu="@menu/menu_profile_control"/>

@@ -2,6 +2,7 @@ package com.example.rcbleproject;
 
 import android.os.Bundle;
 import android.util.DisplayMetrics;
+import android.view.View;
 
 import com.example.rcbleproject.Database.DatabaseAdapterElementsControl;
 import com.example.rcbleproject.databinding.ActivityAddingElementControlBinding;
@@ -27,6 +28,7 @@ public class AddingElementControlActivity extends BaseAppActivity {
         binding = ActivityAddingElementControlBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         binding.tbActivityAddElement.tvLabel.setText(getString(R.string.elements_control));
+        binding.tbActivityAddElement.btAddDevice.setVisibility(View.GONE);
         List<BaseControlElement> list = initElementsControlList();
         dbAdapterElementsControl = new DatabaseAdapterElementsControl(this);
         dbAdapterElementsControl.open();

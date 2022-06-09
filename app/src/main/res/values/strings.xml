@@ -24,4 +24,5 @@
     <string name="binding_ports" translatable="true">Bind ports</string>
     <string name="axis_word" translatable="true">axis</string>
     <string name="add_controlled_port" translatable="true">Add controlled port</string>
+    <string name="edit_profile" translatable="true">Edit profile</string>
 </resources>

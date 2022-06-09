@@ -26,10 +26,12 @@ public class ProfileControlActivity extends BaseAppBluetoothActivity implements 
     private DatabaseAdapterElementsControl dbAdapterElementsControl;
     private DatabaseAdapterProfilesControl dbProfiles;
     private DatabaseAdapterDisplays dbDisplays;
-    private View controlsView;
     private long profileID;
     private GameControllersDrawer gameControllersDrawer;
     private ActivityProfileControlBinding binding;
+    private MODE_TYPE mode;
+
+    public enum MODE_TYPE {GAME_MODE, EDIT_MODE}
 
     @SuppressLint({"ClickableViewAccessibility", "NonConstantResourceId"})
     @Override
@@ -42,7 +44,6 @@ public class ProfileControlActivity extends BaseAppBluetoothActivity implements 
 
         binding = ActivityProfileControlBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-        controlsView = binding.fullscreenContentControls;
 
         dbProfiles = new DatabaseAdapterProfilesControl(this);
         dbProfiles.open();
@@ -63,26 +64,49 @@ public class ProfileControlActivity extends BaseAppBluetoothActivity implements 
             return true;
         });
 
-        binding.btBack.setOnClickListener((View v) -> finish());
+        binding.btBack.setOnClickListener((View v) -> {
+            if (mode == MODE_TYPE.GAME_MODE) finish();
+            else setMode(MODE_TYPE.GAME_MODE);
+        });
         binding.btAddElementControl.setOnClickListener((View v) -> {
             Intent intent = new Intent(this, AddingElementControlActivity.class);
             intent.putExtra("display_id", gameControllersDrawer.getCurrentDisplayID());
-            //intent.putExtra("screen_number", gameControllersDrawer.getCurrentDisplayIndex());
             intent.putExtra("count_of_elements", gameControllersDrawer.getCountOfElements());
             startActivity(intent);
         });
 
         binding.dlMenuDrawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
-        binding.dlMenuDrawer.setScrimColor(getColor(android.R.color.transparent));
+        //binding.dlMenuDrawer.setScrimColor(getColor(android.R.color.transparent));
         binding.btProfileControlMenu.setOnClickListener((View v) -> {
-            binding.nwMenuProfileControl.getMenu().setGroupVisible(R.id.group_profile_control_menu, true);
-            binding.nwMenuProfileControl.getMenu().setGroupVisible(R.id.group_element_control_menu_1, false);
-            binding.nwMenuProfileControl.getMenu().setGroupVisible(R.id.group_element_control_menu_2, false);
+            if (mode == MODE_TYPE.GAME_MODE){
+                binding.nwMenuProfileControl.getMenu().setGroupVisible(R.id.group_profile_control_menu, false);
+                binding.nwMenuProfileControl.getMenu().setGroupVisible(R.id.group_element_control_menu_1, false);
+                binding.nwMenuProfileControl.getMenu().setGroupVisible(R.id.group_element_control_menu_2, false);
+                binding.nwMenuProfileControl.getMenu().setGroupVisible(R.id.group_game_mode, true);
+            }
+            else {
+                binding.nwMenuProfileControl.getMenu().setGroupVisible(R.id.group_game_mode, false);
+                binding.nwMenuProfileControl.getMenu().setGroupVisible(R.id.group_profile_control_menu, true);
+                binding.nwMenuProfileControl.getMenu().setGroupVisible(R.id.group_element_control_menu_1, false);
+                binding.nwMenuProfileControl.getMenu().setGroupVisible(R.id.group_element_control_menu_2, false);
+            }
             binding.dlMenuDrawer.openDrawer(binding.nwMenuProfileControl);
         });
 
         binding.btElementControlMenu.setOnClickListener((View v) -> {
             Menu menu = binding.nwMenuProfileControl.getMenu();
+            if (!gameControllersDrawer.isFocused()) {
+                menu.setGroupVisible(R.id.group_game_mode, false);
+                menu.setGroupVisible(R.id.group_profile_control_menu, false);
+                menu.setGroupVisible(R.id.group_element_control_menu_1, false);
+                menu.setGroupVisible(R.id.group_element_control_menu_2, false);
+                binding.dlMenuDrawer.openDrawer(binding.nwMenuProfileControl);
+                return;
+            }
+            menu.setGroupVisible(R.id.group_game_mode, false);
+            menu.setGroupVisible(R.id.group_profile_control_menu, false);
+            menu.setGroupVisible(R.id.group_element_control_menu_1, true);
+            menu.setGroupVisible(R.id.group_element_control_menu_2, true);
             TextView tvControlledPorts_1 = menu.findItem(R.id.item_controlled_ports_1).getActionView()
                     .findViewById(R.id.tv_axis_name);
             Button btAddControlledPorts_1 = menu.findItem(R.id.item_controlled_ports_1).getActionView()
@@ -120,16 +144,11 @@ public class ProfileControlActivity extends BaseAppBluetoothActivity implements 
 
             sizeChangerInitOrUpdate(true);
             if (gameControllersDrawer.getElementLocking()){
-                binding.nwMenuProfileControl.getMenu().findItem(R.id.item_lock_element_control)
-                        .setIcon(R.drawable.baseline_lock_20);
+                menu.findItem(R.id.item_lock_element_control).setIcon(R.drawable.baseline_lock_20);
             }
             else {
-                binding.nwMenuProfileControl.getMenu().findItem(R.id.item_lock_element_control)
-                        .setIcon(R.drawable.baseline_lock_open_20);
+                menu.findItem(R.id.item_lock_element_control).setIcon(R.drawable.baseline_lock_open_20);
             }
-            binding.nwMenuProfileControl.getMenu().setGroupVisible(R.id.group_profile_control_menu, false);
-            binding.nwMenuProfileControl.getMenu().setGroupVisible(R.id.group_element_control_menu_1, true);
-            binding.nwMenuProfileControl.getMenu().setGroupVisible(R.id.group_element_control_menu_2, true);
             binding.dlMenuDrawer.openDrawer(binding.nwMenuProfileControl);
         });
 
@@ -161,7 +180,6 @@ public class ProfileControlActivity extends BaseAppBluetoothActivity implements 
                     binding.dlMenuDrawer.closeDrawer(GravityCompat.END);
                     break;
 
-
                 case R.id.item_lock_element_control:
                     if (gameControllersDrawer.getElementLocking()) {
                         gameControllersDrawer.setElementLocking(false);
@@ -184,8 +202,13 @@ public class ProfileControlActivity extends BaseAppBluetoothActivity implements 
                     dialog2.setCancelable(false);
                     binding.dlMenuDrawer.closeDrawer(GravityCompat.END);
                     break;
+                case R.id.item_edit_mode:
+                    Log.v("APP_TAG33", Integer.valueOf(item.getItemId()).toString());
+                    setMode(MODE_TYPE.EDIT_MODE);
+                    binding.dlMenuDrawer.closeDrawer(GravityCompat.END);
+                    break;
             }
-            Log.v("APP_TAG2", Integer.valueOf(item.getItemId()).toString());
+            Log.v("APP_TAG33", Integer.valueOf(R.id.item_edit_mode).toString());
             return false;
         });
 
@@ -206,8 +229,25 @@ public class ProfileControlActivity extends BaseAppBluetoothActivity implements 
                                           @Override
                                           public void onStopTrackingTouch(SeekBar seekBar) {}
                                       });
-
+        setMode(MODE_TYPE.GAME_MODE);
     }
+
+    @SuppressLint("UseCompatLoadingForDrawables")
+    private void setMode(MODE_TYPE newMode){
+        mode = newMode;
+        if (mode == MODE_TYPE.GAME_MODE) {
+            binding.btAddElementControl.setVisibility(View.GONE);
+            binding.btElementControlMenu.setVisibility(View.GONE);
+            binding.btBack.setImageDrawable(getDrawable(R.drawable.baseline_close_18));
+        }
+        else {
+            binding.btAddElementControl.setVisibility(View.VISIBLE);
+            binding.btElementControlMenu.setVisibility(View.VISIBLE);
+            binding.btBack.setImageDrawable(getDrawable(R.drawable.baseline_save_20));
+        }
+    }
+
+    public MODE_TYPE getMode() { return mode; }
 
     @SuppressLint("SetTextI18n")
     public void showCurrentDisplayNum(int currentDisplayNum, int countOfDisplays){
@@ -255,7 +295,7 @@ public class ProfileControlActivity extends BaseAppBluetoothActivity implements 
     protected void onResume(){
         super.onResume();
         setFullscreenMode(binding.dlMenuDrawer);
-        if (!checkBluetoothPeripherals()) return;
+        checkBluetoothPeripherals();
         gameControllersDrawer.updateElementsControl();
         menuItemsInit();
     }

@@ -4,10 +4,9 @@
     android:paddingTop="0dp"
     android:paddingRight="0dp"
     android:paddingBottom="0dp">
-
     <group
         android:id="@+id/group_profile_control_menu"
-        android:checkableBehavior="single">
+        android:checkableBehavior="none">
         <item
             android:id="@+id/item_alignment_to_grid"
             android:title="@string/grid_align"
@@ -70,7 +69,18 @@
         </item>
     </group>
     <group
-        android:id="@+id/group_element_control_menu_2">
+        android:id="@+id/group_game_mode"
+        android:checkableBehavior="single">
+        <item
+            android:id="@+id/item_edit_mode"
+            android:title="@string/edit_profile"
+            android:icon="@drawable/baseline_edit_20"
+            android:checkable="true"
+            android:layout_height="700dp"/>
+    </group>
+    <group
+        android:id="@+id/group_element_control_menu_2"
+        android:checkableBehavior="none">
         <item
             android:id="@+id/item_remove_element_control"
             android:title="@string/remove_element_control"

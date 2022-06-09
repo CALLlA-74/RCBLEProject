@@ -18,6 +18,7 @@ import com.example.rcbleproject.Database.DatabaseAdapterElementsControl;
 import com.example.rcbleproject.Database.DatabaseAdapterProfilesControl;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 @SuppressLint("ViewConstructor")
 public class GameControllersDrawer extends SurfaceView implements SurfaceHolder.Callback {
@@ -35,6 +36,8 @@ public class GameControllersDrawer extends SurfaceView implements SurfaceHolder.
     private int currentDisplayIndex;
     private int countOfDisplays;
     private BaseControlElement focusableElement = null;
+    private final ProfileControlActivity activity;
+    private final HashMap<Integer, BaseControlElement> touchedElements = new HashMap<>();
 
     public final GridParams gridParams;
     private volatile boolean gridVisibility;
@@ -45,6 +48,7 @@ public class GameControllersDrawer extends SurfaceView implements SurfaceHolder.
                           DatabaseAdapterProfilesControl dbAdapterProfiles,
                           DatabaseAdapterDisplays dbDisplays, long profileID){
         super(profileControlActivity);
+        activity = profileControlActivity;
         dbAdapterElementsControl = dbAdapterElements;
         dbAdapterProfilesControl = dbAdapterProfiles;
         this.dbDisplays = dbDisplays;
@@ -162,6 +166,10 @@ public class GameControllersDrawer extends SurfaceView implements SurfaceHolder.
     }
     public String[] getElementAxesNames() { return focusableElement.getAxesNames(); }
     public long getFocusableElementID() { return focusableElement.elementID; }
+    public boolean isFocused() {
+        if (focusableElement == null) return false;
+        return true;
+    }
 
     public boolean getElementLocking() { return focusableElement.isElementLocked; }
     public void setElementLocking(boolean locking){ focusableElement.isElementLocked = locking; }
@@ -178,24 +186,58 @@ public class GameControllersDrawer extends SurfaceView implements SurfaceHolder.
     public void onTouch(View view, MotionEvent event){
         Log.v("APP_TAG2", "view TOUCH " + event.getPointerId(0) + " " + view);
         ArrayList<BaseControlElement> elementsOnDisplay = controlElements.get(currentDisplayIndex);
-        if (event.getAction() == MotionEvent.ACTION_DOWN){
-            for (int i = elementsOnDisplay.size() - 1; i >= 0; i--){
-                switch (elementsOnDisplay.get(i).getType()){
-                    case JOYSTICK_XY:
-                        JoystickXY element = (JoystickXY) elementsOnDisplay.get(i);
-                        if (element.contains(event.getX(), event.getY())){
-                            element.onTouch(event, gridVisibility);
-                            setFocus(element);
-                            return;
-                        }
-                        break;
-                    case JOYSTICK_X:
-                    case JOYSTICK_Y:
+        int act = event.getAction();
+        if (activity.getMode() == ProfileControlActivity.MODE_TYPE.EDIT_MODE){
+            if (act == MotionEvent.ACTION_DOWN){
+                for (int i = elementsOnDisplay.size() - 1; i >= 0; i--){
+                    switch (elementsOnDisplay.get(i).getType()){
+                        case JOYSTICK_XY:
+                            JoystickXY element = (JoystickXY) elementsOnDisplay.get(i);
+                            if (element.contains(event.getX(), event.getY())){
+                                element.onTouch(event, gridVisibility);
+                                setFocus(element);
+                                return;
+                            }
+                            break;
+                        case JOYSTICK_X:
+                        case JOYSTICK_Y:
+                    }
                 }
             }
+            else if (focusableElement != null && focusableElement.contains(event.getX(), event.getY())) {
+                focusableElement.onTouch(event, gridVisibility);
+            }
         }
-        else if (focusableElement != null && focusableElement.contains(event.getX(), event.getY())) {
-            focusableElement.onTouch(event, gridVisibility);
+        else {
+            if (act == MotionEvent.ACTION_POINTER_DOWN || act == MotionEvent.ACTION_DOWN){
+                for (int i = elementsOnDisplay.size() - 1; i >= 0; i--){
+                    switch (elementsOnDisplay.get(i).getType()){
+                        case JOYSTICK_XY:
+                            JoystickXY element = (JoystickXY) elementsOnDisplay.get(i);
+                            if (element.contains(event.getX(), event.getY())){
+                                element.onControl(event);
+                                int pointerID = event.getPointerId(event.getActionIndex());
+                                touchedElements.put(pointerID, element);
+                                return;
+                            }
+                            break;
+                        case JOYSTICK_X:
+                        case JOYSTICK_Y:
+                    }
+                }
+            }
+            else if (act == MotionEvent.ACTION_UP || act == MotionEvent.ACTION_POINTER_UP) {
+                int pointerID = event.getPointerId(event.getActionIndex());
+                if (touchedElements.containsKey(pointerID)) {
+                    touchedElements.get(pointerID).onControl(event);
+                    touchedElements.remove(pointerID);
+                }
+            }
+            else {
+                int pointerID = event.getPointerId(event.getActionIndex());
+                if (touchedElements.containsKey(pointerID))
+                    touchedElements.get(pointerID).onControl(event);
+            }
         }
     }
 
@@ -255,17 +297,18 @@ public class GameControllersDrawer extends SurfaceView implements SurfaceHolder.
                 if (c != null){
                     try{
                         c.drawRect(0, 0, c.getWidth(), c.getHeight(), paintBackground);
-                        if (gridVisibility)
+                        if (gridVisibility && activity.getMode() == ProfileControlActivity.MODE_TYPE.EDIT_MODE){
                             for (int i = gridParams.left; i <= c.getWidth(); i+= gridParams.step)
                                 for (int j = gridParams.top; j <= c.getHeight(); j+= gridParams.step){
                                     c.drawCircle(i, j, 1, paintGrid);
                                 }
+                        }
                         if (currentDisplayIndex < controlElements.size()){
                             ArrayList<BaseControlElement> elementsOnDisplay = controlElements.get(currentDisplayIndex);
                             for (BaseControlElement element : elementsOnDisplay){
                                 switch (element.getType()){
                                     case JOYSTICK_XY:
-                                        ((JoystickXY)element).onDraw(c);
+                                        ((JoystickXY)element).onDraw(c, activity.getMode());
                                         break;
                                     case JOYSTICK_X:
                                     case JOYSTICK_Y:

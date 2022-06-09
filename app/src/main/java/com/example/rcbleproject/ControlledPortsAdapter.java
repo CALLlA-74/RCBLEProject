@@ -15,7 +15,7 @@ public class ControlledPortsAdapter extends ArrayAdapter<ControlledPort> {
     private final ArrayList<ControlledPort> controlledPorts;
     private final ArrayList<BluetoothDeviceApp> devices;
     private final LayoutInflater inflater;
-    private final ConnectedDevicesAdapterForControlledPortsActivity connectedDevicesAdapter;
+    private final ConnectedDevicesAdapterForControlledPorts connectedDevicesAdapter;
 
     public ControlledPortsAdapter(SettingControlledPortsActivity context,
                                   ArrayList<ControlledPort> controlledPorts,
@@ -25,11 +25,11 @@ public class ControlledPortsAdapter extends ArrayAdapter<ControlledPort> {
         this.controlledPorts = controlledPorts;
         inflater = LayoutInflater.from(context);
         this.devices = devices;
-        connectedDevicesAdapter = new ConnectedDevicesAdapterForControlledPortsActivity(activity,
+        connectedDevicesAdapter = new ConnectedDevicesAdapterForControlledPorts(activity,
                 devices);
     }
 
-    public ConnectedDevicesAdapterForControlledPortsActivity getConnectedDevicesAdapter(){
+    public ConnectedDevicesAdapterForControlledPorts getConnectedDevicesAdapter(){
         return connectedDevicesAdapter;
     }
 

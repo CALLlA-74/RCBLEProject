@@ -21,7 +21,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ConnectedDevicesAdapterForControlledPortsActivity extends ArrayAdapter<BluetoothDeviceApp>
+public class ConnectedDevicesAdapterForControlledPorts extends ArrayAdapter<BluetoothDeviceApp>
         implements IListViewAdapterForDevices {
     private final Map<String, Boolean> availability = Collections.synchronizedMap(new HashMap<>());
     private final SettingControlledPortsActivity activity;
@@ -30,8 +30,8 @@ public class ConnectedDevicesAdapterForControlledPortsActivity extends ArrayAdap
     private final ArrayList<BluetoothDeviceApp> deviceApps;
 
     @SuppressLint("MissingPermission")
-    public ConnectedDevicesAdapterForControlledPortsActivity(SettingControlledPortsActivity context,
-                                                             ArrayList<BluetoothDeviceApp> devices) {
+    public ConnectedDevicesAdapterForControlledPorts(SettingControlledPortsActivity context,
+                                                     ArrayList<BluetoothDeviceApp> devices) {
         super(context, layout, devices);
         deviceApps = devices;
         activity = context;
