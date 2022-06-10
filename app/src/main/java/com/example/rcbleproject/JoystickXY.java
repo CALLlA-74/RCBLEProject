@@ -208,8 +208,12 @@ public class JoystickXY extends BaseControlElement{
         else {      // иначе помещаем его в точке пересечения границы джойстика и прямой,
                             // проведенной между точкой касания и центром джойстика
             float k = (event.getY() - posY)/(event.getX() - posX);  // тангенс угла наклона прямой
-            float x = (float) (sqrt((radius*radius - k*k)/2) + posX);  // х-координата новой точки стика
-            float y = k*(x-posX)+posY;  // х-координата новой точки стика
+            float x;
+            if (event.getX() < posX) {   // определяем четверь, в которой находится точка касания
+                x = (float) (posX - sqrt(radius*radius/(k*k+1)));  // х-координата новой точки стика
+            }
+            else x = (float) (sqrt(radius*radius/(k*k+1)) + posX);  // х-координата новой точки стика
+            float y = k*(x-posX)+posY;  // y-координата новой точки стика
             stickPosX = x;
             stickPosY = y;
         }

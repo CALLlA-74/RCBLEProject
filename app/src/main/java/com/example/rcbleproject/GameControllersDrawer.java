@@ -184,9 +184,10 @@ public class GameControllersDrawer extends SurfaceView implements SurfaceHolder.
     }
 
     public void onTouch(View view, MotionEvent event){
-        Log.v("APP_TAG2", "view TOUCH " + event.getPointerId(0) + " " + view);
+        Log.v("APP_TAG33", "view TOUCH " + event.getPointerId(event.getActionIndex()));
         ArrayList<BaseControlElement> elementsOnDisplay = controlElements.get(currentDisplayIndex);
-        int act = event.getAction();
+        int act = event.getActionMasked();
+        Log.v("APP_TAG33", "act = "+act);
         if (activity.getMode() == ProfileControlActivity.MODE_TYPE.EDIT_MODE){
             if (act == MotionEvent.ACTION_DOWN){
                 for (int i = elementsOnDisplay.size() - 1; i >= 0; i--){
@@ -217,6 +218,8 @@ public class GameControllersDrawer extends SurfaceView implements SurfaceHolder.
                             if (element.contains(event.getX(), event.getY())){
                                 element.onControl(event);
                                 int pointerID = event.getPointerId(event.getActionIndex());
+                                Log.v("APP_TAG33", "adding touchedElement");
+                                Log.v("APP_TAG33", act + " " + event.getPointerId(event.getActionIndex()));
                                 touchedElements.put(pointerID, element);
                                 return;
                             }
