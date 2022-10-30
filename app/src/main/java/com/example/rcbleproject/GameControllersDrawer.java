@@ -1,6 +1,7 @@
 package com.example.rcbleproject;
 
 import android.annotation.SuppressLint;
+import android.app.usage.UsageEvents;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Canvas;
@@ -19,6 +20,7 @@ import com.example.rcbleproject.Database.DatabaseAdapterProfilesControl;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 @SuppressLint("ViewConstructor")
 public class GameControllersDrawer extends SurfaceView implements SurfaceHolder.Callback {
@@ -184,17 +186,16 @@ public class GameControllersDrawer extends SurfaceView implements SurfaceHolder.
     }
 
     public void onTouch(View view, MotionEvent event){
-        Log.v("APP_TAG33", "view TOUCH " + event.getPointerId(event.getActionIndex()));
         ArrayList<BaseControlElement> elementsOnDisplay = controlElements.get(currentDisplayIndex);
         int act = event.getActionMasked();
-        Log.v("APP_TAG33", "act = "+act);
+        int pointerIndex = event.getActionIndex();
         if (activity.getMode() == ProfileControlActivity.MODE_TYPE.EDIT_MODE){
             if (act == MotionEvent.ACTION_DOWN){
                 for (int i = elementsOnDisplay.size() - 1; i >= 0; i--){
                     switch (elementsOnDisplay.get(i).getType()){
                         case JOYSTICK_XY:
                             JoystickXY element = (JoystickXY) elementsOnDisplay.get(i);
-                            if (element.contains(event.getX(), event.getY())){
+                            if (element.contains(event.getX(pointerIndex), event.getY(pointerIndex))){
                                 element.onTouch(event, gridVisibility);
                                 setFocus(element);
                                 return;
@@ -205,7 +206,7 @@ public class GameControllersDrawer extends SurfaceView implements SurfaceHolder.
                     }
                 }
             }
-            else if (focusableElement != null && focusableElement.contains(event.getX(), event.getY())) {
+            else if (focusableElement != null && focusableElement.contains(event.getX(pointerIndex), event.getY(pointerIndex))) {
                 focusableElement.onTouch(event, gridVisibility);
             }
         }
@@ -215,11 +216,9 @@ public class GameControllersDrawer extends SurfaceView implements SurfaceHolder.
                     switch (elementsOnDisplay.get(i).getType()){
                         case JOYSTICK_XY:
                             JoystickXY element = (JoystickXY) elementsOnDisplay.get(i);
-                            if (element.contains(event.getX(), event.getY())){
-                                element.onControl(event);
-                                int pointerID = event.getPointerId(event.getActionIndex());
-                                Log.v("APP_TAG33", "adding touchedElement");
-                                Log.v("APP_TAG33", act + " " + event.getPointerId(event.getActionIndex()));
+                            if (element.contains(event.getX(pointerIndex), event.getY(pointerIndex))){
+                                int pointerID = event.getPointerId(pointerIndex);
+                                element.onControl(pointerID, event);
                                 touchedElements.put(pointerID, element);
                                 return;
                             }
@@ -232,14 +231,17 @@ public class GameControllersDrawer extends SurfaceView implements SurfaceHolder.
             else if (act == MotionEvent.ACTION_UP || act == MotionEvent.ACTION_POINTER_UP) {
                 int pointerID = event.getPointerId(event.getActionIndex());
                 if (touchedElements.containsKey(pointerID)) {
-                    touchedElements.get(pointerID).onControl(event);
+                    touchedElements.get(pointerID).onControl(pointerID, event);
                     touchedElements.remove(pointerID);
                 }
             }
             else {
-                int pointerID = event.getPointerId(event.getActionIndex());
-                if (touchedElements.containsKey(pointerID))
-                    touchedElements.get(pointerID).onControl(event);
+                for (int idx = 0; idx < event.getPointerCount(); idx++){
+                    int pointerID = event.getPointerId(idx);
+                    if (touchedElements.containsKey(pointerID)){
+                        touchedElements.get(pointerID).onControl(pointerID, event);
+                    }
+                }
             }
         }
     }

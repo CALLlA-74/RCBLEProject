@@ -34,7 +34,7 @@ public class JoystickXY extends BaseControlElement{
         stickPosX = pX;
         stickPosY = pY;
         radius = (3 + elementSize)*gridParams.step;
-        stickRadius = 0.75f*elementSize*gridParams.step;
+        stickRadius = 0.75f*(elementSize == 0? 1: elementSize)*gridParams.step;
         paintBackground = new Paint();
         paintBackground.setColor(context.getColor(R.color.black));
         paintBackground.setStyle(Paint.Style.FILL);
@@ -155,20 +155,21 @@ public class JoystickXY extends BaseControlElement{
 
     @Override
     public void onTouch(MotionEvent event, boolean isGridVisible){
-        Log.v("APP_TAG3", "id: " + event.getPointerId(event.getActionIndex()) +
-                " action: " + event.getAction() + " " + event.getActionMasked());
         if (isElementLocked) return;
 
+        int pointerIndex = event.getActionIndex();
+        float pointerX = event.getX(pointerIndex);
+        float pointerY = event.getY(pointerIndex);
         switch (event.getActionMasked()) {
             case MotionEvent.ACTION_DOWN:
             case MotionEvent.ACTION_POINTER_DOWN:
             case MotionEvent.ACTION_POINTER_UP:
-                deltaX = event.getX()-posX;
-                deltaY = event.getY()-posY;
+                deltaX = event.getX(pointerIndex)-posX;
+                deltaY = event.getY(pointerIndex)-posY;
                 break;
             case MotionEvent.ACTION_MOVE:
-                posX = (int)(event.getX() - deltaX);
-                posY = (int)(event.getY() - deltaY);
+                posX = (int)(pointerX - deltaX);
+                posY = (int)(pointerY - deltaY);
                 stickPosX = posX;
                 stickPosY = posY;
                 break;
@@ -180,36 +181,39 @@ public class JoystickXY extends BaseControlElement{
     }
 
     @Override
-    public void onControl(MotionEvent event){
-        int act = event.getAction();
+    public void onControl(int touchedPointerID, MotionEvent event){
+        int act = event.getActionMasked();
         if (act == MotionEvent.ACTION_DOWN || act == MotionEvent.ACTION_POINTER_DOWN){
-            if (touchedPointerID == -1)
-                touchedPointerID = event.getPointerId(event.getActionIndex());
-            else return;
+            if (pointerID == -1)
+                pointerID = touchedPointerID;
+            else if (pointerID != touchedPointerID) return;
         }
         else if (act == MotionEvent.ACTION_UP || act == MotionEvent.ACTION_POINTER_UP){
-            Log.v("APP_TAG33", act + " " + event.getPointerId(event.getActionIndex()));
-            Log.v("APP_TAG33", "" + touchedPointerID);
-            if (event.getPointerId(event.getActionIndex()) == touchedPointerID){
-                touchedPointerID = -1;
+            if (pointerID == touchedPointerID){
+                pointerID = -1;
                 stickPosX = posX;
                 stickPosY = posY;
             }
             return;
         }
-        else if (event.getPointerId(event.getActionIndex()) != touchedPointerID) return;
+        else if (act == MotionEvent.ACTION_MOVE){
+            if (pointerID != touchedPointerID) return;
+        }
 
-        float delta = (posX - event.getX())*(posX - event.getX()) + (posY - event.getY())
-                *(posY - event.getY());    // вычисляем расстояние от точки касания до центра джойстика
+        int pointerIndex = event.findPointerIndex(pointerID);
+        float pointerX = event.getX(pointerIndex);
+        float pointerY = event.getY(pointerIndex);
+        float delta = (posX - pointerX)*(posX - pointerX) + (posY - pointerY)
+                *(posY - pointerY);    // вычисляем расстояние от точки касания до центра джойстика
         if (delta <= radius*radius){           // если точка касания внутри джойстика, то
-            stickPosX = event.getX();   // перемещаем стик в точку касания
-            stickPosY = event.getY();
+            stickPosX = pointerX;   // перемещаем стик в точку касания
+            stickPosY = pointerY;
         }
         else {      // иначе помещаем его в точке пересечения границы джойстика и прямой,
                             // проведенной между точкой касания и центром джойстика
-            float k = (event.getY() - posY)/(event.getX() - posX);  // тангенс угла наклона прямой
+            float k = (pointerY - posY)/(pointerX - posX);  // тангенс угла наклона прямой
             float x;
-            if (event.getX() < posX) {   // определяем четверь, в которой находится точка касания
+            if (pointerX < posX) {   // определяем четверь, в которой находится точка касания
                 x = (float) (posX - sqrt(radius*radius/(k*k+1)));  // х-координата новой точки стика
             }
             else x = (float) (sqrt(radius*radius/(k*k+1)) + posX);  // х-координата новой точки стика
