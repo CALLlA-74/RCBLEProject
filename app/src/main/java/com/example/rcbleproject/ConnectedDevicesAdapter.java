@@ -122,7 +122,6 @@ public class ConnectedDevicesAdapter extends BaseAppCursorAdapter implements ILi
     public boolean removeDevice(BluetoothDevice device){
         String deviceAddress = device.getAddress();
         Cursor c = dbAdapter.getDeviceByAddress_cursor(deviceAddress);
-        //while (c == null) c =
         c.moveToFirst();
         dbAdapter.updateState(c.getLong(c.getColumnIndexOrThrow(dbAdapter.ID)), 0);
         swapCursor(dbAdapter.getConnectedDevices_cursor());

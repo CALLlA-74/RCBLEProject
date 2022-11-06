@@ -96,10 +96,17 @@ public class ProfilesActivity extends BaseAppActivity implements Removable {
     }
 
     @Override
-    protected void onDestroy(){
-        super.onDestroy();
-        dbAdapterProfilesControl.close();
-        dbDisplays.close();
+    protected void onStart(){
+        super.onStart();
+        if (!dbAdapterProfilesControl.isOpen()) dbAdapterProfilesControl.open();
+        if (!dbDisplays.isOpen()) dbDisplays.open();
+    }
+
+    @Override
+    protected void onStop(){
+        super.onStop();
+        if (dbAdapterProfilesControl.isOpen()) dbAdapterProfilesControl.close();
+        if (dbDisplays.isOpen()) dbDisplays.close();
     }
 
     @Override

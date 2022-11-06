@@ -60,8 +60,14 @@ public class AddingElementControlActivity extends BaseAppActivity {
     }
 
     @Override
-    protected void onDestroy(){
-        super.onDestroy();
-        dbAdapterElementsControl.close();
+    protected void onStart(){
+        super.onStart();
+        if (!dbAdapterElementsControl.isOpen()) dbAdapterElementsControl.open();
+    }
+
+    @Override
+    protected void onStop(){
+        super.onStop();
+        if (dbAdapterElementsControl.isOpen()) dbAdapterElementsControl.close();
     }
 }

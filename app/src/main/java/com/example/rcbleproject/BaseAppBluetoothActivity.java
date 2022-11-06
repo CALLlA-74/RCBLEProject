@@ -204,7 +204,7 @@ public class BaseAppBluetoothActivity extends BaseAppActivity{
     public void connectDevice(BluetoothDevice device){
         if (!checkBluetoothPeripherals()) return;
         new Thread(() -> {
-            device.connectGatt(this, true, gattCallback, TRANSPORT_LE);
+            device.connectGatt(this, false, gattCallback, TRANSPORT_LE);
         }).start();
     }
 
@@ -215,9 +215,18 @@ public class BaseAppBluetoothActivity extends BaseAppActivity{
 
     @SuppressLint("MissingPermission")
     public void disconnectDevice(BluetoothGatt gatt){
-        if (!checkBluetoothPeripherals()) return;
-        Log.v("APP_TAG22", "start disconnecting");
+        if (!checkBluetoothPeripherals() || gatt == null) return;
+        if (BuildConfig.DEBUG){
+            Log.v("APP_TAG22", "start disconnecting, addr = " + gatt.getDevice().getAddress());
+            Log.v("APP_TAG22", "gatt = " + gatt);
+        }
         new Thread(() -> gatt.disconnect()).start();
+        runOnUiThread(() -> {
+            gatts.remove(gatt.getDevice().getAddress());
+            if (lvAdapterConnectedDevices != null)
+                lvAdapterConnectedDevices.removeDevice(gatt.getDevice());
+            Log.v("APP_TAG22", "gatts size: " + gatts.size());
+        });
     }
 
     @SuppressLint("MissingPermission")
@@ -268,10 +277,10 @@ public class BaseAppBluetoothActivity extends BaseAppActivity{
         @Override
         public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
             super.onConnectionStateChange(gatt, status, newState);
-            if (gatt.getDevice().getName().contains("lego"))
-                Log.v("APP_TAG22", "onConnectionStateChange " + gatt.getDevice().getAddress() +
-                        ". status: " + status + "; newState: " + newState + "; bondState: " +
-                        gatt.getDevice().getBondState());
+            if (BuildConfig.DEBUG) {
+                Log.v("APP_TAG22", "state changed: " + gatt.getDevice().getAddress());
+                Log.v("APP_TAG22", "status: " + status + "; newState: " + newState);
+            }
             if (status == GATT_SUCCESS){
                 Log.v("APP_TAG2", "GATT_SUCCESS");
                 if (newState == BluetoothProfile.STATE_CONNECTED){
@@ -305,12 +314,8 @@ public class BaseAppBluetoothActivity extends BaseAppActivity{
                 }
                 else if (newState == BluetoothProfile.STATE_DISCONNECTED){
                     gatt.close();
-                    runOnUiThread(() -> {
-                        gatts.remove(gatt.getDevice().getAddress());
-                        if (lvAdapterConnectedDevices != null)
-                            lvAdapterConnectedDevices.removeDevice(gatt.getDevice());
-                        Log.v("APP_TAG22", "gatts size: " + gatts.size());
-                    });
+                    Log.v("APP_TAG22", "gatt is closed");
+                    Log.v("APP_TAG22", "gatt = " + gatt);
                 }
             }
             else if (status == 8){
@@ -337,6 +342,7 @@ public class BaseAppBluetoothActivity extends BaseAppActivity{
     @SuppressLint("MissingPermission")
     public boolean writeCharacteristic(String deviceAddress, String message){
         BluetoothGatt bluetoothGatt = gatts.get(deviceAddress);
+        if (bluetoothGatt == null) return false;
         BluetoothGattService service = bluetoothGatt.getService(serviceUUID);
         BluetoothGattCharacteristic characteristic = service.getCharacteristic(characteristicUUID);
 

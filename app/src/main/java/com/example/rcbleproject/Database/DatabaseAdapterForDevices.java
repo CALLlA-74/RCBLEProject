@@ -36,11 +36,13 @@ public class DatabaseAdapterForDevices extends DatabaseAdapter{
     }
 
     public Cursor getConnectedDevices_cursor(){
+        if (!database.isOpen()) database = dbHelper.getWritableDatabase();
         return database.query(TABLE_NAME, getColumns(), DEVICE_STATE_CONNECTION + " = 1",
                 null, null, null, null);
     }
 
     public ArrayList<BluetoothDeviceApp> getConnectedDevices(BluetoothAdapter bluetoothAdapter){
+        if (!database.isOpen()) database = dbHelper.getWritableDatabase();
         Cursor cursor = getConnectedDevices_cursor();
         ArrayList<BluetoothDeviceApp> devices = new ArrayList<>();
 
@@ -53,6 +55,7 @@ public class DatabaseAdapterForDevices extends DatabaseAdapter{
     }
 
     public long insert(String name, String address, int state){
+        if (!database.isOpen()) database = dbHelper.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(DEVICE_NAME, name);
         contentValues.put(DEVICE_ADDRESS, address);
@@ -61,23 +64,27 @@ public class DatabaseAdapterForDevices extends DatabaseAdapter{
     }
 
     public long delete(long profileId){
+        if (!database.isOpen()) database = dbHelper.getWritableDatabase();
         return database.delete(TABLE_NAME,
                 ID + " = " + profileId, null);
     }
 
     public void updateName(long deviceId, String name){
+        if (!database.isOpen()) database = dbHelper.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(DEVICE_NAME, name);
         database.update(TABLE_NAME, contentValues, ID + " = " + deviceId, null);
     }
 
     public void updateState(long deviceId, int state){
+        if (!database.isOpen()) database = dbHelper.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(DEVICE_STATE_CONNECTION, state);
         database.update(TABLE_NAME, contentValues, ID + " = " + deviceId, null);
     }
 
     public long getDeviceStateConnection(String deviceAddress){
+        if (!database.isOpen()) database = dbHelper.getWritableDatabase();
         Cursor c = database.query(TABLE_NAME, new String[]{DEVICE_STATE_CONNECTION},
                 DEVICE_ADDRESS + " = '" + deviceAddress + "'", null, null,
                 null, null);
@@ -86,11 +93,13 @@ public class DatabaseAdapterForDevices extends DatabaseAdapter{
     }
 
     public Cursor getDeviceById_cursor(long id){
+        if (!database.isOpen()) database = dbHelper.getWritableDatabase();
         return database.query(TABLE_NAME, getColumns(), ID + " = " + id, null,
                 null, null, null);
     }
 
     public Cursor getDeviceByAddress_cursor(String deviceAddress){
+        if (!database.isOpen()) database = dbHelper.getWritableDatabase();
         return database.query(TABLE_NAME, getColumns(), DEVICE_ADDRESS + " = '" +
                         deviceAddress + "'", null, null, null, null);
     }

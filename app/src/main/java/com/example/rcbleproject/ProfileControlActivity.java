@@ -307,11 +307,19 @@ public class ProfileControlActivity extends BaseAppBluetoothActivity implements 
     }
 
     @Override
-    protected void onDestroy(){
-        super.onDestroy();
-        dbAdapterElementsControl.close();
-        dbProfiles.close();
-        dbDisplays.close();
+    protected void onStart(){
+        super.onStart();
+        if (!dbAdapterElementsControl.isOpen()) dbAdapterElementsControl.open();
+        if (!dbProfiles.isOpen()) dbProfiles.open();
+        if (!dbDisplays.isOpen()) dbDisplays.open();
+    }
+
+    @Override
+    protected void onStop(){
+        super.onStop();
+        if (dbAdapterElementsControl.isOpen()) dbAdapterElementsControl.close();
+        if (dbProfiles.isOpen()) dbProfiles.close();
+        if (dbDisplays.isOpen()) dbDisplays.close();
     }
 
     @Override

@@ -64,13 +64,14 @@ public abstract class BaseControlElement {
     protected abstract void checkOutDisplay();
     protected float square(float value){ return value*value; }
 
+
     /**
-     *
-     * @param canvas
-     * @param paint
-     * @param p1
-     * @param p2
-     * @param p3
+     * По заданным точкам p1, p2, p3 строит треугольник в экзепляре canvas
+     * @param canvas - полотно для отрисовки в surface
+     * @param paint - параметры отрисовки
+     * @param p1 - 1-я вершина треугольника
+     * @param p2 - 2-я вершина треугольника
+     * @param p3 - 3-я вершина треугольника
      */
     protected void drawTriangle(Canvas canvas, Paint paint, PointF p1, PointF p2, PointF p3){
         Path path = new Path();
@@ -83,7 +84,18 @@ public abstract class BaseControlElement {
         canvas.drawPath(path, paint);
     }
 
+    /**
+     * @return значение x-координаты элемента управления
+     */
     public float getPosX() { return posX; }
+
+    /**
+     * @return значение y-координаты элемента управления
+     */
     public float getPosY() { return posY; }
+
+    /**
+     * @return значение  элемента управления
+     */
     public int getElementSize() { return elementSize; }
 }

@@ -3,6 +3,7 @@ package com.example.rcbleproject;
 import android.annotation.SuppressLint;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.os.Debug;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -66,20 +67,27 @@ public class AddingDevicesActivity extends BaseAppBluetoothActivity implements R
     }
 
     @Override
-    protected void onDestroy(){
-        super.onDestroy();
-        dbDeviceAdapter.close();
+    protected void onStart(){
+        super.onStart();
+        if(!dbDeviceAdapter.isOpen()) dbDeviceAdapter.open();
+    }
+
+    @Override
+    protected void onStop(){
+        super.onStop();
+        if(dbDeviceAdapter.isOpen()) dbDeviceAdapter.close();
     }
 
     @Override
     public void remove(long id) {
         setFullscreenMode(binding.layoutContent);
-        Log.v("APP_TAG22", "try to remove device. id = " + id);
+        if (BuildConfig.DEBUG) Log.v("APP_TAG22", "try to remove device. id = " + id);
         Cursor c = dbDeviceAdapter.getDeviceById_cursor(id);
         if (!c.moveToFirst()) return;
         String address = c.getString(c.getColumnIndexOrThrow(dbDeviceAdapter
                 .DEVICE_ADDRESS));
         c.close();
+        if (BuildConfig.DEBUG) Log.v("APP_TAG22", "try to disconn device. addr = " + address);
         disconnectDevice(gatts.get(address));
     }
 

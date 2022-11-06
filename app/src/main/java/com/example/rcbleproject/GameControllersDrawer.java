@@ -267,14 +267,16 @@ public class GameControllersDrawer extends SurfaceView implements SurfaceHolder.
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
         drawingThread.setStop();
-        //if (pause) return;
         boolean retry = true;
         while (retry){
             try {
                 drawingThread.join();
                 retry = false;
             }
-            catch (InterruptedException e){}
+            catch (InterruptedException e){
+                if (BuildConfig.DEBUG)
+                    Log.e(getResources().getString(R.string.app_tag), e.toString());
+            }
         }
         if (BuildConfig.DEBUG) Log.v("APP_TAG2", "clear");
         drawingThread = null;
