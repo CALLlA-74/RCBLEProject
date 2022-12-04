@@ -88,7 +88,9 @@ public class DatabaseAdapterForDevices extends DatabaseAdapter{
         Cursor c = database.query(TABLE_NAME, new String[]{DEVICE_STATE_CONNECTION},
                 DEVICE_ADDRESS + " = '" + deviceAddress + "'", null, null,
                 null, null);
-        if (!c.moveToFirst()) return -1;
+        try {
+            if (c == null || !c.moveToFirst()) return -1;
+        } catch (Exception e) {return -1;}
         return c.getLong(c.getColumnIndexOrThrow(DEVICE_STATE_CONNECTION));
     }
 

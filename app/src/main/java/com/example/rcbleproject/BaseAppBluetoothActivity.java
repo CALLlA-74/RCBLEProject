@@ -59,7 +59,7 @@ public class BaseAppBluetoothActivity extends BaseAppActivity{
     protected ActivityResultLauncher launcher;
 
     protected BluetoothAdapter bluetoothAdapter;
-    protected BluetoothLeScanner scanner;
+    protected BluetoothLeScanner BLEScanner;
     protected UUID serviceUUID;
     protected UUID characteristicUUID;
     protected ActivityAddingDevicesBinding binding;
@@ -165,14 +165,17 @@ public class BaseAppBluetoothActivity extends BaseAppActivity{
     protected void startLEScan(){
         if (!checkBluetoothPeripherals()) return;
         if (bluetoothAdapter.isEnabled()) {
-            scanner = bluetoothAdapter.getBluetoothLeScanner();
+            BLEScanner = bluetoothAdapter.getBluetoothLeScanner();
             ScanFilter filter = new ScanFilter.Builder()
                     .setServiceUuid(new ParcelUuid(serviceUUID)).build();
             ScanSettings settings = new ScanSettings.Builder()
-                    .setScanMode(ScanSettings.SCAN_MODE_LOW_POWER).build();
+                    .setScanMode(ScanSettings.SCAN_MODE_LOW_POWER)
+                    .setCallbackType(ScanSettings.CALLBACK_TYPE_ALL_MATCHES)
+                    .setMatchMode(ScanSettings.MATCH_MODE_AGGRESSIVE)
+                    .setNumOfMatches(ScanSettings.MATCH_NUM_ONE_ADVERTISEMENT).build();
             ArrayList<ScanFilter> filters = new ArrayList<>();
             filters.add(filter);
-            scanner.startScan(filters, settings, scanCallback);
+            BLEScanner.startScan(filters, settings, scanCallback);
             if (BuildConfig.DEBUG) Log.v("APP_TAG", "Start scan!");
         }
         Log.v("APP_TAG22", "gatts size: " + gatts.size());
@@ -180,21 +183,21 @@ public class BaseAppBluetoothActivity extends BaseAppActivity{
 
     @SuppressLint("MissingPermission")
     protected void stopLEScan(){
-        if (scanner == null) return;
-        scanner.stopScan(scanCallback);
+        if (BLEScanner == null) return;
+        BLEScanner.stopScan(scanCallback);
     }
 
     @SuppressLint("MissingPermission")
     protected void startLEScan(String deviceAddress){
         if (!checkBluetoothPeripherals()) return;
         if (bluetoothAdapter.isEnabled()) {
-            scanner = bluetoothAdapter.getBluetoothLeScanner();
+            BLEScanner = bluetoothAdapter.getBluetoothLeScanner();
             ScanFilter filter = new ScanFilter.Builder().setDeviceAddress(deviceAddress).build();
             ScanSettings settings = new ScanSettings.Builder()
                     .setScanMode(ScanSettings.SCAN_MODE_LOW_POWER).build();
             ArrayList<ScanFilter> filters = new ArrayList<>();
             filters.add(filter);
-            scanner.startScan(filters, settings, scanCallback);
+            BLEScanner.startScan(filters, settings, scanCallback);
             if (BuildConfig.DEBUG) Log.v("APP_TAG", "Start scan!");
         }
         Log.v("APP_TAG22", "gatts size: " + gatts.size());
@@ -202,9 +205,10 @@ public class BaseAppBluetoothActivity extends BaseAppActivity{
 
     @SuppressLint("MissingPermission")
     public void connectDevice(BluetoothDevice device){
+        if (BuildConfig.DEBUG) Log.v("APP_TAG22", "try to connect");
         if (!checkBluetoothPeripherals()) return;
         new Thread(() -> {
-            device.connectGatt(this, false, gattCallback, TRANSPORT_LE);
+            device.connectGatt(this, true, gattCallback, TRANSPORT_LE);
         }).start();
     }
 
@@ -215,18 +219,21 @@ public class BaseAppBluetoothActivity extends BaseAppActivity{
 
     @SuppressLint("MissingPermission")
     public void disconnectDevice(BluetoothGatt gatt){
+        if (BuildConfig.DEBUG) Log.v("APP_TAG22", "try to disconnect");
         if (!checkBluetoothPeripherals() || gatt == null) return;
         if (BuildConfig.DEBUG){
             Log.v("APP_TAG22", "start disconnecting, addr = " + gatt.getDevice().getAddress());
             Log.v("APP_TAG22", "gatt = " + gatt);
         }
-        new Thread(() -> gatt.disconnect()).start();
-        runOnUiThread(() -> {
-            gatts.remove(gatt.getDevice().getAddress());
-            if (lvAdapterConnectedDevices != null)
-                lvAdapterConnectedDevices.removeDevice(gatt.getDevice());
-            Log.v("APP_TAG22", "gatts size: " + gatts.size());
-        });
+        new Thread(() -> {
+            gatt.disconnect();
+            runOnUiThread(() -> {
+                gatts.remove(gatt.getDevice().getAddress());
+                if (lvAdapterConnectedDevices != null)
+                    lvAdapterConnectedDevices.removeDevice(gatt.getDevice());
+                Log.v("APP_TAG22", "gatts size: " + gatts.size());
+            });
+        }).start();
     }
 
     @SuppressLint("MissingPermission")
@@ -313,9 +320,11 @@ public class BaseAppBluetoothActivity extends BaseAppActivity{
                             }, delay);
                 }
                 else if (newState == BluetoothProfile.STATE_DISCONNECTED){
+                    String addr = gatt.getDevice().getAddress();
+                    int st = gatt.getConnectionState(gatt.getDevice());
                     gatt.close();
-                    Log.v("APP_TAG22", "gatt is closed");
-                    Log.v("APP_TAG22", "gatt = " + gatt);
+                    Log.v("APP_TAG22", "gatt is closed; addr = " + addr);
+                    Log.v("APP_TAG22", "gatt = " + gatt + "; Conn state: " + st);
                 }
             }
             else if (status == 8){

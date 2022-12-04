@@ -37,8 +37,8 @@ public class ConnectedDevicesAdapter extends BaseAppCursorAdapter implements ILi
         Cursor c = getCursor();
         while (c.moveToNext()){
             availability.put(c.getString(c.getColumnIndexOrThrow(dbAdapter.DEVICE_ADDRESS)),
-                    Boolean.FALSE);
-            activity.connectDevice(c.getString(c.getColumnIndexOrThrow(dbAdapter.DEVICE_ADDRESS)));
+                    Boolean.TRUE);
+            //activity.connectDevice(c.getString(c.getColumnIndexOrThrow(dbAdapter.DEVICE_ADDRESS)));
         }
         c.moveToFirst();
     }
@@ -46,7 +46,9 @@ public class ConnectedDevicesAdapter extends BaseAppCursorAdapter implements ILi
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup parent){
         View convertView = inflater.inflate(this.layout, parent, false);
+        long id = cursor.getLong(cursor.getColumnIndexOrThrow(dbAdapter.ID));
         ViewHolder holder = new ViewHolder(convertView);
+        holder.id = id;
         convertView.setTag(holder);
         return convertView;
     }
@@ -72,8 +74,9 @@ public class ConnectedDevicesAdapter extends BaseAppCursorAdapter implements ILi
         }
 
         holder.bt_delete_device.setOnClickListener((View v) -> {
-            long id = ((ViewHolder)((View)v.getParent()).getTag()).id;
-            Log.v("APP_TAG", "delete. id = " + id);
+            ViewHolder vh = (ViewHolder) ((View)v.getParent()).getTag();
+            long id = vh.id;
+            Log.v("APP_TAG222", "delete. id = " + id);
             Cursor c = dbAdapter.getDeviceById_cursor(id);
             c.moveToFirst();
             ConfirmRemoveDialogFragment dialog = new ConfirmRemoveDialogFragment();
@@ -87,8 +90,13 @@ public class ConnectedDevicesAdapter extends BaseAppCursorAdapter implements ILi
         });
 
         holder.bt_light_alarm.setOnClickListener(v -> {
-            String address = cursor.getString(cursor.getColumnIndexOrThrow(dbAdapter.DEVICE_ADDRESS));
-            activity.writeCharacteristic(address, "1");
+            ViewHolder vh = (ViewHolder) ((View)v.getParent()).getTag();
+            Cursor c = dbAdapter.getDeviceById_cursor(vh.id);
+            if (!c.moveToFirst()) return;
+            String deviceAddress = c.getString(cursor.getColumnIndexOrThrow(dbAdapter.DEVICE_ADDRESS));
+            Log.v("APP_TAG222", "id = " + vh.id + "; addr = " + deviceAddress);
+            c.close();
+            activity.writeCharacteristic(deviceAddress, "1");
         });
 
         holder.bt_cancel.setOnClickListener(v -> cancelEdit());
@@ -122,8 +130,9 @@ public class ConnectedDevicesAdapter extends BaseAppCursorAdapter implements ILi
     public boolean removeDevice(BluetoothDevice device){
         String deviceAddress = device.getAddress();
         Cursor c = dbAdapter.getDeviceByAddress_cursor(deviceAddress);
-        c.moveToFirst();
+        if (!c.moveToFirst()) return false;
         dbAdapter.updateState(c.getLong(c.getColumnIndexOrThrow(dbAdapter.ID)), 0);
+        c.close();
         swapCursor(dbAdapter.getConnectedDevices_cursor());
         availability.remove(deviceAddress);
         notifyDataSetChanged();

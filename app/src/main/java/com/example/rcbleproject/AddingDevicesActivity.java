@@ -84,8 +84,7 @@ public class AddingDevicesActivity extends BaseAppBluetoothActivity implements R
         if (BuildConfig.DEBUG) Log.v("APP_TAG22", "try to remove device. id = " + id);
         Cursor c = dbDeviceAdapter.getDeviceById_cursor(id);
         if (!c.moveToFirst()) return;
-        String address = c.getString(c.getColumnIndexOrThrow(dbDeviceAdapter
-                .DEVICE_ADDRESS));
+        String address = c.getString(c.getColumnIndexOrThrow(dbDeviceAdapter.DEVICE_ADDRESS));
         c.close();
         if (BuildConfig.DEBUG) Log.v("APP_TAG22", "try to disconn device. addr = " + address);
         disconnectDevice(gatts.get(address));

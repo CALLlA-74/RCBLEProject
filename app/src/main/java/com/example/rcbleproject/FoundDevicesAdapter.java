@@ -64,7 +64,7 @@ public class FoundDevicesAdapter extends ArrayAdapter<BluetoothDeviceApp> implem
 
         holder.bt_add_device.setOnClickListener((View v) -> {
             ViewHolder vh = (ViewHolder) ((View)v.getParent()).getTag();
-            Log.v("APP_TAG2", "connecting to " + devices.get(vh.position).getDevice().getAddress());
+            if(BuildConfig.DEBUG) Log.v("APP_TAG2", "connecting to " + devices.get(vh.position).getDevice().getAddress());
             vh.bt_add_device.setVisibility(View.GONE);
             activity.connectDevice(devices.get(vh.position).getDevice());
         });
