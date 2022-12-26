@@ -66,7 +66,7 @@ public class BaseAppBluetoothActivity extends BaseAppActivity{
 
     protected DatabaseAdapterForDevices dbDeviceAdapter;
 
-    protected final HashMap<String, BluetoothGatt> gatts = BluetoothGattsContainer.getGatts();
+    protected final HashMap<String, BluetoothGatt> gatts = Container.getGatts();
 
     protected void setLvAdapterConnectedDevices(IListViewAdapterForDevices adapter){
         lvAdapterConnectedDevices = adapter;
@@ -88,9 +88,9 @@ public class BaseAppBluetoothActivity extends BaseAppActivity{
         bluetoothAdapter = ((BluetoothManager) getSystemService(BLUETOOTH_SERVICE)).getAdapter();
         launcher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
-                result -> {checkBluetoothPeripherals();});
+                result -> checkBluetoothPeripherals());
 
-        serviceUUID = UUID.fromString(getResources().getString(R.string.service_uuid));
+        serviceUUID = UUID.fromString(getString(R.string.service_uuid));
         characteristicUUID = UUID.fromString(getString(R.string.characteristic_uuid));
     }
 
@@ -251,12 +251,12 @@ public class BaseAppBluetoothActivity extends BaseAppActivity{
         @Override
         public void onScanResult(int callbackType, ScanResult result) {
             super.onScanResult(callbackType, result);
-            //if (BuildConfig.DEBUG) Log.v("APP_TAG", "onScanResult");
             BluetoothDevice device = result.getDevice();
             if (device != null) {
                 if (dbDeviceAdapter != null &&
                         dbDeviceAdapter.getDeviceStateConnection(device.getAddress()) == 1){
-                    //connectDevice(device);
+                    if (!gatts.containsKey(device.getAddress()))
+                        connectDevice(device);
                     return;
                 }
                 if (lvAdapterFoundDevices != null)
@@ -264,17 +264,6 @@ public class BaseAppBluetoothActivity extends BaseAppActivity{
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
                     return;
                 }
-                String uuids = "";
-                device.fetchUuidsWithSdp();
-                try {
-                    device.createRfcommSocketToServiceRecord(UUID.randomUUID());
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                List<ParcelUuid> uuids2 = result.getScanRecord().getServiceUuids();
-                if (uuids2 != null)
-                    for (ParcelUuid uuid : uuids2) uuids += uuid + " ";
-                //if (BuildConfig.DEBUG) Log.v("APP_TAG", uuids + " " + device.getAddress());
             }
         }
     };
@@ -303,14 +292,15 @@ public class BaseAppBluetoothActivity extends BaseAppActivity{
                     }
 
                     if (!gatts.containsKey(gatt.getDevice().getAddress()))
-                        runOnUiThread(() -> gatts.put(gatt.getDevice().getAddress(), gatt));
                     runOnUiThread(() -> {
                         if (lvAdapterConnectedDevices == null) return;
                         if (lvAdapterFoundDevices == null) return;
                         if (lvAdapterFoundDevices.removeDevice(gatt.getDevice()))
                             lvAdapterConnectedDevices.addDevice(gatt.getDevice());
-                        else
-                            lvAdapterConnectedDevices.setAvailability(true, gatt.getDevice());
+                    });
+                    runOnUiThread(() -> {
+                        gatts.put(gatt.getDevice().getAddress(), gatt);
+                        lvAdapterConnectedDevices.setAvailability(true, gatt.getDevice());
                     });
                     new Handler(Looper.getMainLooper()).postDelayed(() -> {
                         if (BuildConfig.DEBUG) Log.v("APP_TAG2", "Discover services");
@@ -321,10 +311,9 @@ public class BaseAppBluetoothActivity extends BaseAppActivity{
                 }
                 else if (newState == BluetoothProfile.STATE_DISCONNECTED){
                     String addr = gatt.getDevice().getAddress();
-                    int st = gatt.getConnectionState(gatt.getDevice());
                     gatt.close();
                     Log.v("APP_TAG22", "gatt is closed; addr = " + addr);
-                    Log.v("APP_TAG22", "gatt = " + gatt + "; Conn state: " + st);
+                    Log.v("APP_TAG22", "gatt = " + gatt + "; Conn state: " + newState);
                 }
             }
             else if (status == 8){
@@ -364,11 +353,5 @@ public class BaseAppBluetoothActivity extends BaseAppActivity{
         characteristic.setValue(message);
         if (!bluetoothGatt.writeCharacteristic(characteristic)) return false;
         return true;
-    }
-
-    @Override
-    protected void onDestroy(){
-        super.onDestroy();
-        //lv_connected_devices_adapter.allDisconnect();
     }
 }

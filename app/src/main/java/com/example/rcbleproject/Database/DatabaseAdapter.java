@@ -9,7 +9,7 @@ public class DatabaseAdapter {
     protected DatabaseHelper dbHelper;
 
     public DatabaseAdapter(Context context) {
-        dbHelper = new DatabaseHelper(context);
+        dbHelper = new DatabaseHelper(context.getApplicationContext());
     }
 
     public void open(){

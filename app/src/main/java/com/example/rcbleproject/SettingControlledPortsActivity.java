@@ -31,10 +31,8 @@ public class SettingControlledPortsActivity extends BaseAppBluetoothActivity {
             startActivity(intent);
         });
 
-        dbDeviceAdapter = new DatabaseAdapterForDevices(this);
-        dbControlledPorts = new DatabaseAdapterControlledPorts(this);
-        dbDeviceAdapter.open();
-        dbControlledPorts.open();
+        dbDeviceAdapter = Container.getDbForDevices(this);
+        dbControlledPorts = Container.getDbControlledPorts(this);
 
         profileID = getIntent().getLongExtra("profile_id", -1);
         displayID = getIntent().getLongExtra("display_id", -1);
@@ -81,12 +79,5 @@ public class SettingControlledPortsActivity extends BaseAppBluetoothActivity {
     protected void onPause(){
         super.onPause();
         stopLEScan();
-    }
-
-    @Override
-    protected void onDestroy(){
-        super.onDestroy();
-        dbDeviceAdapter.close();
-        dbControlledPorts.close();
     }
 }

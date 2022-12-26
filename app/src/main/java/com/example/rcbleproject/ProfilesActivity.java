@@ -39,11 +39,8 @@ public class ProfilesActivity extends BaseAppActivity implements Removable {
 
         lvProfiles = findViewById(R.id.lv_profiles);
 
-        dbAdapterProfilesControl = new DatabaseAdapterProfilesControl(this);
-        dbAdapterProfilesControl.open();
-
-        dbDisplays = new DatabaseAdapterDisplays(this);
-        dbDisplays.open();
+        dbAdapterProfilesControl = Container.getDbProfilesControl(this);
+        dbDisplays = Container.getDbDisplays(this);
 
         lvAdapterProfilesControl = new ProfilesAdapter(this,
                 R.layout.app_list_item,
@@ -93,20 +90,6 @@ public class ProfilesActivity extends BaseAppActivity implements Removable {
 
     public void setImageButtonVisibility(int visibility){
         if (btAddProfile.getVisibility() != visibility) btAddProfile.setVisibility(visibility);
-    }
-
-    @Override
-    protected void onStart(){
-        super.onStart();
-        if (!dbAdapterProfilesControl.isOpen()) dbAdapterProfilesControl.open();
-        if (!dbDisplays.isOpen()) dbDisplays.open();
-    }
-
-    @Override
-    protected void onStop(){
-        super.onStop();
-        if (dbAdapterProfilesControl.isOpen()) dbAdapterProfilesControl.close();
-        if (dbDisplays.isOpen()) dbDisplays.close();
     }
 
     @Override

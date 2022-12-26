@@ -1,9 +1,9 @@
 package com.example.rcbleproject;
 
 import android.annotation.SuppressLint;
+import android.bluetooth.BluetoothGatt;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.os.Debug;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -14,6 +14,8 @@ import com.example.rcbleproject.Database.DatabaseAdapterForDevices;
 import com.example.rcbleproject.databinding.ActivityAddingDevicesBinding;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class AddingDevicesActivity extends BaseAppBluetoothActivity implements Removable {
     protected ConnectedDevicesAdapter lv_connected_devices_adapter;
@@ -30,8 +32,7 @@ public class AddingDevicesActivity extends BaseAppBluetoothActivity implements R
         findViewById(R.id.bt_back).setOnClickListener((View v) -> finish());
         findViewById(R.id.bt_add_device).setVisibility(View.GONE);
 
-        dbDeviceAdapter = new DatabaseAdapterForDevices(this);
-        dbDeviceAdapter.open();
+        dbDeviceAdapter = Container.getDbForDevices(this);
 
         devicesAdapter = new FoundDevicesAdapter(this, R.layout.item_found_device, new ArrayList<>());
         ListView lv_found_devices = binding.lvFoundDevices;
@@ -56,6 +57,9 @@ public class AddingDevicesActivity extends BaseAppBluetoothActivity implements R
         super.onResume();
         setFullscreenMode(binding.layoutContent);
         startLEScan();
+        for (HashMap.Entry<String, BluetoothGatt> gatt : gatts.entrySet()){
+            lv_connected_devices_adapter.setAvailability(true, gatt.getValue().getDevice());
+        }
     }
 
     @SuppressLint("MissingPermission")
@@ -63,19 +67,6 @@ public class AddingDevicesActivity extends BaseAppBluetoothActivity implements R
     public void onPause() {
         super.onPause();
         stopLEScan();
-        //lv_connected_devices_adapter.allDisconnect();
-    }
-
-    @Override
-    protected void onStart(){
-        super.onStart();
-        if(!dbDeviceAdapter.isOpen()) dbDeviceAdapter.open();
-    }
-
-    @Override
-    protected void onStop(){
-        super.onStop();
-        if(dbDeviceAdapter.isOpen()) dbDeviceAdapter.close();
     }
 
     @Override

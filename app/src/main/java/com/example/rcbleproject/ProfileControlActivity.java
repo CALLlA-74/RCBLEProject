@@ -45,14 +45,9 @@ public class ProfileControlActivity extends BaseAppBluetoothActivity implements 
         binding = ActivityProfileControlBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        dbProfiles = new DatabaseAdapterProfilesControl(this);
-        dbProfiles.open();
-
-        dbAdapterElementsControl = new DatabaseAdapterElementsControl(this);
-        dbAdapterElementsControl.open();
-
-        dbDisplays = new DatabaseAdapterDisplays(this);
-        dbDisplays.open();
+        dbProfiles = Container.getDbProfilesControl(this);
+        dbAdapterElementsControl = Container.getDbElementsControl(this);
+        dbDisplays = Container.getDbDisplays(this);
 
         DisplayMetrics dm = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getRealMetrics(dm);
@@ -304,22 +299,6 @@ public class ProfileControlActivity extends BaseAppBluetoothActivity implements 
     protected void onPause(){
         super.onPause();
         gameControllersDrawer.saveElementsParams();
-    }
-
-    @Override
-    protected void onStart(){
-        super.onStart();
-        if (!dbAdapterElementsControl.isOpen()) dbAdapterElementsControl.open();
-        if (!dbProfiles.isOpen()) dbProfiles.open();
-        if (!dbDisplays.isOpen()) dbDisplays.open();
-    }
-
-    @Override
-    protected void onStop(){
-        super.onStop();
-        if (dbAdapterElementsControl.isOpen()) dbAdapterElementsControl.close();
-        if (dbProfiles.isOpen()) dbProfiles.close();
-        if (dbDisplays.isOpen()) dbDisplays.close();
     }
 
     @Override

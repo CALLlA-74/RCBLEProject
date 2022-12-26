@@ -37,7 +37,7 @@ public class ConnectedDevicesAdapter extends BaseAppCursorAdapter implements ILi
         Cursor c = getCursor();
         while (c.moveToNext()){
             availability.put(c.getString(c.getColumnIndexOrThrow(dbAdapter.DEVICE_ADDRESS)),
-                    Boolean.TRUE);
+                    Boolean.FALSE);
             //activity.connectDevice(c.getString(c.getColumnIndexOrThrow(dbAdapter.DEVICE_ADDRESS)));
         }
         c.moveToFirst();
@@ -213,16 +213,6 @@ public class ConnectedDevicesAdapter extends BaseAppCursorAdapter implements ILi
     public void setEditingView(View editingView) {
         this.editingView = editingView;
     }
-
-    /*public void allDisconnect(){
-        Cursor c = getCursor();
-        if (!c.moveToFirst()) return;
-        do{
-            String deviceAddress = c.getString(c.getColumnIndexOrThrow(dbAdapter.DEVICE_ADDRESS));
-            if (availability.get(deviceAddress))
-                activity.disconnectDevice(deviceAddress);
-        } while (c.moveToNext());
-    }*/
 
     private class ViewHolder{
         final TextView tv_device_name;

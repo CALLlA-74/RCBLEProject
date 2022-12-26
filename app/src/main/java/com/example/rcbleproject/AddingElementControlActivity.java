@@ -30,8 +30,7 @@ public class AddingElementControlActivity extends BaseAppActivity {
         binding.tbActivityAddElement.tvLabel.setText(getString(R.string.elements_control));
         binding.tbActivityAddElement.btAddDevice.setVisibility(View.GONE);
         List<BaseControlElement> list = initElementsControlList();
-        dbAdapterElementsControl = new DatabaseAdapterElementsControl(this);
-        dbAdapterElementsControl.open();
+        dbAdapterElementsControl = Container.getDbElementsControl(this);
         ElementsControlAdapter adapter = new ElementsControlAdapter(this,
                                                                         R.layout.item_element_control,
                                                                         list);
@@ -57,17 +56,5 @@ public class AddingElementControlActivity extends BaseAppActivity {
     protected void onResume(){
         super.onResume();
         setFullscreenMode(binding.llContentAddElement);
-    }
-
-    @Override
-    protected void onStart(){
-        super.onStart();
-        if (!dbAdapterElementsControl.isOpen()) dbAdapterElementsControl.open();
-    }
-
-    @Override
-    protected void onStop(){
-        super.onStop();
-        if (dbAdapterElementsControl.isOpen()) dbAdapterElementsControl.close();
     }
 }
