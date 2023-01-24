@@ -5,5 +5,5 @@ public class ControlledPort {
                 displayID = -1;
     public int axisNum = -1,
                portNum = -1;
-    public String deviceAddress = null;
+    public String hubAddress = null;
 }

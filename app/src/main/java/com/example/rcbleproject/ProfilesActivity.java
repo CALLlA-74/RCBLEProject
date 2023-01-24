@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.ImageButton;
 import android.widget.ListView;
@@ -30,12 +31,6 @@ public class ProfilesActivity extends BaseAppActivity implements Removable {
         ((TextView)findViewById(R.id.tv_label)).setText(R.string.profiles_control);
         findViewById(R.id.bt_back).setVisibility(View.GONE);
         findViewById(R.id.bt_add_device).setVisibility(View.GONE);
-
-        /*findViewById(R.id.bt_back).setOnClickListener(v -> {
-            Intent intent = new Intent(this, AddingDevicesActivity.class);
-            startActivity(intent);
-            finish();
-        });*/
 
         lvProfiles = findViewById(R.id.lv_profiles);
 

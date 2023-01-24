@@ -15,17 +15,17 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class FoundDevicesAdapter extends ArrayAdapter<BluetoothDeviceApp> implements IListViewAdapterForDevices {
+public class FoundDevicesAdapter extends ArrayAdapter<BluetoothHub> implements IListViewAdapterForHubs {
     public enum Activeness {active, inactive}
 
     private final LayoutInflater inflater;
     private final int layout;
-    private final List<BluetoothDeviceApp> devices;
-    private final AddingDevicesActivity activity;
+    private final List<BluetoothHub> hubs;
+    private final AddingHubsActivity activity;
 
-    public FoundDevicesAdapter(AddingDevicesActivity context, int resource, List<BluetoothDeviceApp> devices) {
-        super(context, resource, devices);
-        this.devices = devices;
+    public FoundDevicesAdapter(AddingHubsActivity context, int resource, List<BluetoothHub> hubs) {
+        super(context, resource, hubs);
+        this.hubs = hubs;
         layout = resource;
         inflater = LayoutInflater.from(context);
         activity = context;
@@ -35,10 +35,10 @@ public class FoundDevicesAdapter extends ArrayAdapter<BluetoothDeviceApp> implem
             @Override
             public void run() {
                 long time = System.currentTimeMillis();
-                for (BluetoothDeviceApp deviceApp : devices){
-                    if (time - deviceApp.lastTimeAdv > 8000)
+                for (BluetoothHub hub : hubs){
+                    if (time - hub.lastTimeAdv > 2000)
                         activity.runOnUiThread(() -> {
-                            deviceApp.isActive = false;
+                            hub.isActive = false;
                             notifyDataSetChanged();
                         });
                 }
@@ -50,7 +50,7 @@ public class FoundDevicesAdapter extends ArrayAdapter<BluetoothDeviceApp> implem
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         final ViewHolder holder;
-        BluetoothDeviceApp deviceApp = devices.get(position);
+        BluetoothHub hub = hubs.get(position);
         if (convertView == null) {
             convertView = inflater.inflate(this.layout, parent, false);
             holder = new ViewHolder(convertView);
@@ -58,31 +58,30 @@ public class FoundDevicesAdapter extends ArrayAdapter<BluetoothDeviceApp> implem
         } else holder = (ViewHolder) convertView.getTag();
         holder.position = position;
 
-        holder.tv_device_name.setText(deviceApp.getDevice().getName() + " (" + deviceApp.getDevice().getAddress() + ")");
-        if (deviceApp.isActive) setActiveness(Activeness.active,holder);
+        holder.tv_device_name.setText(hub.name + " (" + hub.address + ")");
+        if (hub.isActive) setActiveness(Activeness.active,holder);
         else setActiveness(Activeness.inactive, holder);
 
         holder.bt_add_device.setOnClickListener((View v) -> {
             ViewHolder vh = (ViewHolder) ((View)v.getParent()).getTag();
-            if(BuildConfig.DEBUG) Log.v("APP_TAG2", "connecting to " + devices.get(vh.position).getDevice().getAddress());
+            if(BuildConfig.DEBUG) Log.v("APP_TAG2", "connecting to " + hubs.get(vh.position).address);
             vh.bt_add_device.setVisibility(View.GONE);
-            activity.connectDevice(devices.get(vh.position).getDevice());
+            activity.connectDevice(hubs.get(vh.position).address);
         });
         return convertView;
     }
 
-    public boolean addDevice(BluetoothDevice device){
-        if (device == null) return false;
-        int pos = containsDevice(device);
+    public boolean addHub(BluetoothHub hub){
+        if (hub == null) return false;
+        int pos = containsDevice(hub.address);
         if (pos >= 0){
-            devices.get(pos).lastTimeAdv = System.currentTimeMillis();
-            devices.get(pos).isActive = true;
+            hubs.get(pos).lastTimeAdv = System.currentTimeMillis();
+            hubs.get(pos).isActive = true;
             notifyDataSetChanged();
             return false;
         }
-        BluetoothDeviceApp deviceApp = new BluetoothDeviceApp(device);
-        deviceApp.lastTimeAdv = System.currentTimeMillis();
-        add(deviceApp);
+        hub.lastTimeAdv = System.currentTimeMillis();
+        add(hub);
         notifyDataSetChanged();
         return true;
     }
@@ -90,21 +89,22 @@ public class FoundDevicesAdapter extends ArrayAdapter<BluetoothDeviceApp> implem
     /**
      * Возврщает true, если device находился в списке найденных устройств
      **/
-    public boolean removeDevice(BluetoothDevice device){
-        int pos = containsDevice(device);
+    public BluetoothHub removeHub(String hubAddress){
+        int pos = containsDevice(hubAddress);
         if (pos >= 0){
-            remove(getItem(pos));
+            BluetoothHub removableHub = getItem(pos);
+            remove(removableHub);
             notifyDataSetChanged();
-            return  true;
+            return  removableHub;
         }
-        return false;
+        return null;
     }
 
     public boolean setAvailability(boolean flag, BluetoothDevice device){ return true; }
 
-    private int containsDevice(BluetoothDevice device){
-        for (int i = 0; i < devices.size(); i++){
-            if (devices.get(i).getDevice().getAddress().equals(device.getAddress()))
+    private int containsDevice(String address){
+        for (int i = 0; i < hubs.size(); i++){
+            if (hubs.get(i).address.equals(address))
                 return i;
         }
         return -1;

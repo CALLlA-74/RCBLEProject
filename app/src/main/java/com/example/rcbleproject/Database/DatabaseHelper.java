@@ -15,7 +15,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db){
         DatabaseAdapterProfilesControl.createTable(db);
-        DatabaseAdapterForDevices.createTable(db);
+        DatabaseAdapterForHubs.createTable(db);
         DatabaseAdapterDisplays.createTable(db);
         DatabaseAdapterElementsControl.createTable(db);
         DatabaseAdapterControlledPorts.createTable(db);

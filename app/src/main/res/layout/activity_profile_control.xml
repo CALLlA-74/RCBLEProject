@@ -7,7 +7,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ProfileControlActivity"
-    tools:openDrawer="end">
+    tools:openDrawer="start">
 
     <SurfaceView
         android:id="@+id/sv_game_controllers"
@@ -119,9 +119,9 @@
         android:paddingTop="0dp"
         android:paddingBottom="0dp"
         android:paddingEnd="0dp"
-        android:background="@color/maximum_blue"
-        android:backgroundTint="@color/maximum_blue"
+        android:background="?attr/colorPrimary"
+        android:backgroundTint="?attr/colorPrimary"
         android:backgroundTintMode="screen"
         android:theme="@style/MenuItemStyle"
-        app:menu="@menu/menu_profile_control"/>
+        app:menu="@menu/menu_profile_control" />
 </androidx.drawerlayout.widget.DrawerLayout>

@@ -1,6 +1,7 @@
 package com.example.rcbleproject;
 
 import android.annotation.SuppressLint;
+import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -10,14 +11,12 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.example.rcbleproject.Database.DatabaseAdapterForDevices;
 import com.example.rcbleproject.databinding.ActivityAddingDevicesBinding;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
 
-public class AddingDevicesActivity extends BaseAppBluetoothActivity implements Removable {
+public class AddingHubsActivity extends BaseAppBluetoothActivity implements Removable {
     protected ConnectedDevicesAdapter lv_connected_devices_adapter;
     protected FoundDevicesAdapter devicesAdapter;
 
@@ -26,13 +25,13 @@ public class AddingDevicesActivity extends BaseAppBluetoothActivity implements R
         super.onCreate(savedInstanceState);
         binding = ActivityAddingDevicesBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-        setSupportActionBar(findViewById(R.id.tb_activity_profiles));
+        setSupportActionBar(binding.tbActivityAddDevices.getRoot());
         setFullscreenMode(binding.layoutContent);
         ((TextView) findViewById(R.id.tv_label)).setText(getResources().getString(R.string.devices));
         findViewById(R.id.bt_back).setOnClickListener((View v) -> finish());
         findViewById(R.id.bt_add_device).setVisibility(View.GONE);
 
-        dbDeviceAdapter = Container.getDbForDevices(this);
+        dbHubsAdapter = Container.getDbForHubs(this);
 
         devicesAdapter = new FoundDevicesAdapter(this, R.layout.item_found_device, new ArrayList<>());
         ListView lv_found_devices = binding.lvFoundDevices;
@@ -40,15 +39,16 @@ public class AddingDevicesActivity extends BaseAppBluetoothActivity implements R
         ListView lv_connected_devices = binding.lvConnectedDevices;
         lv_connected_devices_adapter = new ConnectedDevicesAdapter(this,
                                                                           R.layout.app_list_item,
-                                                                          dbDeviceAdapter);
+                dbHubsAdapter);
         lv_connected_devices.setAdapter(lv_connected_devices_adapter);
         lv_connected_devices.setOnItemLongClickListener(
                 (AdapterView<?> parent, View view, int position, long id) -> {
-                    lv_connected_devices_adapter.setFocusOnEditText(view);
+                    if (lv_connected_devices_adapter.getAvailability(view))
+                        lv_connected_devices_adapter.setFocusOnEditText(view);
                     return false;
         });
         setLvAdapterConnectedDevices(lv_connected_devices_adapter);
-        setLvAdapterFoundDevices(devicesAdapter);
+        setLvAdapterFoundHubs(devicesAdapter);
     }
 
 
@@ -57,8 +57,10 @@ public class AddingDevicesActivity extends BaseAppBluetoothActivity implements R
         super.onResume();
         setFullscreenMode(binding.layoutContent);
         startLEScan();
+        BluetoothDevice device;
         for (HashMap.Entry<String, BluetoothGatt> gatt : gatts.entrySet()){
-            lv_connected_devices_adapter.setAvailability(true, gatt.getValue().getDevice());
+            device = gatt.getValue().getDevice();
+            lv_connected_devices_adapter.setAvailability(true, device);
         }
     }
 
@@ -73,9 +75,9 @@ public class AddingDevicesActivity extends BaseAppBluetoothActivity implements R
     public void remove(long id) {
         setFullscreenMode(binding.layoutContent);
         if (BuildConfig.DEBUG) Log.v("APP_TAG22", "try to remove device. id = " + id);
-        Cursor c = dbDeviceAdapter.getDeviceById_cursor(id);
+        Cursor c = dbHubsAdapter.getHubById_cursor(id);
         if (!c.moveToFirst()) return;
-        String address = c.getString(c.getColumnIndexOrThrow(dbDeviceAdapter.DEVICE_ADDRESS));
+        String address = c.getString(c.getColumnIndexOrThrow(dbHubsAdapter.HUB_ADDRESS));
         c.close();
         if (BuildConfig.DEBUG) Log.v("APP_TAG22", "try to disconn device. addr = " + address);
         disconnectDevice(gatts.get(address));

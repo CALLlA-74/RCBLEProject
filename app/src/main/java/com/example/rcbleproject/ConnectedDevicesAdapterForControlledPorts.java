@@ -1,11 +1,7 @@
 package com.example.rcbleproject;
 
 import android.annotation.SuppressLint;
-import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
-import android.content.Context;
-import android.database.Cursor;
-import android.graphics.Color;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,31 +10,29 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.example.rcbleproject.Database.DatabaseAdapterForDevices;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ConnectedDevicesAdapterForControlledPorts extends ArrayAdapter<BluetoothDeviceApp>
-        implements IListViewAdapterForDevices {
+public class ConnectedDevicesAdapterForControlledPorts extends ArrayAdapter<BluetoothHub>
+        implements IListViewAdapterForHubs {
     private final Map<String, Boolean> availability = Collections.synchronizedMap(new HashMap<>());
     private final SettingControlledPortsActivity activity;
     private static final int layout = R.layout.item_device_for_spinner;
     private final LayoutInflater inflater;
-    private final ArrayList<BluetoothDeviceApp> deviceApps;
+    private final ArrayList<BluetoothHub> hubs;
 
     @SuppressLint("MissingPermission")
     public ConnectedDevicesAdapterForControlledPorts(SettingControlledPortsActivity context,
-                                                     ArrayList<BluetoothDeviceApp> devices) {
+                                                     ArrayList<BluetoothHub> devices) {
         super(context, layout, devices);
-        deviceApps = devices;
+        hubs = devices;
         activity = context;
         inflater = LayoutInflater.from(context);
 
-        for (BluetoothDeviceApp deviceApp : deviceApps) {
-            availability.put(deviceApp.getDevice().getAddress(), Boolean.FALSE);
+        for (BluetoothHub hub : hubs) {
+            availability.put(hub.address, Boolean.FALSE);
         }
         setDropDownViewResource(android.R.layout.simple_spinner_item);
     }
@@ -55,15 +49,14 @@ public class ConnectedDevicesAdapterForControlledPorts extends ArrayAdapter<Blue
         else viewHolder = (ViewHolder) convertView.getTag();
         viewHolder.pos = position;
 
-        if (availability.get(deviceApps.get(position).getDevice().getAddress()))
+        if (availability.get(hubs.get(position).address))
             viewHolder.bt_where_are_you.setVisibility(View.VISIBLE);
         else viewHolder.bt_where_are_you.setVisibility(View.GONE);
 
-        viewHolder.tv_device_name.setText(deviceApps.get(position).name);
+        viewHolder.tv_device_name.setText(hubs.get(position).name);
         viewHolder.bt_where_are_you.setOnClickListener((View v) -> {
             ViewHolder vh = (ViewHolder) ((View)v.getParent()).getTag();
-            String address = deviceApps.get(vh.pos).getDevice().getAddress();
-            activity.writeCharacteristic(address, "1");
+            hubs.get(vh.pos).alarm(activity);
         });
         Log.v("APP_TAG3", "getting view. pos = " + position);
 
@@ -76,15 +69,16 @@ public class ConnectedDevicesAdapterForControlledPorts extends ArrayAdapter<Blue
     }
 
     @Override
-    public boolean addDevice(BluetoothDevice device){ return false; }
+    public boolean addHub(BluetoothHub hub){ return false; }
 
     @Override
-    public boolean removeDevice(BluetoothDevice device) { return false; }
+    public BluetoothHub removeHub(String hubAddress) { return null; }
 
     @Override
     public boolean setAvailability(boolean flag, BluetoothDevice device){
-        if (!availability.containsKey(device.getAddress())) return false;
-        availability.put(device.getAddress(), flag);
+        String hubAddress = device.getAddress();
+        if (!availability.containsKey(hubAddress)) return false;
+        availability.put(hubAddress, flag);
         notifyDataSetChanged();
         return true;
     }

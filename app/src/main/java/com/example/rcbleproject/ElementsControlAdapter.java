@@ -33,13 +33,11 @@ public class ElementsControlAdapter extends ArrayAdapter<BaseControlElement> {
             convertView.setTag(viewHolder);
         }
         else viewHolder = (ViewHolder) convertView.getTag();
+
         viewHolder.position = position;
         BaseControlElement element = elements.get(position);
-        switch (element.getType()){
-            case JOYSTICK_XY:
-                viewHolder.tv_element_name.setText(((JoystickXY)element).getName());
-                viewHolder.iv_element_image.setImageResource(R.drawable.joystick_xy);
-        }
+        viewHolder.tv_element_name.setText(element.getName());
+        viewHolder.iv_element_image.setImageResource(element.getIcon());
 
         return convertView;
     }

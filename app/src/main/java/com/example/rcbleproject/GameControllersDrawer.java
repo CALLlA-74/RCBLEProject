@@ -62,8 +62,6 @@ public class GameControllersDrawer extends SurfaceView implements SurfaceHolder.
 
         paintGrid.setColor(Color.WHITE);
         paintGrid.setStyle(Paint.Style.FILL);
-
-        //Log.v("APP_TAG2", controlElements.get(0).getType().toString());
     }
 
     public int getCountOfDisplays(){ return countOfDisplays; }
@@ -91,7 +89,7 @@ public class GameControllersDrawer extends SurfaceView implements SurfaceHolder.
         setFocusOnElementWithUpperIndex();
     }
 
-    @SuppressLint("CommitPrefEdits")
+    @SuppressLint({"CommitPrefEdits", "ApplySharedPref"})
     public void saveElementsParams(){
         SharedPreferences prefs = ((ProfileControlActivity)getContext()).getPreferences(Context.MODE_PRIVATE);
         prefs.edit().putInt("current_display_index_"+profileID, currentDisplayIndex).commit();
@@ -192,17 +190,11 @@ public class GameControllersDrawer extends SurfaceView implements SurfaceHolder.
         if (activity.getMode() == ProfileControlActivity.MODE_TYPE.EDIT_MODE){
             if (act == MotionEvent.ACTION_DOWN){
                 for (int i = elementsOnDisplay.size() - 1; i >= 0; i--){
-                    switch (elementsOnDisplay.get(i).getType()){
-                        case JOYSTICK_XY:
-                            JoystickXY element = (JoystickXY) elementsOnDisplay.get(i);
-                            if (element.contains(event.getX(pointerIndex), event.getY(pointerIndex))){
-                                element.onTouch(event, gridVisibility);
-                                setFocus(element);
-                                return;
-                            }
-                            break;
-                        case JOYSTICK_X:
-                        case JOYSTICK_Y:
+                    BaseControlElement element = elementsOnDisplay.get(i);
+                    if (element.contains(event.getX(pointerIndex), event.getY(pointerIndex))){
+                        element.onTouch(event, gridVisibility);
+                        setFocus(element);
+                        return;
                     }
                 }
             }
@@ -213,18 +205,12 @@ public class GameControllersDrawer extends SurfaceView implements SurfaceHolder.
         else {
             if (act == MotionEvent.ACTION_POINTER_DOWN || act == MotionEvent.ACTION_DOWN){
                 for (int i = elementsOnDisplay.size() - 1; i >= 0; i--){
-                    switch (elementsOnDisplay.get(i).getType()){
-                        case JOYSTICK_XY:
-                            JoystickXY element = (JoystickXY) elementsOnDisplay.get(i);
-                            if (element.contains(event.getX(pointerIndex), event.getY(pointerIndex))){
-                                int pointerID = event.getPointerId(pointerIndex);
-                                element.onControl(pointerID, event);
-                                touchedElements.put(pointerID, element);
-                                return;
-                            }
-                            break;
-                        case JOYSTICK_X:
-                        case JOYSTICK_Y:
+                    BaseControlElement element = elementsOnDisplay.get(i);
+                    if (element.contains(event.getX(pointerIndex), event.getY(pointerIndex))){
+                        int pointerID = event.getPointerId(pointerIndex);
+                        element.onControl(pointerID, event);
+                        touchedElements.put(pointerID, element);
+                        return;
                     }
                 }
             }
@@ -313,13 +299,7 @@ public class GameControllersDrawer extends SurfaceView implements SurfaceHolder.
                         if (currentDisplayIndex < controlElements.size()){
                             ArrayList<BaseControlElement> elementsOnDisplay = controlElements.get(currentDisplayIndex);
                             for (BaseControlElement element : elementsOnDisplay){
-                                switch (element.getType()){
-                                    case JOYSTICK_XY:
-                                        ((JoystickXY)element).onDraw(c, activity.getMode());
-                                        break;
-                                    case JOYSTICK_X:
-                                    case JOYSTICK_Y:
-                                }
+                                element.onDraw(c, activity.getMode());
                             }
                         }
                     }

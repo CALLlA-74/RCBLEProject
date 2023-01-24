@@ -47,9 +47,7 @@ public class AddingElementControlActivity extends BaseAppActivity {
     }
 
     protected List<BaseControlElement> initElementsControlList(){
-        ArrayList<BaseControlElement> list = new ArrayList<>();
-        list.add(new JoystickXY(this));
-        return list;
+        return BaseControlElement.getAllDefaultElementControlTypes(this);
     }
 
     @Override

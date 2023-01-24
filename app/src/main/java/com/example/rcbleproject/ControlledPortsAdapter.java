@@ -13,20 +13,20 @@ public class ControlledPortsAdapter extends ArrayAdapter<ControlledPort> {
     private final SettingControlledPortsActivity activity;
     private static final int layout = R.layout.item_controlled_port;
     private final ArrayList<ControlledPort> controlledPorts;
-    private final ArrayList<BluetoothDeviceApp> devices;
+    private final ArrayList<BluetoothHub> hubs;
     private final LayoutInflater inflater;
     private final ConnectedDevicesAdapterForControlledPorts connectedDevicesAdapter;
 
     public ControlledPortsAdapter(SettingControlledPortsActivity context,
                                   ArrayList<ControlledPort> controlledPorts,
-                                  ArrayList<BluetoothDeviceApp> devices){
+                                  ArrayList<BluetoothHub> hubs){
         super(context, layout, controlledPorts);
         activity = context;
         this.controlledPorts = controlledPorts;
         inflater = LayoutInflater.from(context);
-        this.devices = devices;
+        this.hubs = hubs;
         connectedDevicesAdapter = new ConnectedDevicesAdapterForControlledPorts(activity,
-                devices);
+                hubs);
     }
 
     public ConnectedDevicesAdapterForControlledPorts getConnectedDevicesAdapter(){

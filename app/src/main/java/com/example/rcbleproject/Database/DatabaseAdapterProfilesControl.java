@@ -1,5 +1,6 @@
 package com.example.rcbleproject.Database;
 
+import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -21,6 +22,7 @@ public class DatabaseAdapterProfilesControl extends DatabaseAdapter{
 
     public DatabaseAdapterProfilesControl(Context context){
         super(context);
+        open();
     }
 
     public static void createTable(SQLiteDatabase db){

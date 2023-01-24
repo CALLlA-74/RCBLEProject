@@ -9,10 +9,10 @@
     <string name="confirm_msg_device" translatable="true">Delete the device</string>
     <string name="confirm_msg_display" translatable="true">Delete current display?</string>
     <string name="confirm_msg_element_control" translatable="true">Delete chosen element control?</string>
-    <string name="service_uuid" translatable="false">4ad77a12-4a0b-4daa-a715-ae0cb0427ed3</string>
-    <string name="characteristic_uuid" translatable="false">39789f14-68f7-46f8-92f1-623cde4bdfc7</string>
     <string name="elements_control" translatable="true">Choose an element to add</string>
     <string name="joystick_xy_name" translatable="true">2-axis joystick</string>
+    <string name="joystick_x_name" translatable="true">1-axis horizontal joystick</string>
+    <string name="joystick_y_name" translatable="true">1-axis vertical joystick</string>
     <string name="grid_align" translatable="true">Grid alignment</string>
     <string name="add_display" translatable="true">Add display</string>
     <string name="remove_display" translatable="true">Remove current display</string>
@@ -25,6 +25,13 @@
     <string name="axis_word" translatable="true">axis</string>
     <string name="add_controlled_port" translatable="true">Add controlled port</string>
     <string name="edit_profile" translatable="true">Edit profile</string>
+    <string name="too_long_name" translatable="true">The name is too long</string>
+    <string name="alarm_no_permissions" translatable="true">Bluetooth or Location are not enabled!</string>
 
     <string name="app_tag" translatable="false">Geckos Control</string>
+
+    <string name="gecko_service_uuid" translatable="false">4ad77a12-4a0b-4daa-a715-ae0cb0427ed3</string>
+    <string name="gecko_characteristic_uuid" translatable="false">39789f14-68f7-46f8-92f1-623cde4bdfc7</string>
+    <string name="pu_service_uuid" translatable="false">00001623-1212-EFDE-1623-785FEABCD123</string>
+    <string name="pu_characteristic_uuid" translatable="false">00001624-1212-EFDE-1623-785FEABCD123</string>
 </resources>

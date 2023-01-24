@@ -1,5 +1,10 @@
 package com.example.rcbleproject;
 
+import static com.example.rcbleproject.Database.DatabaseAdapterForHubs.HUB_ADDRESS;
+import static com.example.rcbleproject.Database.DatabaseAdapterForHubs.HUB_NAME;
+import static com.example.rcbleproject.Database.DatabaseAdapterForHubs.HUB_TYPE;
+import static com.example.rcbleproject.Database.DatabaseAdapterForHubs.ID;
+
 import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothDevice;
 import android.content.Context;
@@ -12,31 +17,31 @@ import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.example.rcbleproject.Database.DatabaseAdapterForDevices;
+import com.example.rcbleproject.Database.DatabaseAdapterForHubs;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ConnectedDevicesAdapter extends BaseAppCursorAdapter implements IListViewAdapterForDevices {
-    private final DatabaseAdapterForDevices dbAdapter;
+public class ConnectedDevicesAdapter extends BaseAppCursorAdapter implements IListViewAdapterForHubs {
+    private final DatabaseAdapterForHubs dbAdapter;
     private final Map<String, Boolean> availability = Collections.synchronizedMap(new HashMap<>());
-    AddingDevicesActivity activity;
+    AddingHubsActivity activity;
 
-    public ConnectedDevicesAdapter(AddingDevicesActivity context, int resource,
-                                   DatabaseAdapterForDevices adapter){
-        super(context, resource, adapter.getConnectedDevices_cursor(), adapter.getColumns(),
+    public ConnectedDevicesAdapter(AddingHubsActivity context, int resource,
+                                   DatabaseAdapterForHubs adapter){
+        super(context, resource, adapter.getConnectedHubs_cursor(), adapter.getColumns(),
                 new int[]{R.id.et_name, R.id.tv_name, R.id.bt_delete,
                         R.id.bt_cancel, R.id.bt_ok}, 0);
         dbAdapter = adapter;
         activity = context;
         Cursor c = getCursor();
+        int columnAddressIndex = c.getColumnIndexOrThrow(HUB_ADDRESS);
         while (c.moveToNext()){
-            availability.put(c.getString(c.getColumnIndexOrThrow(dbAdapter.DEVICE_ADDRESS)),
+            availability.put(c.getString(columnAddressIndex),
                     Boolean.FALSE);
             //activity.connectDevice(c.getString(c.getColumnIndexOrThrow(dbAdapter.DEVICE_ADDRESS)));
         }
@@ -46,7 +51,7 @@ public class ConnectedDevicesAdapter extends BaseAppCursorAdapter implements ILi
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup parent){
         View convertView = inflater.inflate(this.layout, parent, false);
-        long id = cursor.getLong(cursor.getColumnIndexOrThrow(dbAdapter.ID));
+        long id = cursor.getLong(cursor.getColumnIndexOrThrow(ID));
         ViewHolder holder = new ViewHolder(convertView);
         holder.id = id;
         convertView.setTag(holder);
@@ -56,7 +61,7 @@ public class ConnectedDevicesAdapter extends BaseAppCursorAdapter implements ILi
     @Override
     public void bindView(View convertView, Context context, Cursor cursor){
         final ViewHolder holder = (ViewHolder) convertView.getTag();
-        holder.id = cursor.getLong(cursor.getColumnIndexOrThrow(dbAdapter.ID));
+        holder.id = cursor.getLong(cursor.getColumnIndexOrThrow(ID));
         Log.v("APP_TAG22", "device id = " + holder.id);
 
         holder.et_device_name.setOnEditorActionListener((v, actionId, event) -> {
@@ -64,7 +69,7 @@ public class ConnectedDevicesAdapter extends BaseAppCursorAdapter implements ILi
             return false;
         });
 
-        if (availability.get(cursor.getString(cursor.getColumnIndexOrThrow(dbAdapter.DEVICE_ADDRESS)))){
+        if (Boolean.TRUE.equals(availability.get(cursor.getString(cursor.getColumnIndexOrThrow(HUB_ADDRESS))))){
             holder.tv_device_name.setTextColor(Color.WHITE);
             holder.bt_light_alarm.setVisibility(View.VISIBLE);
         }
@@ -77,13 +82,13 @@ public class ConnectedDevicesAdapter extends BaseAppCursorAdapter implements ILi
             ViewHolder vh = (ViewHolder) ((View)v.getParent()).getTag();
             long id = vh.id;
             Log.v("APP_TAG222", "delete. id = " + id);
-            Cursor c = dbAdapter.getDeviceById_cursor(id);
+            Cursor c = dbAdapter.getHubById_cursor(id);
             c.moveToFirst();
             ConfirmRemoveDialogFragment dialog = new ConfirmRemoveDialogFragment();
             Bundle args = new Bundle();
             args.putLong("object_id", id);
             args.putString("message", activity.getResources().getString(R.string.confirm_msg_device) + " \"" +
-                    c.getString(c.getColumnIndexOrThrow(dbAdapter.DEVICE_NAME)) + "\" ?");
+                    c.getString(c.getColumnIndexOrThrow(DatabaseAdapterForHubs.HUB_NAME)) + "\" ?");
             dialog.setArguments(args);
             dialog.setCancelable(false);
             dialog.show(activity.getSupportFragmentManager(), activity.getResources().getString(R.string.app_name));
@@ -91,14 +96,14 @@ public class ConnectedDevicesAdapter extends BaseAppCursorAdapter implements ILi
 
         holder.bt_light_alarm.setOnClickListener(v -> {
             ViewHolder vh = (ViewHolder) ((View)v.getParent()).getTag();
-            Cursor c = dbAdapter.getDeviceById_cursor(vh.id);
+            Cursor c = dbAdapter.getHubById_cursor(vh.id);
             if (!c.moveToFirst()) return;
-            String deviceAddress = c.getString(cursor.getColumnIndexOrThrow(dbAdapter.DEVICE_ADDRESS));
+            String deviceAddress = c.getString(c.getColumnIndexOrThrow(HUB_ADDRESS));
+            BluetoothHub.HubTypes type = BluetoothHub.IntToHubTypes(c.getInt(c.getColumnIndexOrThrow(HUB_TYPE)));
             Log.v("APP_TAG222", "id = " + vh.id + "; addr = " + deviceAddress);
             c.close();
-            activity.writeCharacteristic(deviceAddress, "1");
+            new BluetoothHub(vh.id, activity).alarm(activity);
         });
-
         holder.bt_cancel.setOnClickListener(v -> cancelEdit());
 
         holder.bt_ok.setOnClickListener(v -> {
@@ -107,43 +112,57 @@ public class ConnectedDevicesAdapter extends BaseAppCursorAdapter implements ILi
             resetEditingView();
         });
 
-        holder.tv_device_name.setText(cursor.getString(cursor.getColumnIndexOrThrow(dbAdapter.DEVICE_NAME)));
-        Log.v("APP_TAG", "get view. id = " + cursor.getLong(cursor.getColumnIndexOrThrow(dbAdapter.ID)));
+        holder.tv_device_name.setText(cursor.getString(cursor.getColumnIndexOrThrow(DatabaseAdapterForHubs.HUB_NAME)));
+        Log.v("APP_TAG", "get view. id = " + cursor.getLong(cursor.getColumnIndexOrThrow(ID)));
     }
 
     @SuppressLint("MissingPermission")
-    public boolean addDevice(BluetoothDevice device){
-        Cursor c = dbAdapter.getDeviceByAddress_cursor(device.getAddress());
-        if (c.getCount() > 0) {
-            c.moveToFirst();
-            dbAdapter.updateState(c.getLong(c.getColumnIndexOrThrow(dbAdapter.ID)), 1);
+    public boolean addHub(BluetoothHub hub){
+        Cursor cursor = dbAdapter.getHubByAddress_cursor(hub.address);
+        if (cursor.moveToFirst()) {
+            dbAdapter.updateNameAndState(cursor.getLong(cursor.getColumnIndexOrThrow(ID)), hub.name, 1);
         }
         else {
-            long id = dbAdapter.insert(device.getName(), device.getAddress(), 1);
+            long id = dbAdapter.insert(hub.name, hub.address, 1, hub.hubType);
             if (BuildConfig.DEBUG) Log.v("APP_TAG", "addProf. id = " + id);
         }
-        availability.put(device.getAddress(), true);
-        swapCursor(dbAdapter.getConnectedDevices_cursor());
+        availability.put(hub.address, true);
+        swapCursor(dbAdapter.getConnectedHubs_cursor());
         return true;
     }
 
-    public boolean removeDevice(BluetoothDevice device){
-        String deviceAddress = device.getAddress();
-        Cursor c = dbAdapter.getDeviceByAddress_cursor(deviceAddress);
-        if (!c.moveToFirst()) return false;
-        dbAdapter.updateState(c.getLong(c.getColumnIndexOrThrow(dbAdapter.ID)), 0);
+    public BluetoothHub removeHub(String hubAddress){
+        Cursor c = dbAdapter.getHubByAddress_cursor(hubAddress);
+        if (!c.moveToFirst()) return null;
+        long hubId = c.getLong(c.getColumnIndexOrThrow(ID));
+        String hubName = c.getString(c.getColumnIndexOrThrow(HUB_NAME));
+        dbAdapter.updateNameAndState(hubId, hubName,  0);
         c.close();
-        swapCursor(dbAdapter.getConnectedDevices_cursor());
-        availability.remove(deviceAddress);
+        swapCursor(dbAdapter.getConnectedHubs_cursor());
+        availability.remove(hubAddress);
         notifyDataSetChanged();
-        return true;
+        return new BluetoothHub(hubId, activity);
     }
 
+    @SuppressLint("MissingPermission")
     public boolean setAvailability(boolean flag, BluetoothDevice device){
         if (!availability.containsKey(device.getAddress())) return false;
+        if (flag){
+            if (BluetoothHub.updateHubNameInDB(activity, device.getAddress(), device.getName()))
+                swapCursor(dbAdapter.getConnectedHubs_cursor());
+        }
         availability.put(device.getAddress(), flag);
         notifyDataSetChanged();
         return true;
+    }
+
+    public boolean getAvailability(View v){
+        ViewHolder holder = (ViewHolder) v.getTag();
+        Cursor cursor = dbAdapter.getHubById_cursor(holder.id);
+        if (!cursor.moveToFirst()) return false;
+        String hubAddress = cursor.getString(cursor.getColumnIndexOrThrow(HUB_ADDRESS));
+        if (!availability.containsKey(hubAddress)) return false;
+        return Boolean.TRUE.equals(availability.get(hubAddress));
     }
 
     public void resetEditingView(){
@@ -168,10 +187,14 @@ public class ConnectedDevicesAdapter extends BaseAppCursorAdapter implements ILi
             setMode(Mode.view_mode, vh);
             return;
         }
+        if (!(new BluetoothHub(vh.id, activity).updateHubNameOnRemoteDev(activity, newName))){
+            setMode(Mode.view_mode, vh);
+            return;
+        }
         vh.tv_device_name.setText(newName);
-        dbAdapter.updateName(vh.id, newName);
+        dbAdapter.updateNameById(vh.id, newName);
         setMode(Mode.view_mode, vh);
-        swapCursor(dbAdapter.getConnectedDevices_cursor());
+        swapCursor(dbAdapter.getConnectedHubs_cursor());
     }
 
     public void setMode(Mode mode, ViewHolder vh){

@@ -40,23 +40,23 @@
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:exported="false"
             android:screenOrientation="sensorLandscape"
-            android:theme="@style/Theme.RCBLEProject.Fullscreen" />
+            android:theme="@style/Theme.RCBLEProject.ProfileControlActivity" />
         <activity
             android:name=".ProfilesActivity"
             android:exported="true"
             android:windowSoftInputMode="adjustPan" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
-            android:name=".AddingDevicesActivity"
+            android:name=".AddingHubsActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:exported="false"
             android:screenOrientation="sensorLandscape"
-            android:windowSoftInputMode="adjustPan" />
+            android:windowSoftInputMode="adjustPan"
+            android:theme="@style/Theme.RCBLEProject.AddingHubsActivity"/>
     </application>
 
 </manifest>

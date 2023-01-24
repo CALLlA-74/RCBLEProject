@@ -9,7 +9,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.example.rcbleproject.Database.DatabaseAdapterControlledPorts;
-import com.example.rcbleproject.Database.DatabaseAdapterForDevices;
+import com.example.rcbleproject.Database.DatabaseAdapterForHubs;
 
 import java.util.ArrayList;
 
@@ -27,11 +27,11 @@ public class SettingControlledPortsActivity extends BaseAppBluetoothActivity {
         ((TextView)findViewById(R.id.tv_label)).setText(getString(R.string.controlled_ports));
         findViewById(R.id.bt_back).setOnClickListener((View v) -> finish());
         findViewById(R.id.bt_add_device).setOnClickListener((View v) -> {
-            Intent intent = new Intent(this, AddingDevicesActivity.class);
+            Intent intent = new Intent(this, AddingHubsActivity.class);
             startActivity(intent);
         });
-
-        dbDeviceAdapter = Container.getDbForDevices(this);
+        
+        dbHubsAdapter = Container.getDbForHubs(this);
         dbControlledPorts = Container.getDbControlledPorts(this);
 
         profileID = getIntent().getLongExtra("profile_id", -1);
@@ -54,16 +54,17 @@ public class SettingControlledPortsActivity extends BaseAppBluetoothActivity {
         });
     }
 
-    private ArrayList<BluetoothDeviceApp> loadDevicesFromDB(){
-        Cursor cursor = dbDeviceAdapter.getConnectedDevices_cursor();
-        ArrayList<BluetoothDeviceApp> connectedDevices = new ArrayList<>();
+    private ArrayList<BluetoothHub> loadDevicesFromDB(){
+        Cursor cursor = dbHubsAdapter.getConnectedHubs_cursor();
+        ArrayList<BluetoothHub> connectedDevices = new ArrayList<>();
+        if (cursor == null || !cursor.moveToFirst()) return connectedDevices;
         while (cursor.moveToNext()){
-            String address = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseAdapterForDevices.DEVICE_ADDRESS));
-            BluetoothDeviceApp deviceApp = new BluetoothDeviceApp(bluetoothAdapter.getRemoteDevice(address));
-            deviceApp.name = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseAdapterForDevices.DEVICE_NAME));
+            String address = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseAdapterForHubs.HUB_ADDRESS));
+            long id = cursor.getLong(cursor.getColumnIndexOrThrow(DatabaseAdapterForHubs.ID));
+            BluetoothHub hub = new BluetoothHub(id, this);
             if (!gatts.containsKey(address))
                 connectDevice(address);
-            connectedDevices.add(deviceApp);
+            connectedDevices.add(hub);
         }
         return connectedDevices;
     }

@@ -16,6 +16,10 @@
         <item name="android:textColorPrimary">@color/white</item>
     </style>
 
+    <style name="Theme.RCBLEProject.AddingHubsActivity" parent="Theme.RCBLEProject">
+        <item name="android:background">@null</item>
+    </style>
+
     <style name="ToolbarStyle">
         <item name="windowNoTitle">true</item>
         <item name="android:background">@drawable/toolbar_background</item>
@@ -45,6 +49,7 @@
         <item name="android:fontFamily">serif</item>
         <item name="android:textSize">14sp</item>
         <item name="android:textColor">@color/white</item>
+        <item name="android:background">?attr/colorPrimary</item>
         <!--item name="android:height">?attr/actionBarSize</item-->
         <!--item name="android:gravity">center_vertical</item-->
     </style>
@@ -56,8 +61,13 @@
         <item name="android:windowBackground">@null</item>
     </style>
 
+    <style name="Theme.RCBLEProject.ProfileControlActivity" parent="Theme.RCBLEProject.Fullscreen">
+        <item name="android:background">@null</item>
+    </style>
+
     <style name="ThemeOverlay.RCBLEProject.FullscreenContainer" parent="">
         <item name="fullscreenBackgroundColor">@color/light_blue_600</item>
         <item name="fullscreenTextColor">@color/light_blue_A200</item>
+        <item name="android:background">?attr/colorPrimary</item>
     </style>
 </resources>

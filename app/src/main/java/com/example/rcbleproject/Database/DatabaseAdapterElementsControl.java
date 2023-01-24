@@ -25,7 +25,10 @@ public class DatabaseAdapterElementsControl extends DatabaseAdapter{
     public static final String X_COORDINATE = "x_coordinate";
     public static final String Y_COORDINATE = "y_coordinate";
 
-    public DatabaseAdapterElementsControl(Context context){ super(context); }
+    public DatabaseAdapterElementsControl(Context context){
+        super(context);
+        open();
+    }
 
     public static void createTable(SQLiteDatabase db){
         db.execSQL("CREATE TABLE enum_types_of_element (_id INTEGER PRIMARY KEY AUTOINCREMENT);");
@@ -88,13 +91,10 @@ public class DatabaseAdapterElementsControl extends DatabaseAdapter{
             boolean elementBlocking = cursor.getInt(cursor.getColumnIndexOrThrow(ELEMENT_BLOCKING)) != 0;
             float posX = cursor.getFloat(cursor.getColumnIndexOrThrow(X_COORDINATE));
             float posY = cursor.getFloat(cursor.getColumnIndexOrThrow(Y_COORDINATE));
-            switch (typeOfElement){
-                case 0:
-                    JoystickXY joystickXY = new JoystickXY(id, context, params, elementIndex,
-                            elementSize, isGridVisible, elementBlocking, posX, posY);
-                    list.add(joystickXY);   //?
-                    break;
-            }
+            list.add(BaseControlElement.getElementControl(BaseControlElement.IntToControlElementType(typeOfElement),
+                                                          id, context, params, elementIndex,
+                                                          elementSize, isGridVisible,
+                                                          elementBlocking, posX, posY));
         }
 
         for (int i = 0; i < countOfDisplays; i++)

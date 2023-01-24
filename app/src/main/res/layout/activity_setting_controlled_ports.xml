@@ -10,6 +10,7 @@
     <include
         android:id="@+id/tb_activity_setting_controlled_ports"
         layout="@layout/app_toolbar"/>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

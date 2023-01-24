@@ -3,20 +3,26 @@ package com.example.rcbleproject;
 import android.bluetooth.BluetoothGatt;
 import android.content.Context;
 
+import androidx.annotation.NonNull;
+
 import com.example.rcbleproject.Database.DatabaseAdapterControlledPorts;
 import com.example.rcbleproject.Database.DatabaseAdapterDisplays;
 import com.example.rcbleproject.Database.DatabaseAdapterElementsControl;
-import com.example.rcbleproject.Database.DatabaseAdapterForDevices;
+import com.example.rcbleproject.Database.DatabaseAdapterForHubs;
 import com.example.rcbleproject.Database.DatabaseAdapterProfilesControl;
 
 import java.util.HashMap;
+import java.util.UUID;
 
 public class Container {
     private static HashMap<String, BluetoothGatt> gatts = null;
+    private static HashMap<BluetoothHub.HubTypes, UUID> serviceUUIDs,
+                                                        characteristicUUIDs = null;
+
     private static DatabaseAdapterControlledPorts dbControlledPorts = null;
     private static DatabaseAdapterDisplays dbDisplays = null;
     private static DatabaseAdapterElementsControl dbElementsControl = null;
-    private static DatabaseAdapterForDevices dbForDevices = null;
+    private static DatabaseAdapterForHubs dbForDevices = null;
     private static DatabaseAdapterProfilesControl dbProfilesControl = null;
 
     /**
@@ -33,10 +39,9 @@ public class Container {
      * @param context - используется для инициализации экземпляра БД.
      * @return экземпляр таблицы ControlledPorts БД.
      */
-    public static DatabaseAdapterControlledPorts getDbControlledPorts(Context context){
+    public static DatabaseAdapterControlledPorts getDbControlledPorts(@NonNull Context context){
         if (dbControlledPorts == null){
             dbControlledPorts = new DatabaseAdapterControlledPorts(context);
-            dbControlledPorts.open();
         }
         return dbControlledPorts;
     }
@@ -46,10 +51,9 @@ public class Container {
      * @param context - используется для инициализации экземпляра БД
      * @return экземпляр таблицы Displays БД.
      */
-    public static DatabaseAdapterDisplays getDbDisplays(Context context){
+    public static DatabaseAdapterDisplays getDbDisplays(@NonNull Context context){
         if (dbDisplays == null){
             dbDisplays = new DatabaseAdapterDisplays(context);
-            dbDisplays.open();
         }
         return dbDisplays;
     }
@@ -59,10 +63,9 @@ public class Container {
      * @param context - используется для инициализации экземпляра БД
      * @return экземпляр таблицы ElementsControl БД.
      */
-    public static DatabaseAdapterElementsControl getDbElementsControl(Context context){
+    public static DatabaseAdapterElementsControl getDbElementsControl(@NonNull Context context){
         if (dbElementsControl == null){
             dbElementsControl = new DatabaseAdapterElementsControl(context);
-            dbElementsControl.open();
         }
         return dbElementsControl;
     }
@@ -72,10 +75,9 @@ public class Container {
      * @param context - используется для инициализации экземпляра БД
      * @return экземпляр таблицы Devices БД.
      */
-    public static DatabaseAdapterForDevices getDbForDevices(Context context){
+    public static DatabaseAdapterForHubs getDbForHubs(@NonNull Context context){
         if (dbForDevices == null){
-            dbForDevices = new DatabaseAdapterForDevices(context);
-            dbForDevices.open();
+            dbForDevices = new DatabaseAdapterForHubs(context);
         }
         return dbForDevices;
     }
@@ -85,11 +87,38 @@ public class Container {
      * @param context - используется для инициализации экземпляра БД
      * @return экземпляр таблицы ProfilesControl БД.
      */
-    public static DatabaseAdapterProfilesControl getDbProfilesControl(Context context){
+    public static DatabaseAdapterProfilesControl getDbProfilesControl(@NonNull Context context){
         if (dbProfilesControl == null){
             dbProfilesControl = new DatabaseAdapterProfilesControl(context);
-            dbProfilesControl.open();
         }
         return dbProfilesControl;
+    }
+
+    /**
+     * Получаем экземпляр коллекции UUID BLE-сервисов.
+     * @param context - используется для инициализации экземпляра БД
+     * @return экземпляр таблицы ProfilesControl БД.
+     */
+    public static HashMap<BluetoothHub.HubTypes, UUID> getServiceUUIDs(@NonNull Context context){
+        if (serviceUUIDs == null){
+            serviceUUIDs = new HashMap<>();
+            serviceUUIDs.put(BluetoothHub.HubTypes.GeckoHub, UUID.fromString(context.getString(R.string.gecko_service_uuid)));
+            serviceUUIDs.put(BluetoothHub.HubTypes.PoweredUpHub, UUID.fromString(context.getString(R.string.pu_service_uuid)));
+        }
+        return serviceUUIDs;
+    }
+
+    /**
+     * Получаем экземпляр коллекции UUID BLE-характеристик.
+     * @param context - используется для инициализации экземпляра БД
+     * @return экземпляр таблицы ProfilesControl БД.
+     */
+    public static HashMap<BluetoothHub.HubTypes, UUID> getCharacteristicUUIDs(@NonNull Context context){
+        if (characteristicUUIDs == null){
+            characteristicUUIDs = new HashMap<>();
+            characteristicUUIDs.put(BluetoothHub.HubTypes.GeckoHub, UUID.fromString(context.getString(R.string.gecko_characteristic_uuid)));
+            characteristicUUIDs.put(BluetoothHub.HubTypes.PoweredUpHub, UUID.fromString(context.getString(R.string.pu_characteristic_uuid)));
+        }
+        return characteristicUUIDs;
     }
 }

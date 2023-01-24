@@ -16,7 +16,10 @@ public class DatabaseAdapterDisplays extends DatabaseAdapter{
     public static final String DISPLAY_INDEX = "display_index";
     public static final String PROFILE_ID = "profile_id";
 
-    public DatabaseAdapterDisplays(Context context) { super(context); }
+    public DatabaseAdapterDisplays(Context context) {
+        super(context);
+        open();
+    }
 
     public static void createTable(SQLiteDatabase db){
         db.execSQL("CREATE TABLE " + TABLE_NAME

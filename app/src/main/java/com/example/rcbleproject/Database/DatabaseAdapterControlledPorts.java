@@ -7,7 +7,6 @@ import android.database.sqlite.SQLiteDatabase;
 import com.example.rcbleproject.ControlledPort;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class DatabaseAdapterControlledPorts extends DatabaseAdapter{
     public static final String TABLE_NAME = "controlled_ports";
@@ -18,7 +17,10 @@ public class DatabaseAdapterControlledPorts extends DatabaseAdapter{
     public static final String DISPLAY_ID = "display_id";
     public static final String DIRECTION_OF_ROTATION = "direction_of_rotation";
 
-    public DatabaseAdapterControlledPorts(Context context){ super(context); }
+    public DatabaseAdapterControlledPorts(Context context){
+        super(context);
+        open();
+    }
 
     public static void createTable(SQLiteDatabase db){
         db.execSQL("CREATE TABLE " + TABLE_NAME + " ("
@@ -32,8 +34,8 @@ public class DatabaseAdapterControlledPorts extends DatabaseAdapter{
                     + " OR " + DIRECTION_OF_ROTATION + " = 1),"
                 + "FOREIGN KEY (" + ELEMENT_ID + ") REFERENCES " + DatabaseAdapterElementsControl.TABLE_NAME
                     + "(" + DatabaseAdapterElementsControl.ID + ") ON DELETE CASCADE, "
-                + "FOREIGN KEY (" + DEVICE_ADDRESS + ") REFERENCES " + DatabaseAdapterForDevices.TABLE_NAME
-                    + "(" + DatabaseAdapterForDevices.DEVICE_ADDRESS + ") ON DELETE CASCADE, "
+                + "FOREIGN KEY (" + DEVICE_ADDRESS + ") REFERENCES " + DatabaseAdapterForHubs.TABLE_NAME
+                    + "(" + DatabaseAdapterForHubs.HUB_ADDRESS + ") ON DELETE CASCADE, "
                 + "FOREIGN KEY (" + DISPLAY_ID + ") REFERENCES " + DatabaseAdapterDisplays.TABLE_NAME
                     + "(" + DatabaseAdapterDisplays.ID + ") ON DELETE CASCADE, "
                 + "PRIMARY KEY(" + DEVICE_ADDRESS + ", " + DISPLAY_ID + ", " + DEVICE_PORT_NUM + "));");
@@ -54,7 +56,7 @@ public class DatabaseAdapterControlledPorts extends DatabaseAdapter{
             controlledPort.elementID = elementID;
             controlledPort.axisNum = axisNum;
             controlledPort.displayID = cursor.getLong(cursor.getColumnIndexOrThrow(DISPLAY_ID));
-            controlledPort.deviceAddress = cursor.getString(cursor.getColumnIndexOrThrow(DEVICE_ADDRESS));
+            controlledPort.hubAddress = cursor.getString(cursor.getColumnIndexOrThrow(DEVICE_ADDRESS));
         }
         return controlledPorts;
     }

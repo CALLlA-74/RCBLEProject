@@ -16,22 +16,34 @@ import java.util.ArrayList;
  */
 
 public abstract class BaseControlElement {
-    protected Context context;
-    protected int pointerID = -1;
+    protected Context context;                  // используется для доступа к ресурсам приложения
+    protected int pointerID = -1;               // id указателя, перехватившего управление элементом
 
-    protected volatile float posX, posY;
-    public volatile int elementSize;
-    public volatile int elementIndex;
-    public volatile boolean isElementLocked;
+    protected volatile float posX, posY;        // координаты центра элемента управления
+    public volatile int elementSize;            // коэффициент размера элемента управления
+    public volatile int elementIndex;           // индекс элемента в списке элементов дисплея
+    public volatile boolean isElementLocked;    // флаг блокировки элемента управления
 
-    public enum ControlElementType {JOYSTICK_XY, JOYSTICK_X, JOYSTICK_Y, BUTTON};
+    public enum ControlElementType {JOYSTICK_XY, JOYSTICK_X, JOYSTICK_Y, BUTTON, UNKNOWN}
 
-    public final long elementID;
-    public final GridParams gridParams;
-    public final Bitmap bitmapLock;
+    public final long elementID;        // id элемента в СУБД
+    public final GridParams gridParams; // параметры сетки для выравнивания на экране
+    public final Bitmap bitmapLock;     // значок заблокированного элемента
 
-    public boolean focus = false;
+    public boolean focus = false;       // флаг присутствия фокуса на элементе управления
 
+    /**
+     * Создает новый элемент управления с заданными параметрами.
+     * @param elementID - id элемента в СУБД.
+     * @param context - используется для доступа к ресурсам приложения.
+     * @param gridParams - параметры сетки для выравнивания на экране.
+     * @param elementIndex - индекс элемента в списке элементов дисплея.
+     * @param elementSize - коэффициент размера элемента управления.
+     * @param isGridVisible - флаг режима выравнивания элементов по сетке.
+     * @param isElementLocked - флаг блокировки элемента управления.
+     * @param pX - координата X центра элемента управления.
+     * @param pY - координата Y центра элемента управления.
+     */
     public BaseControlElement(long elementID, Context context, GridParams gridParams,
                               int elementIndex, int elementSize, boolean isGridVisible,
                               boolean isElementLocked, float pX, float pY){
@@ -49,19 +61,89 @@ public abstract class BaseControlElement {
         if (isGridVisible) alignToTheGrid();
     }
 
+    /**
+     * Возврщает тип элемента управления.
+     * @return тип элемента управления.
+     */
     public abstract ControlElementType getType();
+
+    /**
+     * Возвращает название элемента управления.
+     * @return название элемента управления
+     */
     public abstract String getName();
 
-    public abstract void onDraw(Canvas canvas, ProfileControlActivity.MODE_TYPE mode);
-    public abstract boolean contains(float pointerX, float pointerY);
-    public abstract void onTouch(MotionEvent event, boolean isGridVisible);
-    public abstract void onControl(int touchedPointerID, MotionEvent event);
-    public abstract void alignToTheGrid();
+    /**
+     * Изменяет размер элемента управления.
+     * @param newElementSize - новый коэффициент размера элемента.
+     */
     public abstract void setElementSize(int newElementSize);
+
+    /**
+     * Отрисовывает элемент управления.
+     * @param canvas - холст для отрисовки элемента.
+     * @param mode - режим работы с профилем управления:
+     *             GAME_MODE - игровой режим;
+     *             EDIT_MODE - режим редактирования профиля;
+     */
+    public abstract void onDraw(Canvas canvas, ProfileControlActivity.MODE_TYPE mode);
+
+    /**
+     * Определяет находится ли указатель на элементе управления по координатам указателя.
+     * @param pointerX - координата X указателя.
+     * @param pointerY - координата Y указателя.
+     * @return true - если указатель находится на элементе управления;
+     *         false - в противном случае;
+     */
+    public abstract boolean contains(float pointerX, float pointerY);
+
+    /**
+     * Обрабатывает событие касания элемента в режиме редактирования профиля управления.
+     * @param event - экземпляр жеста касания.
+     * @param isGridVisible - флаг режима выравнивания элементов по сетке.
+     */
+    public abstract void onTouch(MotionEvent event, boolean isGridVisible);
+
+    /**
+     * Обрабатывает событие касания элемента в игровом режиме работы с профилем управления.
+     * @param touchedPointerID - id указателя.
+     * @param event - экземпляр жеста касания.
+     */
+    public abstract void onControl(int touchedPointerID, MotionEvent event);
+
+    /**
+     * Выравнивает элемент управления по узлам сетки.
+     */
+    public abstract void alignToTheGrid();
+
+    /**
+     * Возвращает количество осей элемента управления.
+     * @return количество осей элемента управления.
+     */
     public abstract int getNumberOfAxes();
+
+    /**
+     * Возвращает названия осей элемента управления.
+     * @return массив строк названий осей элемента управления.
+     */
     public abstract String[] getAxesNames();
 
+    /**
+     * Возвращает id ресурса иконки элемента управления.
+     * @return id ресурса иконки элемента управления.
+     */
+    public abstract int getIcon();
+
+    /**
+     * Предотвращает выход элемента управления за пределы видимой области экрана.
+     */
     protected abstract void checkOutDisplay();
+
+    /**
+     * Возводит полученное значение во вторую степень.
+     * @param value - значение для возведения в степень.
+     * @return полученное значение во второй степени.
+     */
     protected float square(float value){ return value*value; }
 
 
@@ -85,17 +167,79 @@ public abstract class BaseControlElement {
     }
 
     /**
-     * @return значение x-координаты элемента управления
+     * @return значение x-координаты элемента управления.
      */
     public float getPosX() { return posX; }
 
     /**
-     * @return значение y-координаты элемента управления
+     * @return значение y-координаты элемента управления.
      */
     public float getPosY() { return posY; }
 
     /**
-     * @return значение  элемента управления
+     * @return значение коэффициента размера элемента управления.
      */
     public int getElementSize() { return elementSize; }
+
+    /**
+     * Возвращает элемент управления заданного типа.
+     * @param elementType - тип создаваемого элемента управления.
+     * @param elementID - id элемента в СУБД.
+     * @param context - используется для доступа к ресурсам приложения.
+     * @param gridParams - параметры сетки для выравнивания на экране.
+     * @param elementIndex - индекс элемента в списке элементов дисплея.
+     * @param elementSize - коэффициент размера элемента управления.
+     * @param isGridVisible - флаг режима выравнивания элементов по сетке.
+     * @param isElementLocked - флаг блокировки элемента управления.
+     * @param pX - координата X центра элемента управления.
+     * @param pY - координата Y центра элемента управления.
+     * @return элемент управления заданного типа.
+     */
+    public static BaseControlElement getElementControl(ControlElementType elementType,
+                                                       long elementID, Context context,
+                                                       GridParams gridParams,
+                                                       int elementIndex, int elementSize,
+                                                       boolean isGridVisible, boolean isElementLocked,
+                                                       float pX, float pY){
+        switch (elementType){
+            case JOYSTICK_XY:
+                return new JoystickXY(elementID, context, gridParams, elementIndex, elementSize,
+                                        isGridVisible, isElementLocked, pX, pY);
+            case JOYSTICK_X:
+                return new JoystickX(elementID, context, gridParams, elementIndex, elementSize,
+                        isGridVisible, isElementLocked, pX, pY);
+            case JOYSTICK_Y:
+                return new JoystickY(elementID, context, gridParams, elementIndex, elementSize,
+                        isGridVisible, isElementLocked, pX, pY);
+        }
+        return null;
+    }
+
+    /**
+     * Возвращает список всех типов элементов управления с параметрами по умолчанию.
+     * Подходит для отображения всех типов элементов управления.
+     * @param context - используется для доступа к ресурсам приложения.
+     * @return список всех типов элементов управления с параметрами по умолчанию.
+     */
+    public static ArrayList<BaseControlElement> getAllDefaultElementControlTypes(Context context){
+        ArrayList<BaseControlElement> list = new ArrayList<>();
+        list.add(new JoystickXY(context));
+        list.add(new JoystickX(context));
+        list.add(new JoystickY(context));
+        return list;
+    }
+
+    /**
+     * Вовзращает тип элемента управления из перечисления enum ControlElementType.
+     * по его целочисленному представлению.
+     * @param val - целочисленное представление типа элемента.
+     * @return целочисленное представление типа элемента, иначе ControlElementType.UNKNOWN.
+     */
+    public static ControlElementType IntToControlElementType(int val){
+        try {
+            return ControlElementType.values()[val];
+        } catch (Exception e){
+            return ControlElementType.UNKNOWN;
+        }
+    }
 }

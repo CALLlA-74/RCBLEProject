@@ -36,20 +36,17 @@ import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.core.app.ActivityCompat;
 
-import com.example.rcbleproject.Database.DatabaseAdapterForDevices;
+import com.example.rcbleproject.Database.DatabaseAdapterForHubs;
 import com.example.rcbleproject.databinding.ActivityAddingDevicesBinding;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.UUID;
 
 public class BaseAppBluetoothActivity extends BaseAppActivity{
-    private IListViewAdapterForDevices lvAdapterConnectedDevices;
-    private IListViewAdapterForDevices lvAdapterFoundDevices;
+    private IListViewAdapterForHubs lvAdapterConnectedDevices;
+    private IListViewAdapterForHubs lvAdapterFoundHubs;
 
     protected boolean bluetoothRequested;
     protected boolean locationRequested;
@@ -60,20 +57,18 @@ public class BaseAppBluetoothActivity extends BaseAppActivity{
 
     protected BluetoothAdapter bluetoothAdapter;
     protected BluetoothLeScanner BLEScanner;
-    protected UUID serviceUUID;
-    protected UUID characteristicUUID;
     protected ActivityAddingDevicesBinding binding;
 
-    protected DatabaseAdapterForDevices dbDeviceAdapter;
+    protected DatabaseAdapterForHubs dbHubsAdapter;
 
     protected final HashMap<String, BluetoothGatt> gatts = Container.getGatts();
 
-    protected void setLvAdapterConnectedDevices(IListViewAdapterForDevices adapter){
+    protected void setLvAdapterConnectedDevices(IListViewAdapterForHubs adapter){
         lvAdapterConnectedDevices = adapter;
     }
 
-    protected void setLvAdapterFoundDevices(IListViewAdapterForDevices adapter){
-        lvAdapterFoundDevices = adapter;
+    protected void setLvAdapterFoundHubs(IListViewAdapterForHubs adapter){
+        lvAdapterFoundHubs = adapter;
     }
 
     @Override
@@ -89,9 +84,6 @@ public class BaseAppBluetoothActivity extends BaseAppActivity{
         launcher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
                 result -> checkBluetoothPeripherals());
-
-        serviceUUID = UUID.fromString(getString(R.string.service_uuid));
-        characteristicUUID = UUID.fromString(getString(R.string.characteristic_uuid));
     }
 
     public boolean checkBluetoothPeripherals(){
@@ -166,19 +158,24 @@ public class BaseAppBluetoothActivity extends BaseAppActivity{
         if (!checkBluetoothPeripherals()) return;
         if (bluetoothAdapter.isEnabled()) {
             BLEScanner = bluetoothAdapter.getBluetoothLeScanner();
-            ScanFilter filter = new ScanFilter.Builder()
-                    .setServiceUuid(new ParcelUuid(serviceUUID)).build();
             ScanSettings settings = new ScanSettings.Builder()
                     .setScanMode(ScanSettings.SCAN_MODE_LOW_POWER)
                     .setCallbackType(ScanSettings.CALLBACK_TYPE_ALL_MATCHES)
                     .setMatchMode(ScanSettings.MATCH_MODE_AGGRESSIVE)
                     .setNumOfMatches(ScanSettings.MATCH_NUM_ONE_ADVERTISEMENT).build();
-            ArrayList<ScanFilter> filters = new ArrayList<>();
-            filters.add(filter);
+            ArrayList<ScanFilter> filters = getScanFilters();
             BLEScanner.startScan(filters, settings, scanCallback);
             if (BuildConfig.DEBUG) Log.v("APP_TAG", "Start scan!");
         }
         Log.v("APP_TAG22", "gatts size: " + gatts.size());
+    }
+
+    protected ArrayList<ScanFilter> getScanFilters(){
+        ArrayList<ScanFilter> filters = new ArrayList<>();
+        for (UUID uuid : Container.getServiceUUIDs(getApplicationContext()).values()){
+            filters.add(new ScanFilter.Builder().setServiceUuid(new ParcelUuid(uuid)).build());
+        }
+        return filters;
     }
 
     @SuppressLint("MissingPermission")
@@ -230,7 +227,7 @@ public class BaseAppBluetoothActivity extends BaseAppActivity{
             runOnUiThread(() -> {
                 gatts.remove(gatt.getDevice().getAddress());
                 if (lvAdapterConnectedDevices != null)
-                    lvAdapterConnectedDevices.removeDevice(gatt.getDevice());
+                    lvAdapterConnectedDevices.removeHub(gatt.getDevice().getAddress());
                 Log.v("APP_TAG22", "gatts size: " + gatts.size());
             });
         }).start();
@@ -243,27 +240,18 @@ public class BaseAppBluetoothActivity extends BaseAppActivity{
 
     protected final ScanCallback scanCallback = new ScanCallback() {
         @Override
-        public void onBatchScanResults(List<ScanResult> results) {
-            super.onBatchScanResults(results);
-            if (BuildConfig.DEBUG) Log.v("APP_TAG", "batch");
-        }
-
-        @Override
         public void onScanResult(int callbackType, ScanResult result) {
             super.onScanResult(callbackType, result);
             BluetoothDevice device = result.getDevice();
             if (device != null) {
-                if (dbDeviceAdapter != null &&
-                        dbDeviceAdapter.getDeviceStateConnection(device.getAddress()) == 1){
+                if (dbHubsAdapter != null &&
+                        dbHubsAdapter.getHubStateConnection(device.getAddress()) == 1){
                     if (!gatts.containsKey(device.getAddress()))
                         connectDevice(device);
                     return;
                 }
-                if (lvAdapterFoundDevices != null)
-                    lvAdapterFoundDevices.addDevice(device);
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
-                    return;
-                }
+                if (lvAdapterFoundHubs != null)
+                    lvAdapterFoundHubs.addHub(new BluetoothHub(result, getApplicationContext()));
             }
         }
     };
@@ -292,12 +280,13 @@ public class BaseAppBluetoothActivity extends BaseAppActivity{
                     }
 
                     if (!gatts.containsKey(gatt.getDevice().getAddress()))
-                    runOnUiThread(() -> {
-                        if (lvAdapterConnectedDevices == null) return;
-                        if (lvAdapterFoundDevices == null) return;
-                        if (lvAdapterFoundDevices.removeDevice(gatt.getDevice()))
-                            lvAdapterConnectedDevices.addDevice(gatt.getDevice());
-                    });
+                        runOnUiThread(() -> {
+                            if (lvAdapterConnectedDevices == null) return;
+                            if (lvAdapterFoundHubs == null) return;
+                            BluetoothHub hub = lvAdapterFoundHubs.removeHub(gatt.getDevice().getAddress());
+                            if (hub != null)
+                                lvAdapterConnectedDevices.addHub(hub);
+                        });
                     runOnUiThread(() -> {
                         gatts.put(gatt.getDevice().getAddress(), gatt);
                         lvAdapterConnectedDevices.setAvailability(true, gatt.getDevice());
@@ -319,18 +308,20 @@ public class BaseAppBluetoothActivity extends BaseAppActivity{
             else if (status == 8){
                 if (BuildConfig.DEBUG) Log.e("APP_TAG", "Error. status = " + status);
                 runOnUiThread(() -> {
-                    //gatts.remove(gatt.getDevice().getAddress());
-                    if (lvAdapterConnectedDevices != null)
+                    gatts.remove(gatt.getDevice().getAddress());
+                    if (lvAdapterConnectedDevices != null){
                         lvAdapterConnectedDevices.setAvailability(false, gatt.getDevice());
+                    }
                 });
-                //gatt.close();
+                gatt.close();
             }
             else {
                 if (BuildConfig.DEBUG) Log.e("APP_TAG", "Error. status = " + status);
                 runOnUiThread(() -> {
                     gatts.remove(gatt.getDevice().getAddress());
-                    if (lvAdapterConnectedDevices != null)
+                    if (lvAdapterConnectedDevices != null){
                         lvAdapterConnectedDevices.setAvailability(false, gatt.getDevice());
+                    }
                 });
                 gatt.close();
             }
@@ -338,20 +329,30 @@ public class BaseAppBluetoothActivity extends BaseAppActivity{
     };
 
     @SuppressLint("MissingPermission")
-    public boolean writeCharacteristic(String deviceAddress, String message){
-        BluetoothGatt bluetoothGatt = gatts.get(deviceAddress);
-        if (bluetoothGatt == null) return false;
-        BluetoothGattService service = bluetoothGatt.getService(serviceUUID);
-        BluetoothGattCharacteristic characteristic = service.getCharacteristic(characteristicUUID);
+    public void writeCharacteristic(BluetoothHub hub, byte[] message){
+        new Thread(() -> {
+            if (!checkBluetoothPeripherals()){
+                runOnUiThread(this::alarmNoPermissions);
+                return;
+            }
+            if (hub == null) return;
+            BluetoothGatt bluetoothGatt = gatts.get(hub.address);
+            if (bluetoothGatt == null) return;
+            BluetoothGattService service = bluetoothGatt.getService(hub.serviceUuid);
+            BluetoothGattCharacteristic characteristic = service.getCharacteristic(hub.characteristicUuid);
 
         /*if((characteristic.getProperties() & PROPERTY_WRITE_NO_RESPONSE) == 0 ) {
             Log.e("APP_TAG22", "proterties " + (characteristic.getProperties() & PROPERTY_WRITE_NO_RESPONSE));
             Log.e("APP_TAG22", "ERROR: Characteristic does not support writeType '" + characteristic.getWriteType() + "'");
             return false;
         }*/
-        characteristic.setWriteType(WRITE_TYPE_NO_RESPONSE);
-        characteristic.setValue(message);
-        if (!bluetoothGatt.writeCharacteristic(characteristic)) return false;
-        return true;
+            characteristic.setWriteType(WRITE_TYPE_NO_RESPONSE);
+            characteristic.setValue(message);
+            bluetoothGatt.writeCharacteristic(characteristic);
+        }).start();
+    }
+
+    public void alarmNoPermissions(){
+        Toast.makeText(this, "", Toast.LENGTH_LONG).show();
     }
 }

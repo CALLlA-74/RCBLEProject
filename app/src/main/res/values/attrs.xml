@@ -5,4 +5,6 @@
     </declare-styleable>
 
     <declare-styleable name="NetworkDrawer"></declare-styleable>
+
+    <attr name="act" format="integer">0x02</attr>
 </resources>

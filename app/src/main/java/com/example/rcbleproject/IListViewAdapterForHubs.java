@@ -2,8 +2,8 @@ package com.example.rcbleproject;
 
 import android.bluetooth.BluetoothDevice;
 
-public interface IListViewAdapterForDevices {
-    boolean addDevice(BluetoothDevice device);
-    boolean removeDevice(BluetoothDevice device);
+public interface IListViewAdapterForHubs {
+    boolean addHub(BluetoothHub hub);
+    BluetoothHub removeHub(String address);
     boolean setAvailability(boolean flag, BluetoothDevice device);
 }
