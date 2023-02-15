@@ -25,6 +25,18 @@
     <string name="axis_word" translatable="true">ось</string>
     <string name="add_controlled_port" translatable="true">Добавить порт управления</string>
     <string name="edit_profile" translatable="true">Редактировать профиль</string>
-    <string name="too_long_name" translatable="true">Слишком длинное имя хаба</string>
+    <string name="too_long_name" translatable="true">Слишком длинное имя хаба!</string>
     <string name="alarm_no_permissions" translatable="true">Bluetooth или Геолокация не включены!</string>
+    <string name="unknown_hub_name" translatable="true">выберете хаб</string>
+    <string name="unknown_port_name" translatable="true">Выберете порт</string>
+    <string name="unknown_controller_axis_name" translatable="true">выберете элемент управления</string>
+
+    <string name="port_a" translatable="true">порт А</string>
+    <string name="port_a_inv" translatable="true">порт А инверс.</string>
+    <string name="port_b" translatable="true">порт B</string>
+    <string name="port_b_inv" translatable="true">порт B инверс.</string>
+    <string name="port_c" translatable="true">порт C</string>
+    <string name="port_c_inv" translatable="true">порт C инверс.</string>
+    <string name="port_d" translatable="true">порт D</string>
+    <string name="port_d_inv" translatable="true">порт D инверс.</string>
 </resources>

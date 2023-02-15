@@ -78,7 +78,6 @@ public class DatabaseAdapterElementsControl extends DatabaseAdapter{
     public ArrayList<BaseControlElement> getElementsControlByDisplayID(Context context,
                                                                        long displayID,
                                                                        GridParams params,
-                                                                       int countOfDisplays,
                                                                        boolean isGridVisible){
         ArrayList<BaseControlElement> list = new ArrayList<>();
 
@@ -97,10 +96,9 @@ public class DatabaseAdapterElementsControl extends DatabaseAdapter{
                                                           elementBlocking, posX, posY));
         }
 
-        for (int i = 0; i < countOfDisplays; i++)
-            list.sort((BaseControlElement o1, BaseControlElement o2) -> {
-                return o1.elementIndex - o2.elementIndex;
-            });
+        list.sort((BaseControlElement o1, BaseControlElement o2) -> {
+            return o1.elementIndex - o2.elementIndex;
+        });
         return list;
     }
 

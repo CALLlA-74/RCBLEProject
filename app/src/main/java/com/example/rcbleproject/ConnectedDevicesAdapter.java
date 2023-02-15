@@ -41,9 +41,7 @@ public class ConnectedDevicesAdapter extends BaseAppCursorAdapter implements ILi
         Cursor c = getCursor();
         int columnAddressIndex = c.getColumnIndexOrThrow(HUB_ADDRESS);
         while (c.moveToNext()){
-            availability.put(c.getString(columnAddressIndex),
-                    Boolean.FALSE);
-            //activity.connectDevice(c.getString(c.getColumnIndexOrThrow(dbAdapter.DEVICE_ADDRESS)));
+            availability.put(c.getString(columnAddressIndex), Boolean.FALSE);
         }
         c.moveToFirst();
     }
@@ -62,6 +60,7 @@ public class ConnectedDevicesAdapter extends BaseAppCursorAdapter implements ILi
     public void bindView(View convertView, Context context, Cursor cursor){
         final ViewHolder holder = (ViewHolder) convertView.getTag();
         holder.id = cursor.getLong(cursor.getColumnIndexOrThrow(ID));
+        holder.iv_hub_icon.setVisibility(View.VISIBLE);
         Log.v("APP_TAG22", "device id = " + holder.id);
 
         holder.et_device_name.setOnEditorActionListener((v, actionId, event) -> {
@@ -77,6 +76,10 @@ public class ConnectedDevicesAdapter extends BaseAppCursorAdapter implements ILi
             holder.tv_device_name.setTextColor(activity.getColor(R.color.blue_ncs));
             holder.bt_light_alarm.setVisibility(View.GONE);
         }
+
+        BluetoothHub hub = new BluetoothHub(cursor.getLong(cursor.getColumnIndexOrThrow(ID)), activity);
+        if (hub.hubType != BluetoothHub.HubTypes.Unknown)
+            holder.iv_hub_icon.setImageResource(hub.getIconId());
 
         holder.bt_delete_device.setOnClickListener((View v) -> {
             ViewHolder vh = (ViewHolder) ((View)v.getParent()).getTag();
@@ -120,10 +123,10 @@ public class ConnectedDevicesAdapter extends BaseAppCursorAdapter implements ILi
     public boolean addHub(BluetoothHub hub){
         Cursor cursor = dbAdapter.getHubByAddress_cursor(hub.address);
         if (cursor.moveToFirst()) {
-            dbAdapter.updateNameAndState(cursor.getLong(cursor.getColumnIndexOrThrow(ID)), hub.name, 1);
+            dbAdapter.updateNameAndState(cursor.getLong(cursor.getColumnIndexOrThrow(ID)), hub.getName(), 1);
         }
         else {
-            long id = dbAdapter.insert(hub.name, hub.address, 1, hub.hubType);
+            long id = dbAdapter.insert(hub);
             if (BuildConfig.DEBUG) Log.v("APP_TAG", "addProf. id = " + id);
         }
         availability.put(hub.address, true);
@@ -171,6 +174,7 @@ public class ConnectedDevicesAdapter extends BaseAppCursorAdapter implements ILi
         if (holder == null) return;
         saveChanges(holder);
         editingView = null;
+        holder.iv_hub_icon.setVisibility(View.VISIBLE);
     }
 
     public void cancelEdit(){
@@ -179,6 +183,7 @@ public class ConnectedDevicesAdapter extends BaseAppCursorAdapter implements ILi
         setMode(Mode.view_mode, vh);
         activity.hideKeyboard(vh.et_device_name);
         editingView = null;
+        vh.iv_hub_icon.setVisibility(View.VISIBLE);
     }
 
     protected void saveChanges(ViewHolder vh){
@@ -187,7 +192,7 @@ public class ConnectedDevicesAdapter extends BaseAppCursorAdapter implements ILi
             setMode(Mode.view_mode, vh);
             return;
         }
-        if (!(new BluetoothHub(vh.id, activity).updateHubNameOnRemoteDev(activity, newName))){
+        if (!(new BluetoothHub(vh.id, activity).setName(activity, newName))){
             setMode(Mode.view_mode, vh);
             return;
         }
@@ -235,6 +240,9 @@ public class ConnectedDevicesAdapter extends BaseAppCursorAdapter implements ILi
 
     public void setEditingView(View editingView) {
         this.editingView = editingView;
+        ViewHolder holder = (ViewHolder) editingView.getTag();
+        if (holder == null) return;
+        holder.iv_hub_icon.setVisibility(View.GONE);
     }
 
     private class ViewHolder{
@@ -244,6 +252,7 @@ public class ConnectedDevicesAdapter extends BaseAppCursorAdapter implements ILi
         final ImageView bt_ok;
         final ImageView bt_cancel;
         final ImageView bt_light_alarm;
+        final ImageView iv_hub_icon;
         long id = 0;
 
         ViewHolder(View view){
@@ -253,6 +262,7 @@ public class ConnectedDevicesAdapter extends BaseAppCursorAdapter implements ILi
             bt_ok = view.findViewById(R.id.bt_ok);
             bt_cancel = view.findViewById(R.id.bt_cancel);
             bt_light_alarm = view.findViewById(R.id.bt_alarm_light);
+            iv_hub_icon = view.findViewById(R.id.iv_connected_hub_icon);
         }
     }
 }

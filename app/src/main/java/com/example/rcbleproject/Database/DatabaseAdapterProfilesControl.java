@@ -1,6 +1,5 @@
 package com.example.rcbleproject.Database;
 
-import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -9,7 +8,6 @@ import android.util.Log;
 
 import com.example.rcbleproject.ProfileControl;
 
-import java.security.PublicKey;
 import java.util.ArrayList;
 
 public class DatabaseAdapterProfilesControl extends DatabaseAdapter{
@@ -33,11 +31,6 @@ public class DatabaseAdapterProfilesControl extends DatabaseAdapter{
                         + "AND + " + NUMBER_OF_SCREENS + " <= 5), "
                     + GRID_ALIGNMENT + " INTEGER DEFAULT 1 CHECK("
                         + GRID_ALIGNMENT + " = 0 OR " + GRID_ALIGNMENT + " = 1));");
-
-        /*db.execSQL("INSERT INTO " + TABLE_NAME +
-                   " (" + PROFILE_NAME + ") VALUES ('Example');");
-        db.execSQL("INSERT INTO " + TABLE_NAME +
-                " (" + PROFILE_NAME + ") VALUES ('Geckos Control');");*/
     }
 
     public String[] getColumns(){

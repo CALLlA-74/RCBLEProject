@@ -10,6 +10,8 @@ import android.graphics.PointF;
 import android.graphics.Rect;
 import android.view.MotionEvent;
 
+import java.util.ArrayList;
+
 /**
  * Класс JoystickX релизует поля и методы для взаимодействия с одно-осевым горизонтальным
  * джойстиком.
@@ -49,6 +51,11 @@ public class JoystickX extends BaseControlElement{
         if (isGridVisible) alignToTheGrid();
         stickPosX = pX;
         stickPosY = pY;
+
+        String[] axisNames = getAxesNames();
+        controllerAxes = new ArrayList<>(axisNames.length);
+        for (short i = 0; i < axisNames.length; ++i)
+            controllerAxes.add(new ControllerAxis(this, axisNames[i], i, true));
 
         paintBackground = new Paint();
         paintBackground.setColor(context.getColor(R.color.black));
@@ -271,6 +278,7 @@ public class JoystickX extends BaseControlElement{
                 stickPosX = posX;
                 stickPosY = posY;
             }
+            /*TODO обновить значение в управляемых портах*/
             return;
         }
         else if (act == MotionEvent.ACTION_MOVE){
@@ -289,6 +297,8 @@ public class JoystickX extends BaseControlElement{
             else
                 stickPosX = posX + (halfWidth - stickRadius);
         }
+
+        /*TODO обновить значение в управляемых портах*/
     }
 
     /**
@@ -339,7 +349,7 @@ public class JoystickX extends BaseControlElement{
      * @return id ресурса иконки элемента управления.
      */
     @Override
-    public int getIcon() {
+    public int getIconId() {
         return R.drawable.joystick_x;
     }
 

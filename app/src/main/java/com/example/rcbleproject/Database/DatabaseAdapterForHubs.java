@@ -7,6 +7,8 @@ import android.database.sqlite.SQLiteDatabase;
 
 import com.example.rcbleproject.BluetoothHub;
 
+import java.util.ArrayList;
+
 public class DatabaseAdapterForHubs extends DatabaseAdapter{
     public static final String TABLE_NAME = "hubs";
     public static final String ID = "_id";
@@ -16,6 +18,8 @@ public class DatabaseAdapterForHubs extends DatabaseAdapter{
     public static final String HUB_STATE_CONNECTION = "hub_state_connection"; /* статус соединения:
                                                                                            1 - соединено;
                                                                                            0 - соединение разорвано*/
+
+    private static ArrayList<BluetoothHub> connectedHubs = null;
 
     public DatabaseAdapterForHubs(Context context){
         super(context);
@@ -41,25 +45,31 @@ public class DatabaseAdapterForHubs extends DatabaseAdapter{
                 null, null, null, null);
     }
 
-    /*public ArrayList<Hub> getConnectedDevices(BluetoothAdapter bluetoothAdapter){
-        if (!database.isOpen()) database = dbHelper.getWritableDatabase();
-        Cursor cursor = getConnectedDevices_cursor();
-        ArrayList<Hub> devices = new ArrayList<>();
+    public ArrayList<BluetoothHub> getConnectedHubs(Context context){
+        //if (connectedHubs != null) return connectedHubs;
+
+        Cursor cursor = getConnectedHubs_cursor();
+        connectedHubs = new ArrayList<>();
+        int hubNameIndex = cursor.getColumnIndexOrThrow(HUB_NAME);
+        int hubAddressIndex = cursor.getColumnIndexOrThrow(HUB_ADDRESS);
+        int hubTypeIndex = cursor.getColumnIndexOrThrow(HUB_TYPE);
 
         while (cursor.moveToNext()){
-            String address = cursor.getString(cursor.getColumnIndexOrThrow(HUB_ADDRESS));
-            final BluetoothDevice device = bluetoothAdapter.getRemoteDevice(address);
-            Hub deviceApp = new Hub(device);
+            String name = cursor.getString(hubNameIndex);
+            String address = cursor.getString(hubAddressIndex);
+            int hubType = cursor.getInt(hubTypeIndex);
+            connectedHubs.add(new BluetoothHub(name, address, hubType, context));
         }
-        return devices;
-    }*/
+        cursor.close();
+        return connectedHubs;
+    }
 
-    public long insert(String name, String address, int state, BluetoothHub.HubTypes hubType){
+    public long insert(BluetoothHub hub){
         ContentValues contentValues = new ContentValues();
-        contentValues.put(HUB_NAME, name);
-        contentValues.put(HUB_ADDRESS, address);
-        contentValues.put(HUB_STATE_CONNECTION, state);
-        contentValues.put(HUB_TYPE, hubType.ordinal());
+        contentValues.put(HUB_NAME, hub.getName());
+        contentValues.put(HUB_ADDRESS, hub.address);
+        contentValues.put(HUB_STATE_CONNECTION, 1);
+        contentValues.put(HUB_TYPE, hub.hubType.ordinal());
         return database.insert(TABLE_NAME, null, contentValues);
     }
 

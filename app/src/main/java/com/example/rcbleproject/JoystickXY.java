@@ -11,6 +11,8 @@ import android.graphics.Rect;
 import android.util.Log;
 import android.view.MotionEvent;
 
+import java.util.ArrayList;
+
 /**
  * Класс JoystickXY релизует поля и методы для взаимодействия с двух-осевым джойстиком
  */
@@ -60,6 +62,11 @@ public class JoystickXY extends BaseControlElement{
                 pX, pY);
         stickPosX = pX;
         stickPosY = pY;
+
+        String[] axisNames = getAxesNames();
+        controllerAxes = new ArrayList<>(axisNames.length);
+        for (short i = 0; i < axisNames.length; ++i)
+            controllerAxes.add(new ControllerAxis(this, axisNames[i], i, false));
 
         paintBackground = new Paint();
         paintBackground.setColor(context.getColor(R.color.black));
@@ -280,6 +287,7 @@ public class JoystickXY extends BaseControlElement{
                 stickPosX = posX;
                 stickPosY = posY;
             }
+            /*TODO обновить значение в управляемых портах*/
             return;
         }
         else if (act == MotionEvent.ACTION_MOVE){
@@ -307,6 +315,8 @@ public class JoystickXY extends BaseControlElement{
             else
                 stickPosY = posY + (radius - stickRadius);
         }
+
+        /*TODO обновить значение в управляемых портах*/
     }
 
     /**
@@ -357,7 +367,7 @@ public class JoystickXY extends BaseControlElement{
      * @return id ресурса иконки элемента управления.
      */
     @Override
-    public int getIcon() {
+    public int getIconId() {
         return R.drawable.joystick_xy;
     }
 

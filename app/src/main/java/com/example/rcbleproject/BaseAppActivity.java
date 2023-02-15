@@ -1,5 +1,6 @@
 package com.example.rcbleproject;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.os.Build;
 import android.os.Bundle;
@@ -7,6 +8,7 @@ import android.os.Handler;
 import android.view.View;
 import android.view.WindowInsets;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -19,6 +21,11 @@ public class BaseAppActivity extends AppCompatActivity {
     public void hideKeyboard(View view){
         InputMethodManager imm = (InputMethodManager) getSystemService(Activity.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+    }
+
+    @SuppressLint("SetTextI18n")
+    public void showCurrentDisplayNum(int currentDisplayNum, int countOfDisplays){
+        ((TextView)findViewById(R.id.tv_num_display)).setText((currentDisplayNum + 1) + " / " + countOfDisplays);
     }
 
     protected void setFullscreenMode(View v){

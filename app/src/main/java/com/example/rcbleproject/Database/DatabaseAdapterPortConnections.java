@@ -4,12 +4,12 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
-import com.example.rcbleproject.ControlledPort;
+import com.example.rcbleproject.PortConnection;
 
 import java.util.ArrayList;
 
-public class DatabaseAdapterControlledPorts extends DatabaseAdapter{
-    public static final String TABLE_NAME = "controlled_ports";
+public class DatabaseAdapterPortConnections extends DatabaseAdapter{
+    public static final String TABLE_NAME = "port_connections";
     public static final String ELEMENT_ID = "element_id";
     public static final String AXIS_NUM = "axis_num";
     public static final String DEVICE_ADDRESS = "device_address";
@@ -17,7 +17,7 @@ public class DatabaseAdapterControlledPorts extends DatabaseAdapter{
     public static final String DISPLAY_ID = "display_id";
     public static final String DIRECTION_OF_ROTATION = "direction_of_rotation";
 
-    public DatabaseAdapterControlledPorts(Context context){
+    public DatabaseAdapterPortConnections(Context context){
         super(context);
         open();
     }
@@ -46,18 +46,37 @@ public class DatabaseAdapterControlledPorts extends DatabaseAdapter{
                 DIRECTION_OF_ROTATION};
     }
 
-    public ArrayList<ControlledPort> getControlledPortsByElementIDAndAxisNum(long elementID, int axisNum){
+    public ArrayList<PortConnection> getPortConnectionsByElementIDAndAxisNum(long elementID, int axisNum){
         Cursor cursor =  database.query(TABLE_NAME, getColumns(), ELEMENT_ID + " = "
                         + elementID + " AND " + AXIS_NUM + " = " + axisNum, null,
                 null, null, null);
-        ArrayList controlledPorts = new ArrayList();
+        ArrayList<PortConnection> portConnections = new ArrayList<>();
+        long displayID;
+        int portNum, direction;
         while (cursor.moveToNext()){
-            ControlledPort controlledPort = new ControlledPort();
-            controlledPort.elementID = elementID;
-            controlledPort.axisNum = axisNum;
-            controlledPort.displayID = cursor.getLong(cursor.getColumnIndexOrThrow(DISPLAY_ID));
-            controlledPort.hubAddress = cursor.getString(cursor.getColumnIndexOrThrow(DEVICE_ADDRESS));
+            displayID = cursor.getLong(cursor.getColumnIndexOrThrow(DISPLAY_ID));
+            portNum = cursor.getInt(cursor.getColumnIndexOrThrow(DEVICE_PORT_NUM));
+            direction = cursor.getInt(cursor.getColumnIndexOrThrow(DIRECTION_OF_ROTATION));
+            portConnections.add(new PortConnection());
+            //controlledPort.hubAddress = cursor.getString(cursor.getColumnIndexOrThrow(DEVICE_ADDRESS));
         }
-        return controlledPorts;
+        return portConnections;
+    }
+
+    public ArrayList<PortConnection> getPortConnectionsByDisplayID(long displayID){
+        Cursor cursor =  database.query(TABLE_NAME, getColumns(), DISPLAY_ID + " = "
+                        + displayID, null, null, null, null);
+        ArrayList<PortConnection> portConnections = new ArrayList<>();
+        long elementID;
+        int portNum, direction, axisNum;
+        while (cursor.moveToNext()){
+            axisNum = cursor.getInt(cursor.getColumnIndexOrThrow(AXIS_NUM));
+            elementID = cursor.getInt(cursor.getColumnIndexOrThrow(ELEMENT_ID));
+            portNum = cursor.getInt(cursor.getColumnIndexOrThrow(DEVICE_PORT_NUM));
+            direction = cursor.getInt(cursor.getColumnIndexOrThrow(DIRECTION_OF_ROTATION));
+            portConnections.add(new PortConnection());
+            //controlledPort.hubAddress = cursor.getString(cursor.getColumnIndexOrThrow(DEVICE_ADDRESS));
+        }
+        return portConnections;
     }
 }

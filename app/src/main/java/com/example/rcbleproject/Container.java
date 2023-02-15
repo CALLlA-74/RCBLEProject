@@ -1,11 +1,12 @@
 package com.example.rcbleproject;
 
+import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothGatt;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
 
-import com.example.rcbleproject.Database.DatabaseAdapterControlledPorts;
+import com.example.rcbleproject.Database.DatabaseAdapterPortConnections;
 import com.example.rcbleproject.Database.DatabaseAdapterDisplays;
 import com.example.rcbleproject.Database.DatabaseAdapterElementsControl;
 import com.example.rcbleproject.Database.DatabaseAdapterForHubs;
@@ -16,13 +17,18 @@ import java.util.UUID;
 
 public class Container {
     private static HashMap<String, BluetoothGatt> gatts = null;
-    private static HashMap<BluetoothHub.HubTypes, UUID> serviceUUIDs,
+    private static HashMap<BluetoothHub.HubTypes, UUID> serviceUUIDs = null,
                                                         characteristicUUIDs = null;
 
-    private static DatabaseAdapterControlledPorts dbControlledPorts = null;
+    @SuppressLint("StaticFieldLeak")
+    private static DatabaseAdapterPortConnections dbPortConnections = null;
+    @SuppressLint("StaticFieldLeak")
     private static DatabaseAdapterDisplays dbDisplays = null;
+    @SuppressLint("StaticFieldLeak")
     private static DatabaseAdapterElementsControl dbElementsControl = null;
+    @SuppressLint("StaticFieldLeak")
     private static DatabaseAdapterForHubs dbForDevices = null;
+    @SuppressLint("StaticFieldLeak")
     private static DatabaseAdapterProfilesControl dbProfilesControl = null;
 
     /**
@@ -39,11 +45,11 @@ public class Container {
      * @param context - используется для инициализации экземпляра БД.
      * @return экземпляр таблицы ControlledPorts БД.
      */
-    public static DatabaseAdapterControlledPorts getDbControlledPorts(@NonNull Context context){
-        if (dbControlledPorts == null){
-            dbControlledPorts = new DatabaseAdapterControlledPorts(context);
+    public static DatabaseAdapterPortConnections getDbPortConnections(@NonNull Context context){
+        if (dbPortConnections == null){
+            dbPortConnections = new DatabaseAdapterPortConnections(context);
         }
-        return dbControlledPorts;
+        return dbPortConnections;
     }
 
     /**

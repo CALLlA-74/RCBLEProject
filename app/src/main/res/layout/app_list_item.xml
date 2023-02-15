@@ -7,13 +7,27 @@
     android:background="?android:attr/selectableItemBackground"
     android:paddingLeft="16dp"
     android:minHeight="60dp">
-    <TextView
-        android:id="@+id/tv_name"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+
+    <ImageView
+        android:id="@+id/iv_connected_hub_icon"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
         android:minHeight="60dp"
+        android:minWidth="60dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:src="@drawable/gecko_hub"
+        android:visibility="gone"/>
+
+    <TextView
+        android:id="@+id/tv_name"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:minHeight="60dp"
+        app:layout_constraintStart_toEndOf="@id/iv_connected_hub_icon"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
         android:gravity="center_vertical"
         style="@style/ItemTextStyle"/>
     <EditText
@@ -75,7 +89,7 @@
         android:layout_height="30dip"
         android:layout_marginEnd="16dp"
         android:background="@drawable/item_button_with_circle_blue_background"
-        android:src="@drawable/baseline_lightbulb_outline_20"
+        android:src="@drawable/alarm_icon"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/bt_delete"/>

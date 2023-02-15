@@ -37,7 +37,7 @@ public class ElementsControlAdapter extends ArrayAdapter<BaseControlElement> {
         viewHolder.position = position;
         BaseControlElement element = elements.get(position);
         viewHolder.tv_element_name.setText(element.getName());
-        viewHolder.iv_element_image.setImageResource(element.getIcon());
+        viewHolder.iv_element_image.setImageResource(element.getIconId());
 
         return convertView;
     }

@@ -18,5 +18,5 @@
         android:id="@+id/lv_elements_control"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:listitem="@layout/item_element_control"/>
+        tools:listitem="@layout/item_element_control" />
 </LinearLayout>

@@ -7,7 +7,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -18,13 +17,13 @@ import java.util.Map;
 public class ConnectedDevicesAdapterForControlledPorts extends ArrayAdapter<BluetoothHub>
         implements IListViewAdapterForHubs {
     private final Map<String, Boolean> availability = Collections.synchronizedMap(new HashMap<>());
-    private final SettingControlledPortsActivity activity;
-    private static final int layout = R.layout.item_device_for_spinner;
+    private final SettingPortConnectionsActivity activity;
+    private static final int layout = R.layout.item_for_params_list;
     private final LayoutInflater inflater;
     private final ArrayList<BluetoothHub> hubs;
 
     @SuppressLint("MissingPermission")
-    public ConnectedDevicesAdapterForControlledPorts(SettingControlledPortsActivity context,
+    public ConnectedDevicesAdapterForControlledPorts(SettingPortConnectionsActivity context,
                                                      ArrayList<BluetoothHub> devices) {
         super(context, layout, devices);
         hubs = devices;
@@ -49,15 +48,15 @@ public class ConnectedDevicesAdapterForControlledPorts extends ArrayAdapter<Blue
         else viewHolder = (ViewHolder) convertView.getTag();
         viewHolder.pos = position;
 
-        if (availability.get(hubs.get(position).address))
+        /*if (availability.get(hubs.get(position).address))
             viewHolder.bt_where_are_you.setVisibility(View.VISIBLE);
-        else viewHolder.bt_where_are_you.setVisibility(View.GONE);
+        else viewHolder.bt_where_are_you.setVisibility(View.GONE);*/
 
-        viewHolder.tv_device_name.setText(hubs.get(position).name);
-        viewHolder.bt_where_are_you.setOnClickListener((View v) -> {
+        viewHolder.tv_device_name.setText(hubs.get(position).getName());
+        /*viewHolder.bt_where_are_you.setOnClickListener((View v) -> {
             ViewHolder vh = (ViewHolder) ((View)v.getParent()).getTag();
             hubs.get(vh.pos).alarm(activity);
-        });
+        });*/
         Log.v("APP_TAG3", "getting view. pos = " + position);
 
         return convertView;
@@ -85,12 +84,12 @@ public class ConnectedDevicesAdapterForControlledPorts extends ArrayAdapter<Blue
 
     private class ViewHolder{
         final TextView tv_device_name;
-        final ImageView bt_where_are_you;
+        //final ImageView bt_where_are_you;
         int pos = -1;
 
         ViewHolder(View view){
             tv_device_name = view.findViewById(R.id.tv_device_name);
-            bt_where_are_you = view.findViewById(R.id.bt_where_are_you);
+            //bt_where_are_you = view.findViewById(R.id.bt_where_are_you);
         }
     }
 }

@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".SettingControlledPortsActivity"
+    tools:context=".SettingPortConnectionsActivity"
     android:orientation="vertical">
 
     <include
@@ -13,7 +13,7 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:orientation="vertical"
         android:layout_margin="0dp"
         android:layout_weight="1">
@@ -21,12 +21,12 @@
             android:id="@+id/lv_controlled_ports"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            tools:listitem="@layout/item_controlled_port"/>
+            tools:listitem="@layout/item_port_connection"/>
     </LinearLayout>
     <Button
         android:id="@+id/bt_add_controlled_port"
         android:layout_width="wrap_content"
-        android:layout_height="30dip"
+        android:layout_height="48dip"
         android:layout_gravity="center_horizontal|bottom"
         android:layout_marginBottom="10dp"
         android:layout_marginTop="10dp"

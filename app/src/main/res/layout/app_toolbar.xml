@@ -14,7 +14,7 @@
             android:id="@+id/bt_back"
             android:layout_width="30dp"
             android:layout_height="match_parent"
-            android:background="@drawable/item_button_with_red_gradient_background"
+            android:background="@drawable/button_last_display_with_red_grad_back"
             android:src="@drawable/baseline_arrow_back_20"
             android:gravity="center_vertical"
             app:layout_constraintTop_toTopOf="parent"
@@ -30,6 +30,43 @@
             android:gravity="center_vertical"
             android:text=""
             android:layout_marginStart="20dp"/>
+
+        <LinearLayout
+            android:id="@+id/ll_displays_control"
+            android:visibility="gone"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginStart="10dp"
+            app:layout_constraintStart_toEndOf="@id/tv_label"
+            android:background="@null">
+
+            <ImageButton
+                android:id="@+id/bt_last"
+                android:layout_width="30dp"
+                android:layout_height="match_parent"
+                android:background="@drawable/button_last_display_with_red_grad_back"
+                android:src="@drawable/baseline_arrow_back_ios_white_20"/>
+            <TextView
+                android:id="@+id/tv_num_display"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:background="@null"
+                android:textColor="@color/white"
+                android:textAlignment="gravity"
+                android:textSize="16sp"
+                android:gravity="center"
+                android:layout_gravity="center"
+                android:textStyle="bold"
+                android:fontFamily="serif"
+                android:text=" 1 / 200 "/>
+            <ImageButton
+                android:id="@+id/bt_next"
+                android:layout_width="30dp"
+                android:layout_height="match_parent"
+                android:background="@drawable/button_next_display_with_red_grad_back"
+                android:src="@drawable/baseline_arrow_forward_ios_white_20"/>
+        </LinearLayout>
 
         <ImageButton
             android:id="@+id/bt_add_device"

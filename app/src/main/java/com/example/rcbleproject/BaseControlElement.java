@@ -16,8 +16,39 @@ import java.util.ArrayList;
  */
 
 public abstract class BaseControlElement {
+
+    /**
+     * Класс ControllerAxis включает поля и методы для взаимодействия с осью, как с базовым
+     * параметром управляемого порта.
+     * Ось - степень свободы движения элемента управления. Как правило, каждый элемент управления
+     * имеет одну ось. Двухосевой джойстик - две. Также возможно и отсутствие осей (например вставки
+     * текста и изображений).
+     */
+    class ControllerAxis extends BaseParam{
+        public final BaseControlElement parent;
+        public final int axisNum;
+        private final String axisName;
+        public ControllerAxis(BaseControlElement parent, String axisName, int axisNum, boolean hideAxisName){
+            this.parent = parent;
+            this.axisName = "#" + (parent.elementIndex + 1)
+                    + (hideAxisName? "" : "\n" + parent.context.getString(R.string.axis_word) + " " + axisName);
+            this.axisNum = axisNum;
+        }
+
+        @Override
+        public String getName(){
+            return axisName;
+        }
+
+        @Override
+        public int getIconId(){
+            return parent.getIconId();
+        }
+    }
+
     protected Context context;                  // используется для доступа к ресурсам приложения
     protected int pointerID = -1;               // id указателя, перехватившего управление элементом
+    protected ArrayList<ControllerAxis> controllerAxes;  // массиив осей элемента управления
 
     protected volatile float posX, posY;        // координаты центра элемента управления
     public volatile int elementSize;            // коэффициент размера элемента управления
@@ -26,11 +57,11 @@ public abstract class BaseControlElement {
 
     public enum ControlElementType {JOYSTICK_XY, JOYSTICK_X, JOYSTICK_Y, BUTTON, UNKNOWN}
 
-    public final long elementID;        // id элемента в СУБД
-    public final GridParams gridParams; // параметры сетки для выравнивания на экране
-    public final Bitmap bitmapLock;     // значок заблокированного элемента
+    public final long elementID;                // id элемента в СУБД
+    public final GridParams gridParams;         // параметры сетки для выравнивания на экране
+    public final Bitmap bitmapLock;             // значок заблокированного элемента
 
-    public boolean focus = false;       // флаг присутствия фокуса на элементе управления
+    public boolean focus = false;               // флаг присутствия фокуса на элементе управления
 
     /**
      * Создает новый элемент управления с заданными параметрами.
@@ -53,6 +84,7 @@ public abstract class BaseControlElement {
         this.elementIndex = elementIndex;
         this.elementSize = elementSize;
         this.isElementLocked = isElementLocked;
+        controllerAxes = new ArrayList<>();
 
         bitmapLock = BitmapFactory.decodeResource(context.getResources(), R.drawable.baseline_lock_black_18);
 
@@ -69,7 +101,7 @@ public abstract class BaseControlElement {
 
     /**
      * Возвращает название элемента управления.
-     * @return название элемента управления
+     * @return название элемента управления.
      */
     public abstract String getName();
 
@@ -132,7 +164,7 @@ public abstract class BaseControlElement {
      * Возвращает id ресурса иконки элемента управления.
      * @return id ресурса иконки элемента управления.
      */
-    public abstract int getIcon();
+    public abstract int getIconId();
 
     /**
      * Предотвращает выход элемента управления за пределы видимой области экрана.
@@ -241,5 +273,13 @@ public abstract class BaseControlElement {
         } catch (Exception e){
             return ControlElementType.UNKNOWN;
         }
+    }
+
+    /**
+     * Возвращает оси элемента управления.
+     * @return список осей элемента управления.
+     */
+    public ArrayList<ControllerAxis> getControllerAxes(){
+        return controllerAxes;
     }
 }

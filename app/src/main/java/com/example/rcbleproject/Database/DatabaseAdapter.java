@@ -7,9 +7,11 @@ public class DatabaseAdapter {
 
     protected SQLiteDatabase database;
     protected DatabaseHelper dbHelper;
+    protected Context context;
 
     public DatabaseAdapter(Context context) {
         dbHelper = new DatabaseHelper(context.getApplicationContext());
+        this.context = context;
     }
 
     public void open(){

@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.List;
@@ -58,9 +59,12 @@ public class FoundDevicesAdapter extends ArrayAdapter<BluetoothHub> implements I
         } else holder = (ViewHolder) convertView.getTag();
         holder.position = position;
 
-        holder.tv_device_name.setText(hub.name + " (" + hub.address + ")");
+        holder.tv_device_name.setText(hub.getName() + " (" + hub.address + ")");
         if (hub.isActive) setActiveness(Activeness.active,holder);
         else setActiveness(Activeness.inactive, holder);
+
+        if (hub.hubType != BluetoothHub.HubTypes.Unknown)
+            holder.iv_hub_icon.setImageResource(hub.getIconId());
 
         holder.bt_add_device.setOnClickListener((View v) -> {
             ViewHolder vh = (ViewHolder) ((View)v.getParent()).getTag();
@@ -125,10 +129,12 @@ public class FoundDevicesAdapter extends ArrayAdapter<BluetoothHub> implements I
     private class ViewHolder{
         final TextView tv_device_name;
         final ImageButton bt_add_device;
+        final ImageView iv_hub_icon;
         volatile int position;
         ViewHolder(View view){
             tv_device_name = view.findViewById(R.id.tv_device_name);
             bt_add_device = view.findViewById(R.id.bt_add_device);
+            iv_hub_icon = view.findViewById(R.id.iv_hub_icon);
         }
     }
 }

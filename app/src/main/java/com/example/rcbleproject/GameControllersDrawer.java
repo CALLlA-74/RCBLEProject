@@ -25,6 +25,8 @@ import java.util.Map;
 @SuppressLint("ViewConstructor")
 public class GameControllersDrawer extends SurfaceView implements SurfaceHolder.Callback {
     public static final int maxDisplays = 5;
+    private static ArrayList<ArrayList<BaseControlElement>> controlElements;
+    private static ArrayList<Long> displayIDs;
 
     private DrawingThread drawingThread;
     private final Paint paintBackground = new Paint();
@@ -33,8 +35,6 @@ public class GameControllersDrawer extends SurfaceView implements SurfaceHolder.
     private final DatabaseAdapterProfilesControl dbAdapterProfilesControl;
     private final DatabaseAdapterDisplays dbDisplays;
     private final long profileID;
-    private ArrayList<ArrayList<BaseControlElement>> controlElements;
-    private ArrayList<Long> displayIDs;
     private int currentDisplayIndex;
     private int countOfDisplays;
     private BaseControlElement focusableElement = null;
@@ -64,11 +64,24 @@ public class GameControllersDrawer extends SurfaceView implements SurfaceHolder.
         paintGrid.setStyle(Paint.Style.FILL);
     }
 
+    public static ArrayList<ArrayList<BaseControlElement>> getElementsControl() {
+        if (controlElements == null) controlElements = new ArrayList<>(getDisplayIDs().size());
+        return controlElements;
+    }
+
+    public static ArrayList<Long> getDisplayIDs() {
+        if (displayIDs == null) displayIDs = new ArrayList<>();
+        return displayIDs;
+    }
+
     public int getCountOfDisplays(){ return countOfDisplays; }
 
     private void setFocusOnElementWithUpperIndex(){
         int len = controlElements.get(currentDisplayIndex).size();
-        if (len <= 0) return;
+        if (len <= 0) {
+            setFocus(null);
+            return;
+        }
         setFocus(controlElements.get(currentDisplayIndex).get(len - 1));
     }
 
@@ -80,10 +93,10 @@ public class GameControllersDrawer extends SurfaceView implements SurfaceHolder.
         profileControlActivity.showCurrentDisplayNum(currentDisplayIndex, countOfDisplays);
 
         displayIDs = dbDisplays.getDisplaysByProfileID(profileID);
-        controlElements = new ArrayList<>();
+        controlElements = new ArrayList<>(countOfDisplays);
         for (Long displayID : displayIDs){
             ArrayList<BaseControlElement> elements = dbAdapterElementsControl.getElementsControlByDisplayID(
-                    getContext(), displayID, gridParams, countOfDisplays, gridVisibility);
+                    getContext(), displayID, gridParams, gridVisibility);
             controlElements.add(elements);
         }
         setFocusOnElementWithUpperIndex();
@@ -94,8 +107,8 @@ public class GameControllersDrawer extends SurfaceView implements SurfaceHolder.
         SharedPreferences prefs = ((ProfileControlActivity)getContext()).getPreferences(Context.MODE_PRIVATE);
         prefs.edit().putInt("current_display_index_"+profileID, currentDisplayIndex).commit();
 
-        for (int i = 0; i < displayIDs.size(); i++){
-            if (displayIDs.get(i) == null) dbDisplays.insert(profileID, i);
+        for (int i = displayIDs.size() - 1; i >= 0; --i){
+            if (displayIDs.get(i) == null || displayIDs.get(i) < 0) dbDisplays.insert(profileID, i);
             else dbDisplays.updateIndexByID(displayIDs.get(i), i);
         }
         for (ArrayList<BaseControlElement> display : controlElements)
@@ -149,6 +162,14 @@ public class GameControllersDrawer extends SurfaceView implements SurfaceHolder.
         if (currentDisplayIndex < 0) currentDisplayIndex = countOfDisplays - 1;
         ((ProfileControlActivity)getContext()).showCurrentDisplayNum(currentDisplayIndex, countOfDisplays);
         setFocusOnElementWithUpperIndex();
+    }
+
+    public int getCurrentDisplayIndex() {
+        return currentDisplayIndex;
+    }
+
+    public int getNumOfDisplays() {
+        return countOfDisplays;
     }
 
     public void setGridVisibility(boolean visibility){
@@ -235,7 +256,7 @@ public class GameControllersDrawer extends SurfaceView implements SurfaceHolder.
     public void setFocus(BaseControlElement element){
         if (focusableElement != null) focusableElement.focus = false;
         focusableElement = element;
-        focusableElement.focus = true;
+        if (element != null) focusableElement.focus = true;
     }
 
     @Override

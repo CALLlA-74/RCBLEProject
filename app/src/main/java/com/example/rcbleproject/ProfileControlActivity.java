@@ -115,11 +115,11 @@ public class ProfileControlActivity extends BaseAppBluetoothActivity implements 
             String[] axesNames = gameControllersDrawer.getElementAxesNames();
             tvControlledPorts_1.setText(axesNames[0]);
             btAddControlledPorts_1.setOnClickListener((View v1) -> {
-                Intent intent = new Intent(this, SettingControlledPortsActivity.class);
-                intent.putExtra("profile_id", profileID);
+                Intent intent = new Intent(this, SettingPortConnectionsActivity.class);
                 intent.putExtra("display_id", gameControllersDrawer.getCurrentDisplayID());
-                intent.putExtra("element_id", gameControllersDrawer.getFocusableElementID());
-                intent.putExtra("axis_num", 0);
+                intent.putExtra("display_index", gameControllersDrawer.getCurrentDisplayIndex());
+                intent.putExtra("number_of_displays", gameControllersDrawer.getNumOfDisplays());
+                //intent.putExtra("element_id", gameControllersDrawer.getFocusableElementID());
                 startActivity(intent);
             });
             if (axesNames.length == 1)
@@ -128,11 +128,14 @@ public class ProfileControlActivity extends BaseAppBluetoothActivity implements 
                 menu.findItem(R.id.item_controlled_ports_2).setVisible(true);
                 tvControlledPorts_2.setText(axesNames[1]);
                 btAddControlledPorts_2.setOnClickListener((View v2) -> {
-                    Intent intent = new Intent(this, SettingControlledPortsActivity.class);
-                    intent.putExtra("profile_id", profileID);
+                    Intent intent = new Intent(this, SettingPortConnectionsActivity.class);
+                    intent.putExtra("display_id", gameControllersDrawer.getCurrentDisplayID());
+                    intent.putExtra("display_index", gameControllersDrawer.getCurrentDisplayIndex());
+                    intent.putExtra("number_of_displays", gameControllersDrawer.getNumOfDisplays());
+                    /*intent.putExtra("profile_id", profileID);
                     intent.putExtra("display_id", gameControllersDrawer.getCurrentDisplayID());
                     intent.putExtra("element_id", gameControllersDrawer.getFocusableElementID());
-                    intent.putExtra("axis_num", 1);
+                    intent.putExtra("axis_num", 1);*/
                     startActivity(intent);
                 });
             }
@@ -243,11 +246,6 @@ public class ProfileControlActivity extends BaseAppBluetoothActivity implements 
     }
 
     public MODE_TYPE getMode() { return mode; }
-
-    @SuppressLint("SetTextI18n")
-    public void showCurrentDisplayNum(int currentDisplayNum, int countOfDisplays){
-        binding.tvNumDisplay.setText((currentDisplayNum + 1) + " / " + countOfDisplays);
-    }
 
     private void menuItemsInit(){
         MenuItem item = binding.nwMenuProfileControl.getMenu().findItem(R.id.item_alignment_to_grid);

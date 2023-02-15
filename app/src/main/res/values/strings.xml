@@ -25,8 +25,20 @@
     <string name="axis_word" translatable="true">axis</string>
     <string name="add_controlled_port" translatable="true">Add controlled port</string>
     <string name="edit_profile" translatable="true">Edit profile</string>
-    <string name="too_long_name" translatable="true">The name is too long</string>
+    <string name="too_long_name" translatable="true">The name is too long!</string>
     <string name="alarm_no_permissions" translatable="true">Bluetooth or Location are not enabled!</string>
+    <string name="unknown_hub_name" translatable="true">choose a hub</string>
+    <string name="unknown_port_name" translatable="true">choose a port</string>
+    <string name="unknown_controller_axis_name" translatable="true">choose an element control</string>
+
+    <string name="port_a" translatable="true">port A</string>
+    <string name="port_a_inv" translatable="true">port А inverse</string>
+    <string name="port_b" translatable="true">port B</string>
+    <string name="port_b_inv" translatable="true">port B inverse</string>
+    <string name="port_c" translatable="true">port C</string>
+    <string name="port_c_inv" translatable="true">port C inverse</string>
+    <string name="port_d" translatable="true">port D</string>
+    <string name="port_d_inv" translatable="true">port D inverse</string>
 
     <string name="app_tag" translatable="false">Geckos Control</string>
 

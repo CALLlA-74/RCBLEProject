@@ -180,7 +180,7 @@ public class BaseAppBluetoothActivity extends BaseAppActivity{
 
     @SuppressLint("MissingPermission")
     protected void stopLEScan(){
-        if (BLEScanner == null) return;
+        if (BLEScanner == null || !checkBluetoothPeripherals()) return;
         BLEScanner.stopScan(scanCallback);
     }
 
@@ -331,10 +331,7 @@ public class BaseAppBluetoothActivity extends BaseAppActivity{
     @SuppressLint("MissingPermission")
     public void writeCharacteristic(BluetoothHub hub, byte[] message){
         new Thread(() -> {
-            if (!checkBluetoothPeripherals()){
-                runOnUiThread(this::alarmNoPermissions);
-                return;
-            }
+            if (!checkBluetoothPeripherals()) return;
             if (hub == null) return;
             BluetoothGatt bluetoothGatt = gatts.get(hub.address);
             if (bluetoothGatt == null) return;
@@ -352,7 +349,7 @@ public class BaseAppBluetoothActivity extends BaseAppActivity{
         }).start();
     }
 
-    public void alarmNoPermissions(){
-        Toast.makeText(this, "", Toast.LENGTH_LONG).show();
-    }
+    /*public void alarmNoPermissions(){
+        Toast.makeText(this, getString(R.string.alarm_no_permissions), Toast.LENGTH_LONG).show();
+    }*/
 }
