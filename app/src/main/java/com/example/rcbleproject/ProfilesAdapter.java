@@ -55,6 +55,7 @@ public class ProfilesAdapter extends BaseAppCursorAdapter {
 
             ConfirmRemoveDialogFragment dialog = new ConfirmRemoveDialogFragment();
             Bundle args = new Bundle();
+            args.putInt("type", ConfirmRemoveDialogFragment.FragmentType.ProfileControl.ordinal());
             args.putLong("object_id", id);
             args.putString("message", activity.getResources().getString(R.string.confirm_msg_profile) + " \""
                             + profileControl.getName() + "\" ?");

@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.ImageButton;
 import android.widget.ListView;
@@ -13,7 +12,7 @@ import android.widget.TextView;
 import com.example.rcbleproject.Database.DatabaseAdapterDisplays;
 import com.example.rcbleproject.Database.DatabaseAdapterProfilesControl;
 
-public class ProfilesActivity extends BaseAppActivity implements Removable {
+public class ProfilesActivity extends BaseAppActivity implements IRemovable {
 
     private ListView lvProfiles;
     private DatabaseAdapterProfilesControl dbAdapterProfilesControl;
@@ -36,6 +35,7 @@ public class ProfilesActivity extends BaseAppActivity implements Removable {
 
         dbAdapterProfilesControl = Container.getDbProfilesControl(this);
         dbDisplays = Container.getDbDisplays(this);
+        Container.getDbForHubs(this);
 
         lvAdapterProfilesControl = new ProfilesAdapter(this,
                 R.layout.app_list_item,
@@ -64,7 +64,6 @@ public class ProfilesActivity extends BaseAppActivity implements Removable {
             Intent intent = new Intent(this, ProfileControlActivity.class);
             intent.putExtra("profile_id", id);
             startActivity(intent);
-            //finish();
         });
 
         lvProfiles.setOnScrollListener(new AbsListView.OnScrollListener() {

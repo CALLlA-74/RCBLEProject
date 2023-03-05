@@ -134,4 +134,13 @@
             android:background="@null"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
 
+    <ImageButton
+        android:id="@+id/bt_delete_port_connection"
+        android:layout_width="30dp"
+        android:layout_height="150dp"
+        android:src="@drawable/baseline_delete_20"
+        android:background="@drawable/item_button_with_rect_blue_background_and_circle_corners"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

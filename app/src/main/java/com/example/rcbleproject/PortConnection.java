@@ -5,15 +5,26 @@ package com.example.rcbleproject;
  */
 public class PortConnection{
     public BluetoothHub hub = null;
-    public BluetoothHub.Port port = null;
+    public Port port = null;
     public BaseControlElement.ControllerAxis controllerAxis = null;
 
-    public PortConnection() {}
+    private long id, displayID;
 
-    public PortConnection(BluetoothHub hub, BluetoothHub.Port port,
+    public PortConnection(long id, long displayID) {
+        this.id = id;
+        this.displayID = displayID;
+    }
+
+    public PortConnection(long id, long displayID, BluetoothHub hub, Port port,
                           BaseControlElement.ControllerAxis controllerAxis){
+        this.id = id;
+        this.displayID = displayID;
         this.hub = hub;
         this.port = port;
         this.controllerAxis = controllerAxis;
     }
+
+    public long getId() { return id; }
+
+    public long getDisplayID() { return displayID; }
 }

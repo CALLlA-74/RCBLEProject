@@ -1,14 +1,9 @@
 package com.example.rcbleproject;
 
-import static com.example.rcbleproject.Database.DatabaseAdapterForHubs.HUB_ADDRESS;
-import static com.example.rcbleproject.Database.DatabaseAdapterForHubs.HUB_NAME;
-import static com.example.rcbleproject.Database.DatabaseAdapterForHubs.HUB_TYPE;
-
 import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.le.ScanResult;
 import android.content.Context;
-import android.database.Cursor;
 import android.os.ParcelUuid;
 import android.util.Log;
 import android.widget.Toast;
@@ -28,77 +23,6 @@ import java.util.UUID;
 public class BluetoothHub extends BaseParam {
     public enum HubTypes {GeckoHub, PoweredUpHub, Unknown}
 
-    public class Port extends BaseParam{
-        private final Context context;
-        private int direction = 0;
-        public final BluetoothHub hub;
-        public int portNum = -1;
-
-        public Port(Context context, BluetoothHub hub){
-            this.context = context;
-            this.hub = hub;
-        }
-
-        public Port(Context context, BluetoothHub hub, int portNum, int direction){
-            this.context = context;
-            this.hub = hub;
-            this.portNum = portNum;
-            this.direction = direction;
-        }
-
-        public int getDirection() {return direction; }
-
-        public void setDirection(int newDirection){
-            direction = Integer.compare(newDirection, 0);
-        }
-
-        @Override
-        public String getName() {
-            switch (portNum){
-                case 0:
-                    if (direction == 1) return context.getString(R.string.port_a);
-                    else return context.getString(R.string.port_a_inv);
-                case 1:
-                    if (direction == 1) return context.getString(R.string.port_b);
-                    else return context.getString(R.string.port_b_inv);
-                case 2:
-                    if (direction == 1) return context.getString(R.string.port_c);
-                    else return context.getString(R.string.port_c_inv);
-                case 3:
-                    if (direction == 1) return context.getString(R.string.port_d);
-                    else return context.getString(R.string.port_d_inv);
-            }
-            return ".?.";
-        }
-
-        @Override
-        public int getIconId(){
-            switch (portNum){
-                case 0:
-                    return R.drawable.letter_a;
-                case 1:
-                    return R.drawable.letter_b;
-                case 2:
-                    return R.drawable.letter_c;
-                case 3:
-                    return R.drawable.letter_d;
-            }
-
-            return R.drawable.unknown_param;
-        }
-
-        @Override
-        public int getMenuIconId(){
-            if (direction < 0) return R.drawable.baseline_rotate_left_24;
-            return R.drawable.baseline_rotate_right_24;
-        }
-
-        @Override
-        public void act(Object obj){
-            hub.setOutputPortCommand((BaseAppBluetoothActivity) obj, portNum, direction);
-        }
-    }
-
     private String name;
     public final String address;
     public final HubTypes hubType;
@@ -106,18 +30,17 @@ public class BluetoothHub extends BaseParam {
     public final UUID characteristicUuid;
     public long lastTimeAdv;
     public volatile boolean isActive = true;
-
-    private ArrayList<Port> ports;
+    public volatile boolean availability = false;
+    public volatile boolean stateConnection = true;
 
     @SuppressLint("MissingPermission")
-    public BluetoothHub(@NonNull ScanResult result, @NonNull Context context) {
+    public BluetoothHub(@NonNull ScanResult result, @NonNull BaseAppBluetoothActivity context) {
         BluetoothDevice device = result.getDevice();
         address = device.getAddress();
         serviceUuid = getServiceUuid(result, context);
         hubType = getHubType(context);
-        name = getName(device, context);
+        name = loadName(device, context);
         characteristicUuid = Container.getCharacteristicUUIDs(context).get(hubType);
-        initPorts(context);
     }
 
     public BluetoothHub(String name, String address, int type, Context context){
@@ -126,43 +49,6 @@ public class BluetoothHub extends BaseParam {
         this.hubType = IntToHubTypes(type);
         serviceUuid = Container.getServiceUUIDs(context).get(hubType);
         characteristicUuid = Container.getCharacteristicUUIDs(context).get(hubType);
-        initPorts(context);
-    }
-
-    public BluetoothHub(long hubId, @NonNull Context context){
-        DatabaseAdapterForHubs dbHubs = Container.getDbForHubs(context);
-        Cursor cursor = dbHubs.getHubById_cursor(hubId);
-        if (!cursor.moveToFirst()){
-            name = "";
-            address = "";
-            serviceUuid = null;
-            characteristicUuid = null;
-            hubType = HubTypes.Unknown;
-        }
-        else{
-            name = cursor.getString(cursor.getColumnIndexOrThrow(HUB_NAME));
-            address = cursor.getString(cursor.getColumnIndexOrThrow(HUB_ADDRESS));
-            hubType = IntToHubTypes(cursor.getInt(cursor.getColumnIndexOrThrow(HUB_TYPE)));
-            characteristicUuid = Container.getCharacteristicUUIDs(context).get(hubType);
-            serviceUuid = Container.getServiceUUIDs(context).get(hubType);
-        }
-        cursor.close();
-        initPorts(context);
-    }
-
-    private void initPorts(Context context){
-        ports = new ArrayList<>();
-        ports.add(new Port(context, this, 0, 1));
-        ports.add(new Port(context, this, 0, -1));
-
-        ports.add(new Port(context, this, 1, 1));
-        ports.add(new Port(context, this, 1, -1));
-
-        ports.add(new Port(context, this, 2, 1));
-        ports.add(new Port(context, this, 2, -1));
-
-        ports.add(new Port(context, this, 3, 1));
-        ports.add(new Port(context, this, 3, -1));
     }
 
     @SuppressLint("MissingPermission")
@@ -186,24 +72,30 @@ public class BluetoothHub extends BaseParam {
     }
 
     @SuppressLint("MissingPermission")
-    private String getName(BluetoothDevice device, Context context) {
-        DatabaseAdapterForHubs dbHubs = Container.getDbForHubs(context);
+    private String loadName(BluetoothDevice device, BaseAppBluetoothActivity context) {
         switch (hubType){
             case GeckoHub:
-                Cursor cursor = dbHubs.getHubByAddress_cursor(device.getAddress());
-                if (!cursor.moveToFirst()) {
-                    cursor.close();
-                    return "Gecko Hub";
-                }
-                String name = cursor.getString(cursor.getColumnIndexOrThrow(HUB_NAME));
-                cursor.close();
-                return name;
+                DatabaseAdapterForHubs dbHubs = Container.getDbForHubs(context);
+                dbHubs.loadHubName(this, context);
+                return "";
             case PoweredUpHub:
-                dbHubs.updateNameByAddress(device.getAddress(), device.getName());
+                //dbHubs.updateNameByAddress(device.getAddress(), device.getName());
                 return device.getName();
         }
 
         return "";
+    }
+
+    @Override
+    public boolean equals(Object obj){
+        if (obj == null) return false;
+        try {
+            BluetoothHub hub = (BluetoothHub) obj;
+            return address.equals(hub.address);
+        }
+        catch (Exception e){
+            return false;
+        }
     }
 
     public static HubTypes IntToHubTypes(int type){
@@ -263,24 +155,17 @@ public class BluetoothHub extends BaseParam {
         }
     }
 
-    public static boolean updateHubNameInDB(Context context, String hubAddress, String newHubName) {
-        DatabaseAdapterForHubs adapter = Container.getDbForHubs(context);
-        Cursor cursor = adapter.getHubByAddress_cursor(hubAddress);
-        if (!cursor.moveToFirst()){
-            cursor.close();
-            return false;
-        }
-        HubTypes type = IntToHubTypes(cursor.getInt(cursor.getColumnIndexOrThrow(HUB_TYPE)));
-        cursor.close();
-        if (type == HubTypes.PoweredUpHub){
-            adapter.updateNameByAddress(hubAddress, newHubName);
+    public boolean updateHubNameInDB(String newHubName) {
+        if (hubType == HubTypes.PoweredUpHub){
+            name = newHubName;
             return true;
         }
         return false;
     }
 
     @SuppressLint("UseCompatLoadingForDrawables")
-    public boolean setName(BaseAppBluetoothActivity activity, String newName){
+    public boolean rename(String newName, BaseAppBluetoothActivity activity){
+        name = newName;
         if (hubType == HubTypes.PoweredUpHub) {
             byte[] name = newName.getBytes(StandardCharsets.UTF_8);
             if (name.length > 14) {
@@ -300,7 +185,6 @@ public class BluetoothHub extends BaseParam {
                 activity.writeCharacteristic(this, message);
             }).start();
         }
-        name = newName;
         return true;
     }
 
@@ -316,6 +200,8 @@ public class BluetoothHub extends BaseParam {
                 return R.drawable.pu_hub;
             case GeckoHub:
                 return R.drawable.gecko_hub;
+            case Unknown:
+                return R.drawable.unknown_param;
         }
         return -1;
     }
@@ -330,5 +216,28 @@ public class BluetoothHub extends BaseParam {
         alarm((BaseAppBluetoothActivity) obj);
     }
 
-    public ArrayList<Port> getPorts() { return ports; }
+    public ArrayList<Port> getPorts(Context context) {
+        ArrayList<Port> ports = new ArrayList<>();
+        ports.add(new Port(context, this, 0, 1));
+        ports.add(new Port(context, this, 0, -1));
+
+        ports.add(new Port(context, this, 1, 1));
+        ports.add(new Port(context, this, 1, -1));
+
+        ports.add(new Port(context, this, 2, 1));
+        ports.add(new Port(context, this, 2, -1));
+
+        ports.add(new Port(context, this, 3, 1));
+        ports.add(new Port(context, this, 3, -1));
+        return ports;
+    }
+
+    public static String getDefaultHubName(Context context) {
+        return context.getString(R.string.default_hub_name);
+    }
+
+    @Override
+    public boolean getAvailabilityForAct(){
+        return availability;
+    }
 }

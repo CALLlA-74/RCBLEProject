@@ -24,10 +24,11 @@ public abstract class BaseControlElement {
      * имеет одну ось. Двухосевой джойстик - две. Также возможно и отсутствие осей (например вставки
      * текста и изображений).
      */
-    class ControllerAxis extends BaseParam{
+    public class ControllerAxis extends BaseParam{
         public final BaseControlElement parent;
         public final int axisNum;
         private final String axisName;
+
         public ControllerAxis(BaseControlElement parent, String axisName, int axisNum, boolean hideAxisName){
             this.parent = parent;
             this.axisName = "#" + (parent.elementIndex + 1)
@@ -44,6 +45,15 @@ public abstract class BaseControlElement {
         public int getIconId(){
             return parent.getIconId();
         }
+
+        @Override
+        public int getMenuIconId() {return R.drawable.baseline_more_vert_20;}
+
+        @Override
+        public void act(Object obg){}
+
+        @Override
+        public boolean getAvailabilityForAct(){ return false; }
     }
 
     protected Context context;                  // используется для доступа к ресурсам приложения
@@ -58,6 +68,7 @@ public abstract class BaseControlElement {
     public enum ControlElementType {JOYSTICK_XY, JOYSTICK_X, JOYSTICK_Y, BUTTON, UNKNOWN}
 
     public final long elementID;                // id элемента в СУБД
+    public final long displayID;                // id дисплея в СУБД, на котором находится элемент
     public final GridParams gridParams;         // параметры сетки для выравнивания на экране
     public final Bitmap bitmapLock;             // значок заблокированного элемента
 
@@ -75,10 +86,11 @@ public abstract class BaseControlElement {
      * @param pX - координата X центра элемента управления.
      * @param pY - координата Y центра элемента управления.
      */
-    public BaseControlElement(long elementID, Context context, GridParams gridParams,
+    public BaseControlElement(long elementID, long displayID, Context context, GridParams gridParams,
                               int elementIndex, int elementSize, boolean isGridVisible,
                               boolean isElementLocked, float pX, float pY){
         this.elementID = elementID;
+        this.displayID = displayID;
         this.context = context;
         this.gridParams = gridParams;
         this.elementIndex = elementIndex;
@@ -228,21 +240,21 @@ public abstract class BaseControlElement {
      * @return элемент управления заданного типа.
      */
     public static BaseControlElement getElementControl(ControlElementType elementType,
-                                                       long elementID, Context context,
-                                                       GridParams gridParams,
+                                                       long elementID, long displayID,
+                                                       Context context, GridParams gridParams,
                                                        int elementIndex, int elementSize,
                                                        boolean isGridVisible, boolean isElementLocked,
                                                        float pX, float pY){
         switch (elementType){
             case JOYSTICK_XY:
-                return new JoystickXY(elementID, context, gridParams, elementIndex, elementSize,
-                                        isGridVisible, isElementLocked, pX, pY);
+                return new JoystickXY(elementID, displayID, context, gridParams, elementIndex,
+                        elementSize, isGridVisible, isElementLocked, pX, pY);
             case JOYSTICK_X:
-                return new JoystickX(elementID, context, gridParams, elementIndex, elementSize,
-                        isGridVisible, isElementLocked, pX, pY);
+                return new JoystickX(elementID, displayID, context, gridParams, elementIndex,
+                        elementSize, isGridVisible, isElementLocked, pX, pY);
             case JOYSTICK_Y:
-                return new JoystickY(elementID, context, gridParams, elementIndex, elementSize,
-                        isGridVisible, isElementLocked, pX, pY);
+                return new JoystickY(elementID, displayID, context, gridParams, elementIndex,
+                        elementSize, isGridVisible, isElementLocked, pX, pY);
         }
         return null;
     }
@@ -253,11 +265,12 @@ public abstract class BaseControlElement {
      * @param context - используется для доступа к ресурсам приложения.
      * @return список всех типов элементов управления с параметрами по умолчанию.
      */
-    public static ArrayList<BaseControlElement> getAllDefaultElementControlTypes(Context context){
+    public static ArrayList<BaseControlElement> getAllDefaultElementControlTypes(Context context,
+                                                                                 long displayID){
         ArrayList<BaseControlElement> list = new ArrayList<>();
-        list.add(new JoystickXY(context));
-        list.add(new JoystickX(context));
-        list.add(new JoystickY(context));
+        list.add(new JoystickXY(context, displayID));
+        list.add(new JoystickX(context, displayID));
+        list.add(new JoystickY(context, displayID));
         return list;
     }
 

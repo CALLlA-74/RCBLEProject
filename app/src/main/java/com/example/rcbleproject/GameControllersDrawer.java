@@ -21,12 +21,14 @@ import com.example.rcbleproject.Database.DatabaseAdapterProfilesControl;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 
 @SuppressLint("ViewConstructor")
 public class GameControllersDrawer extends SurfaceView implements SurfaceHolder.Callback {
     public static final int maxDisplays = 5;
     private static ArrayList<ArrayList<BaseControlElement>> controlElements;
     private static ArrayList<Long> displayIDs;
+    private static TreeMap<Long, BaseControlElement> controlElementTreeMap;
 
     private DrawingThread drawingThread;
     private final Paint paintBackground = new Paint();
@@ -74,6 +76,11 @@ public class GameControllersDrawer extends SurfaceView implements SurfaceHolder.
         return displayIDs;
     }
 
+    public static BaseControlElement getElementByID(long elementID){
+        if (controlElementTreeMap == null) return null;
+        return controlElementTreeMap.get(elementID);
+    }
+
     public int getCountOfDisplays(){ return countOfDisplays; }
 
     private void setFocusOnElementWithUpperIndex(){
@@ -94,10 +101,13 @@ public class GameControllersDrawer extends SurfaceView implements SurfaceHolder.
 
         displayIDs = dbDisplays.getDisplaysByProfileID(profileID);
         controlElements = new ArrayList<>(countOfDisplays);
+        controlElementTreeMap = new TreeMap<>();
         for (Long displayID : displayIDs){
             ArrayList<BaseControlElement> elements = dbAdapterElementsControl.getElementsControlByDisplayID(
                     getContext(), displayID, gridParams, gridVisibility);
             controlElements.add(elements);
+            for (BaseControlElement element : elements)
+                controlElementTreeMap.put(element.elementID, element);
         }
         setFocusOnElementWithUpperIndex();
     }
@@ -267,9 +277,7 @@ public class GameControllersDrawer extends SurfaceView implements SurfaceHolder.
     }
 
     @Override
-    public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-        if (BuildConfig.DEBUG) Log.v("APP_TAG2", "draw update");
-    }
+    public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {}
 
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
@@ -285,7 +293,6 @@ public class GameControllersDrawer extends SurfaceView implements SurfaceHolder.
                     Log.e(getResources().getString(R.string.app_tag), e.toString());
             }
         }
-        if (BuildConfig.DEBUG) Log.v("APP_TAG2", "clear");
         drawingThread = null;
     }
 

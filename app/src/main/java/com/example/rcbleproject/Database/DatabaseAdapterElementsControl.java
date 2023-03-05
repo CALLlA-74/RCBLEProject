@@ -6,12 +6,11 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
+import com.example.rcbleproject.BaseAppActivity;
 import com.example.rcbleproject.BaseControlElement;
 import com.example.rcbleproject.GridParams;
-import com.example.rcbleproject.JoystickXY;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 
 public class DatabaseAdapterElementsControl extends DatabaseAdapter{
     public static final String TABLE_NAME = "elements_control";
@@ -25,7 +24,7 @@ public class DatabaseAdapterElementsControl extends DatabaseAdapter{
     public static final String X_COORDINATE = "x_coordinate";
     public static final String Y_COORDINATE = "y_coordinate";
 
-    public DatabaseAdapterElementsControl(Context context){
+    public DatabaseAdapterElementsControl(BaseAppActivity context){
         super(context);
         open();
     }
@@ -91,7 +90,7 @@ public class DatabaseAdapterElementsControl extends DatabaseAdapter{
             float posX = cursor.getFloat(cursor.getColumnIndexOrThrow(X_COORDINATE));
             float posY = cursor.getFloat(cursor.getColumnIndexOrThrow(Y_COORDINATE));
             list.add(BaseControlElement.getElementControl(BaseControlElement.IntToControlElementType(typeOfElement),
-                                                          id, context, params, elementIndex,
+                                                          id, displayID, context, params, elementIndex,
                                                           elementSize, isGridVisible,
                                                           elementBlocking, posX, posY));
         }

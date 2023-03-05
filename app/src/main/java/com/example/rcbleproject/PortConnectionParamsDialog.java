@@ -16,11 +16,12 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
+import java.util.List;
 
-public class ConnectionPortParamsDialog extends Dialog {
+public class PortConnectionParamsDialog extends Dialog {
     public enum ParamTypes {HUB, PORT, CONTROLLER_AXIS}
 
-    private final ArrayList<BaseParam> params;
+    private final List<BaseParam> params;
     private final ParamTypes typeOfParam;
     private final SettingPortConnectionsActivity activity;
     private final PortConnection portConnection;
@@ -29,9 +30,9 @@ public class ConnectionPortParamsDialog extends Dialog {
 
     RecyclerView lrVarsList;
 
-    public ConnectionPortParamsDialog(SettingPortConnectionsActivity activity, ParamTypes typeOfParam,
+    public PortConnectionParamsDialog(SettingPortConnectionsActivity activity, ParamTypes typeOfParam,
                                       PortConnection port, int currentDisplayIndex, int numOfDisplays,
-                                      ArrayList<BaseParam> params){
+                                      List<BaseParam> params){
         super(activity);
         this.activity = activity;
         dialogContext = this;
@@ -45,16 +46,32 @@ public class ConnectionPortParamsDialog extends Dialog {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.controlled_port_params_dialog);
         lrVarsList = findViewById(R.id.lr_list);
-        lrVarsList.setAdapter(new ParamsListAdapter(getContext(), params));
+        ParamsListAdapter adapter = new ParamsListAdapter(getContext(), params);
+        lrVarsList.setAdapter(adapter);
+        activity.setLvAdapterConnectedDevices(adapter);
+    }
+
+    @Override
+    public void dismiss(){
+        super.dismiss();
+        if (portConnection.port == null) return;
+        if (typeOfParam == ParamTypes.PORT){
+            List<Port> ports = (List) params;
+            for (short idx = (short) (ports.size() - 1); idx >= 0; --idx){
+                if (ports.get(idx).portNum == portConnection.port.portNum){
+                    ports.remove(idx);
+                }
+            }
+        }
     }
 
     private class ParamsListAdapter extends RecyclerView.Adapter<ParamsListAdapter.ViewHolder>
                                                                 implements IListViewAdapterForHubs{
-        ArrayList<BaseParam> paramsList;
+        List<BaseParam> paramsList;
         LayoutInflater inflater;
         final int itemId = R.layout.item_for_params_list;
 
-        ParamsListAdapter(Context context, ArrayList<BaseParam> paramsList){
+        ParamsListAdapter(Context context, List<BaseParam> paramsList){
             this.paramsList = paramsList;
             inflater = LayoutInflater.from(context);
         }
@@ -73,7 +90,7 @@ public class ConnectionPortParamsDialog extends Dialog {
                 for (short idx = 0; idx < paramsList.size(); ++idx){
                     hub = (BluetoothHub) paramsList.get(idx);
                     if (hub.address.equals(device.getAddress())){
-                        hub.activeness = availability;
+                        hub.availability = availability;
                         notifyDataSetChanged();
                         return true;
                     }
@@ -113,10 +130,8 @@ public class ConnectionPortParamsDialog extends Dialog {
             switch (typeOfParam){
                 case HUB:
                 case PORT:
-                    if (param.activeness){
+                    if (param.getAvailabilityForAct()){
                         holder.iv_menu_icon.setVisibility(View.VISIBLE);
-                        holder.parentView.setBackground(activity.getDrawable(R.drawable.rect_white_border));
-                        holder.tv_name.setTextColor(activity.getColor(R.color.white));
                         holder.parentView.setOnLongClickListener((View v) -> {
                             switch (typeOfParam){
                                 case HUB: param.act(activity);
@@ -127,10 +142,10 @@ public class ConnectionPortParamsDialog extends Dialog {
                     }
                     else {
                         holder.iv_menu_icon.setVisibility(View.GONE);
-                        holder.parentView.setBackground(activity.getDrawable(R.drawable.rect_blue_ncs_border));
-                        holder.tv_name.setTextColor(activity.getColor(R.color.maximum_blue));
                         holder.parentView.setOnLongClickListener(null);
                     }
+                    holder.parentView.setBackground(activity.getDrawable(R.drawable.rect_white_border));
+                    holder.tv_name.setTextColor(activity.getColor(R.color.white));
                     holder.iv_menu_icon.setImageResource(param.getMenuIconId());
                     holder.iv_menu_icon.setOnClickListener((View v) -> param.act(activity));
             }
@@ -141,10 +156,12 @@ public class ConnectionPortParamsDialog extends Dialog {
             holder.parentView.setOnClickListener((View v) -> {
                 switch (typeOfParam){
                     case HUB:
+                        if (!((BluetoothHub)param).equals(portConnection.hub))
+                            portConnection.port = null;
                         portConnection.hub = (BluetoothHub) param;
                         break;
                     case PORT:
-                        portConnection.port = (BluetoothHub.Port) param;
+                        portConnection.port = (Port) param;
                         break;
                     case CONTROLLER_AXIS:
                         portConnection.controllerAxis = (BaseControlElement.ControllerAxis) param;

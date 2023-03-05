@@ -8,17 +8,29 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.example.rcbleproject.Database.DatabaseAdapterPortConnections;
+
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.TreeMap;
 
 public class SettingPortConnectionsActivity extends BaseAppBluetoothActivity {
     private int currentDisplayIndex, numOfDisplays;
     private ArrayList<PortConnectionsAdapter> portConnectionsByDisplays;
     private ListView lv_controlled_ports;
+    private long profileID = -1;
+    private BaseAppActivity context;
+    private DatabaseAdapterPortConnections dbPortConnections;
+
+    // доступные порты хабов на каждом дисплее
+    private static TreeMap<Long, TreeMap<String, List<Port>>> hubPortsByDisplays = new TreeMap<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_setting_controlled_ports);
+        context = this;
         ((TextView)findViewById(R.id.tv_label)).setText(getString(R.string.controlled_ports));
         findViewById(R.id.ll_displays_control).setVisibility(View.VISIBLE);
         findViewById(R.id.bt_back).setOnClickListener((View v) -> finish());
@@ -28,34 +40,58 @@ public class SettingPortConnectionsActivity extends BaseAppBluetoothActivity {
         });
         
         dbHubsAdapter = Container.getDbForHubs(this);
+        dbPortConnections = Container.getDbPortConnections(this);
 
         //long currentDisplayID = getIntent().getLongExtra("display_id", -1);
+        profileID = getIntent().getLongExtra("profile_id", -1);
         currentDisplayIndex = getIntent().getIntExtra("display_index", -1);
         numOfDisplays = getIntent().getIntExtra("number_of_displays", -1);
 
-        initPortConnectionsByDisplays(this);
         lv_controlled_ports = findViewById(R.id.lv_controlled_ports);
-        lv_controlled_ports.setAdapter(portConnectionsByDisplays.get(currentDisplayIndex));
-        setLvAdapterConnectedDevices(portConnectionsByDisplays.get(currentDisplayIndex).getConnectedDevicesAdapter());
+        //setLvAdapterConnectedDevices(portConnectionsByDisplays.get(currentDisplayIndex).getConnectedDevicesAdapter());
 
         Button btAddControlledPort = findViewById(R.id.bt_add_controlled_port);
         btAddControlledPort.setOnClickListener((View v) -> {
             PortConnectionsAdapter adapter = (PortConnectionsAdapter) lv_controlled_ports.getAdapter();
-            adapter.portConnections.add(new PortConnection());
+            long disId = GameControllersDrawer.getDisplayIDs().get(currentDisplayIndex);
+            long id = dbPortConnections.insert(disId);
+            adapter.portConnections.add(new PortConnection(id, disId));
             adapter.notifyDataSetChanged();
-            Log.v("APP_TAG555", "" + adapter.portConnections.size());
+            //Log.v("APP_TAG555", "" + adapter.portConnections.size());
         });
         showCurrentDisplayNum(currentDisplayIndex, numOfDisplays);
         findViewById(R.id.bt_last).setOnClickListener((View v) -> prevDisplay());
         findViewById(R.id.bt_next).setOnClickListener((View v) -> nextDisplay());
     }
 
+    //TODO перевести алгоритм метода в фоновой ассинхронный режим!
     private void initPortConnectionsByDisplays(SettingPortConnectionsActivity context){
         ArrayList<Long> displayIDs = GameControllersDrawer.getDisplayIDs();
         portConnectionsByDisplays = new ArrayList<>(numOfDisplays);
+        /*List<List<PortConnection>> portConnections = Container.getDbPortConnections(this)
+                .getPortConnectionsByProfileID(profileID, context);*/
         for (int i = 0; i < numOfDisplays; ++i){
+            TreeMap<String, List<Port>> hubPorts = new TreeMap<>();
+            for (BluetoothHub hub : dbHubsAdapter.getAllHubs(this).values())
+                hubPorts.put(hub.address, hub.getPorts(this));
+            hubPortsByDisplays.put(displayIDs.get(i), hubPorts);
+
+            List<PortConnection> portConnections = Container.getDbPortConnections(this)
+                    .getPortConnectionsByDisplayID(displayIDs.get(i), this);
+            for (PortConnection portConnection : portConnections){
+                if (portConnection.hub == null || portConnection.port == null) continue;
+                List<Port> ports = hubPorts.get(portConnection.hub.address);
+                if (ports == null) continue;
+                for (short idx = (short) (ports.size() - 1); idx >= 0; --idx){
+                    if (ports.get(idx).portNum == portConnection.port.portNum){
+                        ports.remove(idx);
+                    }
+                }
+                ports.remove(portConnection.port);
+            }
+
             portConnectionsByDisplays.add(new PortConnectionsAdapter(context, displayIDs.get(i), i,
-                    numOfDisplays, Container.getDbPortConnections(this).getPortConnectionsByDisplayID(displayIDs.get(i))));
+                    numOfDisplays, portConnections));
         }
     }
 
@@ -75,6 +111,7 @@ public class SettingPortConnectionsActivity extends BaseAppBluetoothActivity {
         portConnectionsByDisplays.get(currentDisplayIndex).notifyDataSetChanged();
     }
 
+    @Override
     public void notifyDataSetChanged(){
         ((PortConnectionsAdapter)lv_controlled_ports.getAdapter()).notifyDataSetChanged();
     }
@@ -84,11 +121,27 @@ public class SettingPortConnectionsActivity extends BaseAppBluetoothActivity {
         super.onResume();
         checkBluetoothPeripherals();
         startLEScan();
+        initPortConnectionsByDisplays(this);
+        lv_controlled_ports.setAdapter(portConnectionsByDisplays.get(currentDisplayIndex));
+        notifyDataSetChanged();
     }
 
     @Override
     protected void onPause(){
         super.onPause();
         stopLEScan();
+        savePortConnections();
+    }
+
+    private void savePortConnections(){
+        for (PortConnectionsAdapter adapter : portConnectionsByDisplays){
+            for (PortConnection portConn : adapter.getPortConnections()){
+                Container.getDbPortConnections(context).update(portConn);
+            }
+        }
+    }
+
+    public TreeMap<Long, TreeMap<String, List<Port>>> getHubPortsByDisplays() {
+        return hubPortsByDisplays;
     }
 }

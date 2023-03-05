@@ -36,6 +36,7 @@ import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.RequiresApi;
 
 import com.example.rcbleproject.Database.DatabaseAdapterForHubs;
 import com.example.rcbleproject.databinding.ActivityAddingDevicesBinding;
@@ -45,7 +46,7 @@ import java.util.HashMap;
 import java.util.UUID;
 
 public class BaseAppBluetoothActivity extends BaseAppActivity{
-    private IListViewAdapterForHubs lvAdapterConnectedDevices;
+    private IListViewAdapterForHubs lvAdapterConnectedDevices = Container.getDbForHubs(this);
     private IListViewAdapterForHubs lvAdapterFoundHubs;
 
     protected boolean bluetoothRequested;
@@ -62,6 +63,7 @@ public class BaseAppBluetoothActivity extends BaseAppActivity{
     protected DatabaseAdapterForHubs dbHubsAdapter;
 
     protected final HashMap<String, BluetoothGatt> gatts = Container.getGatts();
+    protected final BaseAppBluetoothActivity activity = this;
 
     protected void setLvAdapterConnectedDevices(IListViewAdapterForHubs adapter){
         lvAdapterConnectedDevices = adapter;
@@ -223,36 +225,36 @@ public class BaseAppBluetoothActivity extends BaseAppActivity{
             Log.v("APP_TAG22", "gatt = " + gatt);
         }
         new Thread(() -> {
-            gatt.disconnect();
             runOnUiThread(() -> {
                 gatts.remove(gatt.getDevice().getAddress());
                 if (lvAdapterConnectedDevices != null)
                     lvAdapterConnectedDevices.removeHub(gatt.getDevice().getAddress());
                 Log.v("APP_TAG22", "gatts size: " + gatts.size());
             });
+            gatt.disconnect();
         }).start();
     }
 
-    @SuppressLint("MissingPermission")
-    public void disconnectDevice(String deviceAddress){
-        disconnectDevice(gatts.get(deviceAddress));
-    }
-
     protected final ScanCallback scanCallback = new ScanCallback() {
+        @RequiresApi(api = Build.VERSION_CODES.O)
+        @SuppressLint("MissingPermission")
         @Override
         public void onScanResult(int callbackType, ScanResult result) {
             super.onScanResult(callbackType, result);
-            BluetoothDevice device = result.getDevice();
-            if (device != null) {
-                if (dbHubsAdapter != null &&
-                        dbHubsAdapter.getHubStateConnection(device.getAddress()) == 1){
-                    if (!gatts.containsKey(device.getAddress()))
-                        connectDevice(device);
-                    return;
+            new Thread(() -> {
+                BluetoothDevice device = result.getDevice();
+                if (device != null) {
+                    if (dbHubsAdapter != null && dbHubsAdapter.getHubStateConnection(device.getAddress())){
+                        if (!gatts.containsKey(device.getAddress())) {
+                            connectDevice(device);
+                        }
+                        return;
+                    }
+                    Log.v("APP_TAG6", device.getName());
+                    if (lvAdapterFoundHubs != null)
+                        runOnUiThread(() -> lvAdapterFoundHubs.addHub(new BluetoothHub(result, activity)));
                 }
-                if (lvAdapterFoundHubs != null)
-                    lvAdapterFoundHubs.addHub(new BluetoothHub(result, getApplicationContext()));
-            }
+            }).start();
         }
     };
 
@@ -289,7 +291,8 @@ public class BaseAppBluetoothActivity extends BaseAppActivity{
                         });
                     runOnUiThread(() -> {
                         gatts.put(gatt.getDevice().getAddress(), gatt);
-                        lvAdapterConnectedDevices.setAvailability(true, gatt.getDevice());
+                        if (lvAdapterConnectedDevices != null)
+                            lvAdapterConnectedDevices.setAvailability(true, gatt.getDevice());
                     });
                     new Handler(Looper.getMainLooper()).postDelayed(() -> {
                         if (BuildConfig.DEBUG) Log.v("APP_TAG2", "Discover services");
@@ -331,6 +334,7 @@ public class BaseAppBluetoothActivity extends BaseAppActivity{
     @SuppressLint("MissingPermission")
     public void writeCharacteristic(BluetoothHub hub, byte[] message){
         new Thread(() -> {
+            Log.v("APP_TAG33", message.toString());
             if (!checkBluetoothPeripherals()) return;
             if (hub == null) return;
             BluetoothGatt bluetoothGatt = gatts.get(hub.address);

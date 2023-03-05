@@ -42,11 +42,11 @@ public class JoystickY extends BaseControlElement{
 
     public volatile float deltaX, deltaY;
 
-    public JoystickY(long elementID, Context context, GridParams gridParams, int elementIndex,
-                     int elementSize, boolean isGridVisible, boolean isElementLocked, float pX,
-                     float pY){
-        super(elementID, context, gridParams, elementIndex, elementSize, isGridVisible, isElementLocked,
-                pX, pY);
+    public JoystickY(long elementID, long displayID, Context context, GridParams gridParams,
+                     int elementIndex, int elementSize, boolean isGridVisible,
+                     boolean isElementLocked, float pX, float pY){
+        super(elementID, displayID, context, gridParams, elementIndex, elementSize, isGridVisible,
+                isElementLocked, pX, pY);
 
         if (isGridVisible) alignToTheGrid();
         stickPosX = pX;
@@ -92,8 +92,8 @@ public class JoystickY extends BaseControlElement{
      * Создает новый одно-осевой горизонтальный джойстик с параметрами по умолчанию.
      * @param context - используется для доступа к ресурсам приложения.
      */
-    public JoystickY(Context context){
-        super(-1, context, null, 0, 0,
+    public JoystickY(Context context, long displayID){
+        super(-1, displayID, context, null, 0, 0,
                 false,false,0 ,0 );
     }
 

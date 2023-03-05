@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
+import com.example.rcbleproject.BaseAppActivity;
 import com.example.rcbleproject.BaseControlElement;
 import com.example.rcbleproject.GameControllersDrawer;
 
@@ -16,7 +17,7 @@ public class DatabaseAdapterDisplays extends DatabaseAdapter{
     public static final String DISPLAY_INDEX = "display_index";
     public static final String PROFILE_ID = "profile_id";
 
-    public DatabaseAdapterDisplays(Context context) {
+    public DatabaseAdapterDisplays(BaseAppActivity context) {
         super(context);
         open();
     }
@@ -39,6 +40,11 @@ public class DatabaseAdapterDisplays extends DatabaseAdapter{
         ArrayList<Long> res = new ArrayList<>();
         while (cursor.moveToNext()) res.add(cursor.getLong(cursor.getColumnIndexOrThrow(ID)));
         return res;
+    }
+
+    public Cursor getDisplaysByProfileID_cursor(long profileID){
+        return database.query(TABLE_NAME, getAllCols(), PROFILE_ID + " = " + profileID,
+                null, null, null, DISPLAY_INDEX + " ASC");
     }
 
     public long insert(long profileID, int displayIndex){

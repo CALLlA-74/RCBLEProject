@@ -3,8 +3,10 @@ package com.example.rcbleproject;
 import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothGatt;
 import android.content.Context;
+import android.os.Build;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 
 import com.example.rcbleproject.Database.DatabaseAdapterPortConnections;
 import com.example.rcbleproject.Database.DatabaseAdapterDisplays;
@@ -45,7 +47,7 @@ public class Container {
      * @param context - используется для инициализации экземпляра БД.
      * @return экземпляр таблицы ControlledPorts БД.
      */
-    public static DatabaseAdapterPortConnections getDbPortConnections(@NonNull Context context){
+    public static DatabaseAdapterPortConnections getDbPortConnections(@NonNull BaseAppActivity context){
         if (dbPortConnections == null){
             dbPortConnections = new DatabaseAdapterPortConnections(context);
         }
@@ -57,7 +59,7 @@ public class Container {
      * @param context - используется для инициализации экземпляра БД
      * @return экземпляр таблицы Displays БД.
      */
-    public static DatabaseAdapterDisplays getDbDisplays(@NonNull Context context){
+    public static DatabaseAdapterDisplays getDbDisplays(@NonNull BaseAppActivity context){
         if (dbDisplays == null){
             dbDisplays = new DatabaseAdapterDisplays(context);
         }
@@ -69,7 +71,7 @@ public class Container {
      * @param context - используется для инициализации экземпляра БД
      * @return экземпляр таблицы ElementsControl БД.
      */
-    public static DatabaseAdapterElementsControl getDbElementsControl(@NonNull Context context){
+    public static DatabaseAdapterElementsControl getDbElementsControl(@NonNull BaseAppActivity context){
         if (dbElementsControl == null){
             dbElementsControl = new DatabaseAdapterElementsControl(context);
         }
@@ -81,7 +83,8 @@ public class Container {
      * @param context - используется для инициализации экземпляра БД
      * @return экземпляр таблицы Devices БД.
      */
-    public static DatabaseAdapterForHubs getDbForHubs(@NonNull Context context){
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public static DatabaseAdapterForHubs getDbForHubs(@NonNull BaseAppActivity context){
         if (dbForDevices == null){
             dbForDevices = new DatabaseAdapterForHubs(context);
         }
@@ -93,7 +96,7 @@ public class Container {
      * @param context - используется для инициализации экземпляра БД
      * @return экземпляр таблицы ProfilesControl БД.
      */
-    public static DatabaseAdapterProfilesControl getDbProfilesControl(@NonNull Context context){
+    public static DatabaseAdapterProfilesControl getDbProfilesControl(@NonNull BaseAppActivity context){
         if (dbProfilesControl == null){
             dbProfilesControl = new DatabaseAdapterProfilesControl(context);
         }

@@ -7,4 +7,5 @@
     <declare-styleable name="NetworkDrawer"></declare-styleable>
 
     <attr name="act" format="integer">0x02</attr>
+    <integer name="maxNumOfHubs">35</integer>
 </resources>

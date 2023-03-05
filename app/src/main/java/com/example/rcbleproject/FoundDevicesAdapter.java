@@ -8,7 +8,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -18,13 +17,14 @@ import java.util.TimerTask;
 
 public class FoundDevicesAdapter extends ArrayAdapter<BluetoothHub> implements IListViewAdapterForHubs {
     public enum Activeness {active, inactive}
+    private static final int resource = R.layout.item_found_device;
 
     private final LayoutInflater inflater;
     private final int layout;
     private final List<BluetoothHub> hubs;
     private final AddingHubsActivity activity;
 
-    public FoundDevicesAdapter(AddingHubsActivity context, int resource, List<BluetoothHub> hubs) {
+    public FoundDevicesAdapter(AddingHubsActivity context, List<BluetoothHub> hubs) {
         super(context, resource, hubs);
         this.hubs = hubs;
         layout = resource;
@@ -60,18 +60,23 @@ public class FoundDevicesAdapter extends ArrayAdapter<BluetoothHub> implements I
         holder.position = position;
 
         holder.tv_device_name.setText(hub.getName() + " (" + hub.address + ")");
-        if (hub.isActive) setActiveness(Activeness.active,holder);
-        else setActiveness(Activeness.inactive, holder);
+        if (hub.isActive) {
+            setActiveness(Activeness.active,holder);
+            convertView.setOnClickListener((View v) -> {
+                ViewHolder vh = (ViewHolder) v.getTag();
+                if(BuildConfig.DEBUG)
+                    Log.v("APP_TAG6666", "connecting to " + hubs.get(vh.position).address);
+                vh.iv_add_device.setVisibility(View.GONE);
+                activity.connectDevice(hubs.get(vh.position).address);
+            });
+        }
+        else {
+            setActiveness(Activeness.inactive, holder);
+            convertView.setOnClickListener(null);
+        }
 
         if (hub.hubType != BluetoothHub.HubTypes.Unknown)
             holder.iv_hub_icon.setImageResource(hub.getIconId());
-
-        holder.bt_add_device.setOnClickListener((View v) -> {
-            ViewHolder vh = (ViewHolder) ((View)v.getParent()).getTag();
-            if(BuildConfig.DEBUG) Log.v("APP_TAG2", "connecting to " + hubs.get(vh.position).address);
-            vh.bt_add_device.setVisibility(View.GONE);
-            activity.connectDevice(hubs.get(vh.position).address);
-        });
         return convertView;
     }
 
@@ -118,22 +123,22 @@ public class FoundDevicesAdapter extends ArrayAdapter<BluetoothHub> implements I
         switch (activeness){
             case active:
                 vh.tv_device_name.setTextColor(Color.WHITE);
-                vh.bt_add_device.setVisibility(View.VISIBLE);
+                vh.iv_add_device.setVisibility(View.VISIBLE);
                 break;
             case inactive:
                 vh.tv_device_name.setTextColor(activity.getColor(R.color.blue_ncs));
-                vh.bt_add_device.setVisibility(View.GONE);
+                vh.iv_add_device.setVisibility(View.GONE);
         }
     }
 
     private class ViewHolder{
         final TextView tv_device_name;
-        final ImageButton bt_add_device;
+        final ImageView iv_add_device;
         final ImageView iv_hub_icon;
         volatile int position;
         ViewHolder(View view){
             tv_device_name = view.findViewById(R.id.tv_device_name);
-            bt_add_device = view.findViewById(R.id.bt_add_device);
+            iv_add_device = view.findViewById(R.id.iv_add_device);
             iv_hub_icon = view.findViewById(R.id.iv_hub_icon);
         }
     }

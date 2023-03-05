@@ -1,13 +1,11 @@
 package com.example.rcbleproject;
 
 /**
- * Класс BaseParam содержит поля и методы для взаимодействия с параметром управляемого порта.
+ * Класс BaseParam содержит поля и методы для взаимодействия с параметром соединения порта.
  */
 public abstract class BaseParam {
-    public volatile boolean activeness = true;   // флаг, отражающий активность/неактивность параметра
-
     /**
-     * Возвращает название параметра.
+     * Используется для получения имени параметра.
      * @return название параметра.
      */
     public abstract String getName();
@@ -22,13 +20,18 @@ public abstract class BaseParam {
      * Используется для замены стандартной иконки меню параметра.
      * @return id ресурса для иконки меню параметра.
      */
-    public int getMenuIconId() {
-        return R.drawable.baseline_more_vert_20;
-    }
+    public abstract int getMenuIconId();
 
     /**
      * Используется для выполнения действия, ассоциированного с параметром.
      * @param obj - объект, необходимый для выполнения действия.
      */
-    public void act(Object obj){}
+    public abstract void act(Object obj);
+
+    /**
+     * Используется для получения состояния флага, уведомляющего о возможности
+     * выполнить дейстия метода act().
+     * @return флаг активности.
+     */
+    public abstract boolean getAvailabilityForAct();
 }

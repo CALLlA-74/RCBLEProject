@@ -22,7 +22,7 @@ import com.example.rcbleproject.Database.DatabaseAdapterElementsControl;
 import com.example.rcbleproject.Database.DatabaseAdapterProfilesControl;
 import com.example.rcbleproject.databinding.ActivityProfileControlBinding;
 
-public class ProfileControlActivity extends BaseAppBluetoothActivity implements Removable {
+public class ProfileControlActivity extends BaseAppBluetoothActivity implements IRemovable {
     private DatabaseAdapterElementsControl dbAdapterElementsControl;
     private DatabaseAdapterProfilesControl dbProfiles;
     private DatabaseAdapterDisplays dbDisplays;
@@ -65,6 +65,7 @@ public class ProfileControlActivity extends BaseAppBluetoothActivity implements 
         });
         binding.btAddElementControl.setOnClickListener((View v) -> {
             Intent intent = new Intent(this, AddingElementControlActivity.class);
+            intent.putExtra("profile_id", profileID);
             intent.putExtra("display_id", gameControllersDrawer.getCurrentDisplayID());
             intent.putExtra("count_of_elements", gameControllersDrawer.getCountOfElements());
             startActivity(intent);
@@ -116,6 +117,7 @@ public class ProfileControlActivity extends BaseAppBluetoothActivity implements 
             tvControlledPorts_1.setText(axesNames[0]);
             btAddControlledPorts_1.setOnClickListener((View v1) -> {
                 Intent intent = new Intent(this, SettingPortConnectionsActivity.class);
+                intent.putExtra("profile_id", profileID);
                 intent.putExtra("display_id", gameControllersDrawer.getCurrentDisplayID());
                 intent.putExtra("display_index", gameControllersDrawer.getCurrentDisplayIndex());
                 intent.putExtra("number_of_displays", gameControllersDrawer.getNumOfDisplays());
@@ -129,13 +131,10 @@ public class ProfileControlActivity extends BaseAppBluetoothActivity implements 
                 tvControlledPorts_2.setText(axesNames[1]);
                 btAddControlledPorts_2.setOnClickListener((View v2) -> {
                     Intent intent = new Intent(this, SettingPortConnectionsActivity.class);
+                    intent.putExtra("profile_id", profileID);
                     intent.putExtra("display_id", gameControllersDrawer.getCurrentDisplayID());
                     intent.putExtra("display_index", gameControllersDrawer.getCurrentDisplayIndex());
                     intent.putExtra("number_of_displays", gameControllersDrawer.getNumOfDisplays());
-                    /*intent.putExtra("profile_id", profileID);
-                    intent.putExtra("display_id", gameControllersDrawer.getCurrentDisplayID());
-                    intent.putExtra("element_id", gameControllersDrawer.getFocusableElementID());
-                    intent.putExtra("axis_num", 1);*/
                     startActivity(intent);
                 });
             }

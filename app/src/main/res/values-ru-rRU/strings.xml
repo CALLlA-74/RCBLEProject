@@ -3,13 +3,14 @@
     <string name="profiles_control" translatable="true">Профили управления</string>
     <string name="devices" translatable="true">Мои устройства</string>
     <string name="default_profile_name" translatable="true">Новый профиль</string>
+
     <string name="yes" translatable="true">Да</string>
     <string name="no" translatable="true">Нет</string>
     <string name="confirm_msg_profile" translatable="true">Удалить профиль</string>
     <string name="confirm_msg_device" translatable="true">Удалить устройство</string>
     <string name="confirm_msg_display" translatable="true">Удалить текущий экран?</string>
     <string name="confirm_msg_element_control" translatable="true">Удалить выбранный элемент управления?</string>
-    <string name="elements_control" translatable="true">Выберете элемент для добавления</string>
+    <string name="elements_control" translatable="true">выберете элемент для добавления</string>
     <string name="joystick_xy_name" translatable="true">2-осевой джойстик</string>
     <string name="joystick_x_name" translatable="true">1-осевой горизонтальный джойстик</string>
     <string name="joystick_y_name" translatable="true">1-осевой вертикальный джойстик</string>
@@ -23,7 +24,7 @@
     <string name="controlled_ports" translatable="true">Управляемые порты</string>
     <string name="binding_ports" translatable="true">Привязать порты</string>
     <string name="axis_word" translatable="true">ось</string>
-    <string name="add_controlled_port" translatable="true">Добавить порт управления</string>
+    <string name="add_controlled_port" translatable="true">Добавить соединение порта</string>
     <string name="edit_profile" translatable="true">Редактировать профиль</string>
     <string name="too_long_name" translatable="true">Слишком длинное имя хаба!</string>
     <string name="alarm_no_permissions" translatable="true">Bluetooth или Геолокация не включены!</string>

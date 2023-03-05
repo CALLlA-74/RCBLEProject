@@ -42,4 +42,6 @@ public class BaseAppActivity extends AppCompatActivity {
                     | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
         }
     }
+
+    public void notifyDataSetChanged(){}
 }

@@ -55,11 +55,11 @@ public class JoystickXY extends BaseControlElement{
      * @param pX - координата X центра элемента управления.
      * @param pY - координата Y центра элемента управления.
      */
-    public JoystickXY(long elementID, Context context, GridParams gridParams, int elementIndex,
-                      int elementSize, boolean isGridVisible, boolean isElementLocked,  float pX,
-                      float pY){
-        super(elementID, context, gridParams, elementIndex, elementSize, isGridVisible,isElementLocked,
-                pX, pY);
+    public JoystickXY(long elementID, long displayID, Context context, GridParams gridParams,
+                      int elementIndex, int elementSize, boolean isGridVisible,
+                      boolean isElementLocked,  float pX, float pY){
+        super(elementID, displayID, context, gridParams, elementIndex, elementSize, isGridVisible,
+                isElementLocked, pX, pY);
         stickPosX = pX;
         stickPosY = pY;
 
@@ -104,8 +104,8 @@ public class JoystickXY extends BaseControlElement{
      * Создает новый двух-осевой джойстик с параметрами по умолчанию.
      * @param context - используется для доступа к ресурсам приложения.
      */
-    public JoystickXY(Context context){
-        super(-1, context, null, 0, 0,
+    public JoystickXY(Context context, long displayID){
+        super(-1, displayID, context, null, 0, 0,
                 false,false,0 ,0 );
     }
 

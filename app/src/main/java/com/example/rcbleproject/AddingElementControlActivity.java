@@ -29,7 +29,7 @@ public class AddingElementControlActivity extends BaseAppActivity {
         setContentView(binding.getRoot());
         binding.tbActivityAddElement.tvLabel.setText(getString(R.string.elements_control));
         binding.tbActivityAddElement.btAddDevice.setVisibility(View.GONE);
-        List<BaseControlElement> list = initElementsControlList();
+        List<BaseControlElement> list = initElementsControlList(displayID);
         dbAdapterElementsControl = Container.getDbElementsControl(this);
         ElementsControlAdapter adapter = new ElementsControlAdapter(this,
                                                                         R.layout.item_element_control,
@@ -46,8 +46,8 @@ public class AddingElementControlActivity extends BaseAppActivity {
         });
     }
 
-    protected List<BaseControlElement> initElementsControlList(){
-        return BaseControlElement.getAllDefaultElementControlTypes(this);
+    protected List<BaseControlElement> initElementsControlList(long displayID){
+        return BaseControlElement.getAllDefaultElementControlTypes(this, displayID);
     }
 
     @Override

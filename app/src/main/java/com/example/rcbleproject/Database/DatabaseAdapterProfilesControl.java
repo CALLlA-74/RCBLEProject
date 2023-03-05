@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
+import com.example.rcbleproject.BaseAppActivity;
 import com.example.rcbleproject.ProfileControl;
 
 import java.util.ArrayList;
@@ -18,7 +19,7 @@ public class DatabaseAdapterProfilesControl extends DatabaseAdapter{
     public static final String GRID_ALIGNMENT = "grid_alignment";   /* 0 - сетка скрыта, выравнивания нет
                                                                      1 - сетка показана, элементы выравнены по узлам*/
 
-    public DatabaseAdapterProfilesControl(Context context){
+    public DatabaseAdapterProfilesControl(BaseAppActivity context){
         super(context);
         open();
     }

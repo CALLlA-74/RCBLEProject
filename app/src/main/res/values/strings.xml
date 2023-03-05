@@ -3,6 +3,7 @@
     <string name="profiles_control" translatable="true">Profiles control</string>
     <string name="devices" translatable="true">My devices</string>
     <string name="default_profile_name" translatable="true">New profile</string>
+    <string name="default_hub_name" translatable="false">Gecko Hub</string>
     <string name="yes" translatable="true">Yes</string>
     <string name="no" translatable="true">No</string>
     <string name="confirm_msg_profile" translatable="true">Delete the profile</string>
@@ -23,7 +24,7 @@
     <string name="controlled_ports" translatable="true">Controlled ports</string>
     <string name="binding_ports" translatable="true">Bind ports</string>
     <string name="axis_word" translatable="true">axis</string>
-    <string name="add_controlled_port" translatable="true">Add controlled port</string>
+    <string name="add_controlled_port" translatable="true">Add port connection</string>
     <string name="edit_profile" translatable="true">Edit profile</string>
     <string name="too_long_name" translatable="true">The name is too long!</string>
     <string name="alarm_no_permissions" translatable="true">Bluetooth or Location are not enabled!</string>
