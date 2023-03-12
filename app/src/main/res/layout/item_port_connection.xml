@@ -9,23 +9,13 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/v_hub"
-        android:layout_width="wrap_content"
+        android:layout_width="130dp"
         android:layout_height="wrap_content"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         android:padding="10dp"
         android:background="@drawable/rect_white_border">
-        <!--ImageView
-            android:id="@+id/iv_hub_menu_icon"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:src="@drawable/baseline_more_vert_white_20"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            android:visibility="visible"
-            android:background="@null"/-->
         <ImageView
             android:id="@+id/iv_hub_icon"
             android:layout_width="100dp"
@@ -42,6 +32,7 @@
             android:text="TECH"
             android:textColor="@color/white"
             android:fontFamily="serif"
+            android:textAlignment="center"
             app:layout_constraintTop_toBottomOf="@id/iv_hub_icon"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -51,7 +42,7 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/v_port"
-        android:layout_width="wrap_content"
+        android:layout_width="130dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
         app:layout_constraintStart_toEndOf="@id/v_hub"
@@ -59,15 +50,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         android:padding="10dp"
         android:background="@drawable/rect_white_border">
-        <!--ImageView
-            android:id="@+id/iv_port_menu_icon"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:src="@drawable/baseline_more_vert_white_20"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            android:background="@null"/-->
         <ImageView
             android:id="@+id/iv_port_icon"
             android:layout_width="100dp"
@@ -84,6 +66,7 @@
             android:text="Выберете порт"
             android:textColor="@color/white"
             android:fontFamily="serif"
+            android:textAlignment="center"
             app:layout_constraintTop_toBottomOf="@id/iv_port_icon"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -93,7 +76,7 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/v_controller_axis"
-        android:layout_width="wrap_content"
+        android:layout_width="130dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
         app:layout_constraintStart_toEndOf="@id/v_port"
@@ -101,16 +84,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         android:padding="10dp"
         android:background="@drawable/rect_white_border">
-        <!--ImageView
-            android:id="@+id/iv_element_control_menu_icon"
-            android:layout_width="25dp"
-            android:layout_height="match_parent"
-            android:src="@drawable/baseline_more_vert_white_20"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            android:paddingBottom="10dp"
-            android:background="@null"/-->
         <ImageView
             android:id="@+id/iv_controller_axis_icon"
             android:layout_width="100dp"
@@ -124,9 +97,10 @@
             android:id="@+id/tv_controller_axis_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="#1, ось Х"
+            android:text="@string/app_tag"
             android:textColor="@color/white"
             android:fontFamily="serif"
+            android:textAlignment="center"
             app:layout_constraintTop_toBottomOf="@id/iv_controller_axis_icon"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

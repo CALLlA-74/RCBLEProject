@@ -286,8 +286,8 @@ public class JoystickXY extends BaseControlElement{
                 pointerID = -1;
                 stickPosX = posX;
                 stickPosY = posY;
+                for (ControllerAxis axis : controllerAxes) axis.axisValue = 0;
             }
-            /*TODO обновить значение в управляемых портах*/
             return;
         }
         else if (act == MotionEvent.ACTION_MOVE){
@@ -316,7 +316,8 @@ public class JoystickXY extends BaseControlElement{
                 stickPosY = posY + (radius - stickRadius);
         }
 
-        /*TODO обновить значение в управляемых портах*/
+        controllerAxes.get(0).axisValue = (int)((posX - stickPosX)/(radius - stickRadius)*100);
+        controllerAxes.get(1).axisValue = (int)((posY - stickPosY)/(radius - stickRadius)*100);
     }
 
     /**

@@ -1,7 +1,6 @@
 package com.example.rcbleproject;
 
 import android.annotation.SuppressLint;
-import android.app.usage.UsageEvents;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Canvas;
@@ -16,35 +15,43 @@ import android.view.View;
 
 import com.example.rcbleproject.Database.DatabaseAdapterDisplays;
 import com.example.rcbleproject.Database.DatabaseAdapterElementsControl;
+import com.example.rcbleproject.Database.DatabaseAdapterPortConnections;
 import com.example.rcbleproject.Database.DatabaseAdapterProfilesControl;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.TreeMap;
 
 @SuppressLint("ViewConstructor")
 public class GameControllersDrawer extends SurfaceView implements SurfaceHolder.Callback {
-    public static final int maxDisplays = 5;
+    public final int maxNumOfDisplays;
+    public final GridParams gridParams;
     private static ArrayList<ArrayList<BaseControlElement>> controlElements;
+    private static List<List<PortConnection>>portConnections;
     private static ArrayList<Long> displayIDs;
     private static TreeMap<Long, BaseControlElement> controlElementTreeMap;
 
     private DrawingThread drawingThread;
     private final Paint paintBackground = new Paint();
     private final Paint paintGrid = new Paint();
-    private final DatabaseAdapterElementsControl dbAdapterElementsControl;
-    private final DatabaseAdapterProfilesControl dbAdapterProfilesControl;
+
+    private final DatabaseAdapterElementsControl dbElementsControl;
+    private final DatabaseAdapterProfilesControl dbProfilesControl;
     private final DatabaseAdapterDisplays dbDisplays;
+    private final DatabaseAdapterPortConnections dbPortConnections;
+
     private final long profileID;
-    private int currentDisplayIndex;
     private int countOfDisplays;
     private BaseControlElement focusableElement = null;
     private final ProfileControlActivity activity;
     private final HashMap<Integer, BaseControlElement> touchedElements = new HashMap<>();
+    private Timer timerSenderCommands;
 
-    public final GridParams gridParams;
     private volatile boolean gridVisibility;
+    private volatile int currentDisplayIndex;
 
 
     GameControllersDrawer(ProfileControlActivity profileControlActivity, DisplayMetrics displayMetrics,
@@ -53,8 +60,9 @@ public class GameControllersDrawer extends SurfaceView implements SurfaceHolder.
                           DatabaseAdapterDisplays dbDisplays, long profileID){
         super(profileControlActivity);
         activity = profileControlActivity;
-        dbAdapterElementsControl = dbAdapterElements;
-        dbAdapterProfilesControl = dbAdapterProfiles;
+        dbElementsControl = dbAdapterElements;
+        dbProfilesControl = dbAdapterProfiles;
+        dbPortConnections = Container.getDbPortConnections(activity);
         this.dbDisplays = dbDisplays;
         this.profileID = profileID;
         gridVisibility = dbAdapterProfiles.getProfileGridAlignment(profileID);
@@ -64,6 +72,31 @@ public class GameControllersDrawer extends SurfaceView implements SurfaceHolder.
 
         paintGrid.setColor(Color.WHITE);
         paintGrid.setStyle(Paint.Style.FILL);
+
+        maxNumOfDisplays = activity.getResources().getInteger(R.integer.maxNumOfDisplays);
+    }
+
+    public void startTimerSenderCmds(){
+        timerSenderCommands = new Timer();
+        timerSenderCommands.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                for (PortConnection portConn : portConnections.get(currentDisplayIndex)){
+                    if (portConn.port == null || portConn.controllerAxis == null
+                        || portConn.hub == null) continue;
+                    if (portConn.port.portValue != portConn.controllerAxis.axisValue){
+                        portConn.port.portValue = portConn.controllerAxis.axisValue;
+                        Port port = portConn.port;
+                        portConn.hub.setOutputPortCommand(activity, port.portNum, port.getDirection(),
+                                portConn.controllerAxis.axisValue);
+                    }
+                }
+            }
+        }, 0, 1);
+    }
+
+    public void stopTimerSenderCmds(){
+        timerSenderCommands.cancel();
     }
 
     public static ArrayList<ArrayList<BaseControlElement>> getElementsControl() {
@@ -96,18 +129,23 @@ public class GameControllersDrawer extends SurfaceView implements SurfaceHolder.
         ProfileControlActivity profileControlActivity = (ProfileControlActivity)getContext();
         SharedPreferences prefs = (profileControlActivity).getPreferences(Context.MODE_PRIVATE);
         currentDisplayIndex = prefs.getInt("current_display_index_"+profileID, 0);
-        countOfDisplays = dbAdapterProfilesControl.getNumOfScreens(profileID);
+        countOfDisplays = dbProfilesControl.getNumOfScreens(profileID);
         profileControlActivity.showCurrentDisplayNum(currentDisplayIndex, countOfDisplays);
 
         displayIDs = dbDisplays.getDisplaysByProfileID(profileID);
         controlElements = new ArrayList<>(countOfDisplays);
+        portConnections = new ArrayList<>(countOfDisplays);
         controlElementTreeMap = new TreeMap<>();
         for (Long displayID : displayIDs){
-            ArrayList<BaseControlElement> elements = dbAdapterElementsControl.getElementsControlByDisplayID(
+            ArrayList<BaseControlElement> elements = dbElementsControl.getElementsControlByDisplayID(
                     getContext(), displayID, gridParams, gridVisibility);
             controlElements.add(elements);
             for (BaseControlElement element : elements)
                 controlElementTreeMap.put(element.elementID, element);
+
+            List<PortConnection> portConns = dbPortConnections.getPortConnectionsByDisplayID(
+                    displayID, activity);
+            portConnections.add((ArrayList) portConns);
         }
         setFocusOnElementWithUpperIndex();
     }
@@ -122,13 +160,13 @@ public class GameControllersDrawer extends SurfaceView implements SurfaceHolder.
             else dbDisplays.updateIndexByID(displayIDs.get(i), i);
         }
         for (ArrayList<BaseControlElement> display : controlElements)
-            dbAdapterElementsControl.updateAllRows(display);
-        dbAdapterProfilesControl.updateProfileGridAlignment(profileID, gridVisibility);
-        dbAdapterProfilesControl.updateProfileNumOfDisplays(profileID, countOfDisplays);
+            dbElementsControl.updateAllRows(display);
+        dbProfilesControl.updateProfileGridAlignment(profileID, gridVisibility);
+        dbProfilesControl.updateProfileNumOfDisplays(profileID, countOfDisplays);
     }
 
     public void removeElementControl(){
-        dbAdapterElementsControl.deleteElementControlByID(focusableElement.elementID);
+        dbElementsControl.deleteElementControlByID(focusableElement.elementID);
         controlElements.get(currentDisplayIndex).remove(focusableElement.elementIndex);
         for (int i = 0; i < controlElements.get(currentDisplayIndex).size(); i++)
             controlElements.get(currentDisplayIndex).get(i).elementIndex = i;

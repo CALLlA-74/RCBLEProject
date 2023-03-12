@@ -61,19 +61,6 @@ public class AddingHubsActivity extends BaseAppBluetoothActivity implements IRem
     protected void onResume() {
         super.onResume();
         setFullscreenMode(binding.layoutContent);
-        startLEScan();
-        BluetoothDevice device;
-        for (HashMap.Entry<String, BluetoothGatt> gatt : gatts.entrySet()){
-            device = gatt.getValue().getDevice();
-            lv_connected_devices_adapter.setAvailability(true, device);
-        }
-    }
-
-    @SuppressLint("MissingPermission")
-    @Override
-    public void onPause() {
-        super.onPause();
-        stopLEScan();
     }
 
     @Override

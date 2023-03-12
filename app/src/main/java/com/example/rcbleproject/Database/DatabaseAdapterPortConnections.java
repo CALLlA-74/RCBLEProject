@@ -52,8 +52,8 @@ public class DatabaseAdapterPortConnections extends DatabaseAdapter{
                 + DISPLAY_ID + " INTEGER NOT NULL, "
                 + DIRECTION_OF_ROTATION + " INTEGER NOT NULL CHECK(" + DIRECTION_OF_ROTATION + " = -1"
                     + " OR " + DIRECTION_OF_ROTATION + " = 1),"
-                //+ "FOREIGN KEY (" + ELEMENT_ID + ") REFERENCES " + DatabaseAdapterElementsControl.TABLE_NAME
-                //    + "(" + DatabaseAdapterElementsControl.ID + ") ON DELETE CASCADE, "
+                + "FOREIGN KEY (" + ELEMENT_ID + ") REFERENCES " + DatabaseAdapterElementsControl.TABLE_NAME
+                    + "(" + DatabaseAdapterElementsControl.ID + ") ON DELETE CASCADE, "
                 + "FOREIGN KEY (" + DEVICE_ADDRESS + ") REFERENCES " + DatabaseAdapterForHubs.TABLE_NAME
                     + "(" + DatabaseAdapterForHubs.HUB_ADDRESS + ") ON DELETE CASCADE, "
                 + "FOREIGN KEY (" + DISPLAY_ID + ") REFERENCES " + DatabaseAdapterDisplays.TABLE_NAME
@@ -82,9 +82,10 @@ public class DatabaseAdapterPortConnections extends DatabaseAdapter{
     public long insert(long displayID){
         /*if (portConnection.port == null || portConnection.hub == null
                 || portConnection.controllerAxis == null) return;*/
+        long id = Container.getDbElementsControl(context).getUnknownElementIdByDisplayId(displayID);
         ContentValues contentValues = new ContentValues();
         contentValues.put(DISPLAY_ID, displayID);
-        contentValues.put(ELEMENT_ID, -1);
+        contentValues.put(ELEMENT_ID, id);
         contentValues.put(AXIS_NUM, -1);
         contentValues.put(DEVICE_ADDRESS, DatabaseAdapterForHubs.defaultHubAddress);
         contentValues.put(DEVICE_PORT_NUM, -1);
@@ -160,7 +161,7 @@ public class DatabaseAdapterPortConnections extends DatabaseAdapter{
         while (cursor.moveToNext()){
             id = cursor.getLong(idIndex);
             axisNum = cursor.getInt(axisNumIndex);
-            elementID = cursor.getInt(elementIDIndex);
+            elementID = cursor.getInt(elementIDIndex);   //TODO реализовать механизм удаления соединения при удалении элемента управления, входящего в соединение
             portNum = cursor.getInt(devicePortNumIndex);
             direction = cursor.getInt(directionIndex);
             deviceAddress = cursor.getString(deviceAddressIndex);

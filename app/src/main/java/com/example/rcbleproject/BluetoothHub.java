@@ -123,9 +123,9 @@ public class BluetoothHub extends BaseParam {
         }
     }
 
-    public void setOutputPortCommand(BaseAppBluetoothActivity activity, int portNum, int d){
-        if (portNum < 0 || portNum > 7) return;
-        final int direction = Integer.compare(d, 0);
+    public void setOutputPortCommand(BaseAppBluetoothActivity activity, int portNum, int direction){
+        if (portNum < 0 || portNum > 4) return;
+        final int d = Integer.compare(direction, 0);
         switch (hubType){
             case GeckoHub:
                 new Thread(() -> {
@@ -133,18 +133,18 @@ public class BluetoothHub extends BaseParam {
                             '2', '0', '3', '0',
                             '4', '0', '5', '0',
                             '6', '0', '7', '0'};
-                    gecko_message[4*portNum + (direction < 0? 2 : 0) + 2] = '7';
+                    gecko_message[4*portNum + (d < 0? 2 : 0) + 2] = '7';
                     activity.writeCharacteristic(this, gecko_message);
                     try {
                         Thread.sleep(500);
                     } catch (InterruptedException e) { e.printStackTrace(); }
-                    gecko_message[4*portNum + (direction < 0? 2 : 0) + 2] = '0';
+                    gecko_message[4*portNum + (d < 0? 2 : 0) + 2] = '0';
                     activity.writeCharacteristic(this, gecko_message);
                 }).start();
                 break;
             case PoweredUpHub:
                 new Thread(() -> {
-                    byte[] pu_message = {0x05, 0x00, (byte) 0x81, (byte) portNum, 0x10, 0x01, (byte) (100*direction)};
+                    byte[] pu_message = {0x05, 0x00, (byte) 0x81, (byte) portNum, 0x10, 0x01, (byte) (100*d)};
                     activity.writeCharacteristic(this, pu_message);
                     try {
                         Thread.sleep(500);
@@ -152,6 +152,26 @@ public class BluetoothHub extends BaseParam {
                     pu_message[6] = 0;
                     activity.writeCharacteristic(this, pu_message);
                 }).start();
+        }
+    }
+
+    public void setOutputPortCommand(BaseAppBluetoothActivity activity, int portNum, int direction,
+                                     int speed){
+        if (portNum < 0 || portNum > 4) return;
+        switch (hubType){
+            case GeckoHub:
+                byte[] gecko_message = {'0', '0', '0', '1', '0',
+                        '2', '0', '3', '0',
+                        '4', '0', '5', '0',
+                        '6', '0', '7', '0'};
+                gecko_message[4*portNum + (direction < 0? 2 : 0) + 2] = '7';
+                activity.writeCharacteristic(this, gecko_message);
+                break;
+            case PoweredUpHub:
+                byte[] pu_message = {0x05, 0x00, (byte) 0x81, (byte) portNum, 0x10, 0x01,
+                        (byte) (speed*direction)};
+                Log.v("APP_TAG778", "hub: " + address+" " + portNum+" "+speed);
+                activity.writeCharacteristic(this, pu_message);
         }
     }
 

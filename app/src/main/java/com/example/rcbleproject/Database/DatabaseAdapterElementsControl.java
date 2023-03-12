@@ -39,7 +39,7 @@ public class DatabaseAdapterElementsControl extends DatabaseAdapter{
 
         db.execSQL("CREATE TABLE " + TABLE_NAME
                 + " (" + ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-                + ELEMENT_NUMBER + " INTEGER NOT NULL CHECK(" + ELEMENT_NUMBER + " >= 0), "
+                + ELEMENT_NUMBER + " INTEGER NOT NULL CHECK(" + ELEMENT_NUMBER + " >= -1), "
                 + DISPLAY_ID + " INTEGER NOT NULL, "
                 + ELEMENT_TYPE + " INTEGER NOT NULL, "
                 + ELEMENT_SIZE + " INTEGER DEFAULT 4 CHECK(" + ELEMENT_SIZE + " >= 0 AND "
@@ -74,6 +74,18 @@ public class DatabaseAdapterElementsControl extends DatabaseAdapter{
         return database.insert(TABLE_NAME, null, contentValues);
     }
 
+    public long insertUnknownTypeElement(long displayId){
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(ELEMENT_NUMBER, -1);
+        contentValues.put(DISPLAY_ID, displayId);
+        contentValues.put(ELEMENT_TYPE, BaseControlElement.ControlElementType.UNKNOWN.ordinal());
+        contentValues.put(ELEMENT_SIZE, 0);
+        contentValues.put(NUMBER_OF_AXES, 0);
+        contentValues.put(X_COORDINATE, -100);
+        contentValues.put(Y_COORDINATE, -100);
+        return database.insert(TABLE_NAME, null, contentValues);
+    }
+
     public ArrayList<BaseControlElement> getElementsControlByDisplayID(Context context,
                                                                        long displayID,
                                                                        GridParams params,
@@ -81,24 +93,41 @@ public class DatabaseAdapterElementsControl extends DatabaseAdapter{
         ArrayList<BaseControlElement> list = new ArrayList<>();
 
         Cursor cursor = getAllRowsByDisplayID(displayID);
+        int idIdx = cursor.getColumnIndexOrThrow(ID);
+        int typeOfElementIdx = cursor.getColumnIndexOrThrow(ELEMENT_TYPE);
+        int elementIndexIdx = cursor.getColumnIndexOrThrow(ELEMENT_NUMBER);
+        int elementSizeIdx = cursor.getColumnIndexOrThrow(ELEMENT_SIZE);
+        int elementBlockingIdx = cursor.getColumnIndexOrThrow(ELEMENT_BLOCKING);
+        int xCoordIdx = cursor.getColumnIndexOrThrow(X_COORDINATE);
+        int yCoordIdx = cursor.getColumnIndexOrThrow(Y_COORDINATE);
         while (cursor.moveToNext()){
-            long id = cursor.getLong(cursor.getColumnIndexOrThrow(ID));
-            int typeOfElement = cursor.getInt(cursor.getColumnIndexOrThrow(ELEMENT_TYPE));
-            int elementIndex = cursor.getInt(cursor.getColumnIndexOrThrow(ELEMENT_NUMBER));
-            int elementSize = cursor.getInt(cursor.getColumnIndexOrThrow(ELEMENT_SIZE));
-            boolean elementBlocking = cursor.getInt(cursor.getColumnIndexOrThrow(ELEMENT_BLOCKING)) != 0;
-            float posX = cursor.getFloat(cursor.getColumnIndexOrThrow(X_COORDINATE));
-            float posY = cursor.getFloat(cursor.getColumnIndexOrThrow(Y_COORDINATE));
-            list.add(BaseControlElement.getElementControl(BaseControlElement.IntToControlElementType(typeOfElement),
-                                                          id, displayID, context, params, elementIndex,
-                                                          elementSize, isGridVisible,
-                                                          elementBlocking, posX, posY));
+            long id = cursor.getLong(idIdx);
+            int typeOfElement = cursor.getInt(typeOfElementIdx);
+            int elementIndex = cursor.getInt(elementIndexIdx);
+            int elementSize = cursor.getInt(elementSizeIdx);
+            boolean elementBlocking = cursor.getInt(elementBlockingIdx) != 0;
+            float posX = cursor.getFloat(xCoordIdx);
+            float posY = cursor.getFloat(yCoordIdx);
+
+            BaseControlElement.ControlElementType type = BaseControlElement.IntToControlElementType(typeOfElement);
+            if (type == BaseControlElement.ControlElementType.UNKNOWN) continue;
+            list.add(BaseControlElement.getElementControl(type, id, displayID, context, params,
+                    elementIndex, elementSize, isGridVisible, elementBlocking, posX, posY));
         }
+        cursor.close();
 
         list.sort((BaseControlElement o1, BaseControlElement o2) -> {
             return o1.elementIndex - o2.elementIndex;
         });
         return list;
+    }
+
+    public long getUnknownElementIdByDisplayId(long displayId){
+        Cursor c = database.query(TABLE_NAME, getColumns(), DISPLAY_ID + " = " + displayId
+                + " AND " + ELEMENT_TYPE + " = " + BaseControlElement.ControlElementType.UNKNOWN.ordinal(),
+                null, null, null, null);
+        if (!c.moveToFirst()) return -1;
+        return c.getLong(c.getColumnIndexOrThrow(ID));
     }
 
     public void updateAllRows(ArrayList<BaseControlElement> elements){

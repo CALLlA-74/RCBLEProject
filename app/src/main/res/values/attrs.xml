@@ -8,4 +8,5 @@
 
     <attr name="act" format="integer">0x02</attr>
     <integer name="maxNumOfHubs">35</integer>
+    <integer name="maxNumOfDisplays">5</integer>
 </resources>

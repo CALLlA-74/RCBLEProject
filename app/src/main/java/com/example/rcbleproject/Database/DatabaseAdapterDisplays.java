@@ -5,9 +5,11 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
+import androidx.annotation.NonNull;
+
 import com.example.rcbleproject.BaseAppActivity;
-import com.example.rcbleproject.BaseControlElement;
-import com.example.rcbleproject.GameControllersDrawer;
+import com.example.rcbleproject.Container;
+import com.example.rcbleproject.R;
 
 import java.util.ArrayList;
 
@@ -22,11 +24,12 @@ public class DatabaseAdapterDisplays extends DatabaseAdapter{
         open();
     }
 
-    public static void createTable(SQLiteDatabase db){
+    public static void createTable(SQLiteDatabase db, @NonNull Context context){
+        int maxNumOfDisplays = context.getResources().getInteger(R.integer.maxNumOfDisplays);
         db.execSQL("CREATE TABLE " + TABLE_NAME
                 + " (" + ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
                 + DISPLAY_INDEX + " INTEGER NOT NULL CHECK(" + DISPLAY_INDEX + " >= 0 AND "
-                    + DISPLAY_INDEX + " < " + GameControllersDrawer.maxDisplays + "), "
+                    + DISPLAY_INDEX + " < " + maxNumOfDisplays + "), "
                 + PROFILE_ID + " INTEGER NOT NULL, "
                 + "FOREIGN KEY (" + PROFILE_ID +") REFERENCES "
                 + DatabaseAdapterProfilesControl.TABLE_NAME + "("
@@ -35,14 +38,14 @@ public class DatabaseAdapterDisplays extends DatabaseAdapter{
     }
 
     public ArrayList<Long> getDisplaysByProfileID(long profileID){
-        Cursor cursor = database.query(TABLE_NAME, getAllCols(), PROFILE_ID + " = " + profileID,
-                null, null, null, DISPLAY_INDEX + " ASC");
+        Cursor cursor = getDisplaysByProfileID_cursor(profileID);
         ArrayList<Long> res = new ArrayList<>();
-        while (cursor.moveToNext()) res.add(cursor.getLong(cursor.getColumnIndexOrThrow(ID)));
+        int idIdx = cursor.getColumnIndexOrThrow(ID);
+        while (cursor.moveToNext()) res.add(cursor.getLong(idIdx));
         return res;
     }
 
-    public Cursor getDisplaysByProfileID_cursor(long profileID){
+    private Cursor getDisplaysByProfileID_cursor(long profileID){
         return database.query(TABLE_NAME, getAllCols(), PROFILE_ID + " = " + profileID,
                 null, null, null, DISPLAY_INDEX + " ASC");
     }
@@ -51,7 +54,9 @@ public class DatabaseAdapterDisplays extends DatabaseAdapter{
         ContentValues contentValues = new ContentValues();
         contentValues.put(PROFILE_ID, profileID);
         contentValues.put(DISPLAY_INDEX, displayIndex);
-        return database.insert(TABLE_NAME, null, contentValues);
+        long id = database.insert(TABLE_NAME, null, contentValues);
+        Container.getDbElementsControl(context).insertUnknownTypeElement(id);
+        return id;
     }
 
     public void updateIndexByID(long displayID, int displayIndex){

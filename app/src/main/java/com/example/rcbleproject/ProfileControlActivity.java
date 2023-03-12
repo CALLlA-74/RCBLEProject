@@ -46,6 +46,7 @@ public class ProfileControlActivity extends BaseAppBluetoothActivity implements 
         setContentView(binding.getRoot());
 
         dbProfiles = Container.getDbProfilesControl(this);
+        dbHubsAdapter = Container.getDbForHubs(this);
         dbAdapterElementsControl = Container.getDbElementsControl(this);
         dbDisplays = Container.getDbDisplays(this);
 
@@ -287,15 +288,16 @@ public class ProfileControlActivity extends BaseAppBluetoothActivity implements 
     protected void onResume(){
         super.onResume();
         setFullscreenMode(binding.dlMenuDrawer);
-        checkBluetoothPeripherals();
         gameControllersDrawer.updateElementsControl();
         menuItemsInit();
+        gameControllersDrawer.startTimerSenderCmds();
     }
 
     @Override
     protected void onPause(){
         super.onPause();
         gameControllersDrawer.saveElementsParams();
+        gameControllersDrawer.stopTimerSenderCmds();
     }
 
     @Override

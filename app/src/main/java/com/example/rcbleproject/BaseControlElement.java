@@ -29,6 +29,8 @@ public abstract class BaseControlElement {
         public final int axisNum;
         private final String axisName;
 
+        public volatile int axisValue = 0;
+
         public ControllerAxis(BaseControlElement parent, String axisName, int axisNum, boolean hideAxisName){
             this.parent = parent;
             this.axisName = "#" + (parent.elementIndex + 1)

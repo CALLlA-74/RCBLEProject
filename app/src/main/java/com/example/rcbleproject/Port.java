@@ -8,6 +8,8 @@ public class Port extends BaseParam{
     public final BluetoothHub hub;
     public int portNum = -1;
 
+    public volatile int portValue = 0;
+
     public Port(Context context, BluetoothHub hub){
         this.context = context;
         this.hub = hub;

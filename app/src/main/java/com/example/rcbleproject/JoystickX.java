@@ -8,6 +8,7 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.PointF;
 import android.graphics.Rect;
+import android.util.Log;
 import android.view.MotionEvent;
 
 import java.util.ArrayList;
@@ -277,8 +278,8 @@ public class JoystickX extends BaseControlElement{
                 pointerID = -1;
                 stickPosX = posX;
                 stickPosY = posY;
+                controllerAxes.get(0).axisValue = 0;
             }
-            /*TODO обновить значение в управляемых портах*/
             return;
         }
         else if (act == MotionEvent.ACTION_MOVE){
@@ -298,7 +299,7 @@ public class JoystickX extends BaseControlElement{
                 stickPosX = posX + (halfWidth - stickRadius);
         }
 
-        /*TODO обновить значение в управляемых портах*/
+        controllerAxes.get(0).axisValue = (int)((posX - stickPosX)/(halfWidth - stickRadius)*100);
     }
 
     /**

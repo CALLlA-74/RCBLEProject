@@ -119,8 +119,6 @@ public class SettingPortConnectionsActivity extends BaseAppBluetoothActivity {
     @Override
     protected void onResume(){
         super.onResume();
-        checkBluetoothPeripherals();
-        startLEScan();
         initPortConnectionsByDisplays(this);
         lv_controlled_ports.setAdapter(portConnectionsByDisplays.get(currentDisplayIndex));
         notifyDataSetChanged();
@@ -129,7 +127,6 @@ public class SettingPortConnectionsActivity extends BaseAppBluetoothActivity {
     @Override
     protected void onPause(){
         super.onPause();
-        stopLEScan();
         savePortConnections();
     }
 

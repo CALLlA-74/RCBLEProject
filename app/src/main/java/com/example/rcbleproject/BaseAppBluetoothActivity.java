@@ -88,6 +88,24 @@ public class BaseAppBluetoothActivity extends BaseAppActivity{
                 result -> checkBluetoothPeripherals());
     }
 
+    @Override
+    protected void onResume(){
+        super.onResume();
+        startLEScan();
+        BluetoothDevice device;
+        for (HashMap.Entry<String, BluetoothGatt> gatt : gatts.entrySet()){
+            device = gatt.getValue().getDevice();
+            lvAdapterConnectedDevices.setAvailability(true, device);
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    @Override
+    protected void onPause() {
+        super.onPause();
+        stopLEScan();
+    }
+
     public boolean checkBluetoothPeripherals(){
         if (bluetoothAdapter == null) return false;
         if (bluetoothAdapter.isEnabled()
@@ -333,24 +351,22 @@ public class BaseAppBluetoothActivity extends BaseAppActivity{
 
     @SuppressLint("MissingPermission")
     public void writeCharacteristic(BluetoothHub hub, byte[] message){
-        new Thread(() -> {
-            Log.v("APP_TAG33", message.toString());
-            if (!checkBluetoothPeripherals()) return;
-            if (hub == null) return;
-            BluetoothGatt bluetoothGatt = gatts.get(hub.address);
-            if (bluetoothGatt == null) return;
-            BluetoothGattService service = bluetoothGatt.getService(hub.serviceUuid);
-            BluetoothGattCharacteristic characteristic = service.getCharacteristic(hub.characteristicUuid);
+        Log.v("APP_TAG33", message.toString());
+        if (!checkBluetoothPeripherals()) return;
+        if (hub == null) return;
+        BluetoothGatt bluetoothGatt = gatts.get(hub.address);
+        if (bluetoothGatt == null) return;
+        BluetoothGattService service = bluetoothGatt.getService(hub.serviceUuid);
+        BluetoothGattCharacteristic characteristic = service.getCharacteristic(hub.characteristicUuid);
 
         /*if((characteristic.getProperties() & PROPERTY_WRITE_NO_RESPONSE) == 0 ) {
             Log.e("APP_TAG22", "proterties " + (characteristic.getProperties() & PROPERTY_WRITE_NO_RESPONSE));
             Log.e("APP_TAG22", "ERROR: Characteristic does not support writeType '" + characteristic.getWriteType() + "'");
             return false;
         }*/
-            characteristic.setWriteType(WRITE_TYPE_NO_RESPONSE);
-            characteristic.setValue(message);
-            bluetoothGatt.writeCharacteristic(characteristic);
-        }).start();
+        characteristic.setWriteType(WRITE_TYPE_NO_RESPONSE);
+        characteristic.setValue(message);
+        bluetoothGatt.writeCharacteristic(characteristic);
     }
 
     /*public void alarmNoPermissions(){

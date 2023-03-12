@@ -28,9 +28,9 @@
     <string name="edit_profile" translatable="true">Редактировать профиль</string>
     <string name="too_long_name" translatable="true">Слишком длинное имя хаба!</string>
     <string name="alarm_no_permissions" translatable="true">Bluetooth или Геолокация не включены!</string>
-    <string name="unknown_hub_name" translatable="true">выберете хаб</string>
+    <string name="unknown_hub_name" translatable="true">Выберете хаб</string>
     <string name="unknown_port_name" translatable="true">Выберете порт</string>
-    <string name="unknown_controller_axis_name" translatable="true">выберете элемент управления</string>
+    <string name="unknown_controller_axis_name" translatable="true">Выберете элемент управления</string>
 
     <string name="port_a" translatable="true">порт А</string>
     <string name="port_a_inv" translatable="true">порт А инверс.</string>
