@@ -4,10 +4,12 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 
 import com.example.rcbleproject.BaseAppActivity;
+import com.example.rcbleproject.BuildConfig;
 import com.example.rcbleproject.Container;
 import com.example.rcbleproject.R;
 
@@ -62,12 +64,33 @@ public class DatabaseAdapterDisplays extends DatabaseAdapter{
     public void updateIndexByID(long displayID, int displayIndex){
         ContentValues contentValues = new ContentValues();
         contentValues.put(DISPLAY_INDEX, displayIndex);
-        database.update(TABLE_NAME, contentValues, ID + " = " + displayID, null);
+        try {
+            database.update(TABLE_NAME, contentValues, ID + " = " + displayID, null);
+        }
+        catch (Exception e){
+            if (BuildConfig.DEBUG){
+                Log.v("APP_TAG555", "db Displays update: ");
+                Log.v("APP_TAG555", "display index: " + displayIndex);
+                Log.v("APP_TAG555", "display id: " + displayID);
+            }
+        }
     }
 
     public int deleteDisplayByID(Long displayID){
         if (displayID == null) return 0;
-        return database.delete(TABLE_NAME, ID + " = " + displayID, null);
+        int id = 0;
+
+        try {
+            id = database.delete(TABLE_NAME, ID + " = " + displayID, null);
+        }
+        catch (Exception e){
+            if (BuildConfig.DEBUG){
+                Log.v("APP_TAG555", "db Displays delete: ");
+                Log.v("APP_TAG555", "display id: " + displayID);
+            }
+        }
+
+        return id;
     }
 
     public String[] getAllCols(){ return new String[]{ID, DISPLAY_INDEX, PROFILE_ID}; }

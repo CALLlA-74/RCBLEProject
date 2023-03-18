@@ -95,10 +95,13 @@ public class DatabaseAdapterPortConnections extends DatabaseAdapter{
 
     public void update(PortConnection portConnection){
         ContentValues contentValues = new ContentValues();
-        contentValues.put(DISPLAY_ID, portConnection.getDisplayID());
+        long displayID = portConnection.getDisplayID();
+        contentValues.put(DISPLAY_ID, displayID);
 
+        long elemId;
         if (portConnection.controllerAxis == null) {
-            contentValues.put(ELEMENT_ID, -1);
+            elemId = Container.getDbElementsControl(context).getUnknownElementIdByDisplayId(displayID);
+            contentValues.put(ELEMENT_ID, elemId);
             contentValues.put(AXIS_NUM, -1);
         }
         else {
@@ -122,6 +125,7 @@ public class DatabaseAdapterPortConnections extends DatabaseAdapter{
                 contentValues.put(DIRECTION_OF_ROTATION, portConnection.port.getDirection());
             }
         }
+
         database.update(TABLE_NAME, contentValues, ID + " = " + portConnection.getId(),
                 null);
     }

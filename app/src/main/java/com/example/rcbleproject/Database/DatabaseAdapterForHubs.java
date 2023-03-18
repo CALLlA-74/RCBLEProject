@@ -48,7 +48,7 @@ public class DatabaseAdapterForHubs extends DatabaseAdapter implements IListView
                 + HUB_TYPE + " INTEGER NOT NULL);");
 
         ContentValues contentValues = new ContentValues();
-        contentValues.put(HUB_NAME, "");
+        contentValues.put(HUB_NAME, "default");
         contentValues.put(HUB_ADDRESS, defaultHubAddress);
         contentValues.put(HUB_STATE_CONNECTION, 0);
         contentValues.put(HUB_TYPE, 0);

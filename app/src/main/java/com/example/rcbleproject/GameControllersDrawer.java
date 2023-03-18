@@ -133,8 +133,8 @@ public class GameControllersDrawer extends SurfaceView implements SurfaceHolder.
         profileControlActivity.showCurrentDisplayNum(currentDisplayIndex, countOfDisplays);
 
         displayIDs = dbDisplays.getDisplaysByProfileID(profileID);
-        controlElements = new ArrayList<>(countOfDisplays);
-        portConnections = new ArrayList<>(countOfDisplays);
+        controlElements = new ArrayList<>(maxNumOfDisplays);
+        portConnections = new ArrayList<>(maxNumOfDisplays);
         controlElementTreeMap = new TreeMap<>();
         for (Long displayID : displayIDs){
             ArrayList<BaseControlElement> elements = dbElementsControl.getElementsControlByDisplayID(
@@ -175,9 +175,10 @@ public class GameControllersDrawer extends SurfaceView implements SurfaceHolder.
 
     public void addDisplay(){
         countOfDisplays++;
+        displayIDs.add(currentDisplayIndex+1, dbDisplays.insert(profileID, currentDisplayIndex));
+        controlElements.add(currentDisplayIndex+1, new ArrayList<>());
+        portConnections.add(new ArrayList<>());
         currentDisplayIndex++;
-        displayIDs.add(currentDisplayIndex, dbDisplays.insert(profileID, currentDisplayIndex));
-        controlElements.add(currentDisplayIndex, new ArrayList<>());
         ((ProfileControlActivity)getContext()).showCurrentDisplayNum(currentDisplayIndex, countOfDisplays);
         setFocusOnElementWithUpperIndex();
     }
