@@ -21,7 +21,7 @@
     <string name="element_blocking" translatable="true">Блокировка элемента</string>
     <string name="element_properties" translatable="true">Свойства элемента</string>
     <string name="element_size" translatable="true">Размер элемента</string>
-    <string name="controlled_ports" translatable="true">Управляемые порты</string>
+    <string name="controlled_ports" translatable="true">Соединения портов</string>
     <string name="binding_ports" translatable="true">Привязать порты</string>
     <string name="axis_word" translatable="true">ось</string>
     <string name="add_controlled_port" translatable="true">Добавить соединение порта</string>

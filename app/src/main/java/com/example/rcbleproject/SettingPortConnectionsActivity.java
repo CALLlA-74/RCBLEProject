@@ -1,8 +1,12 @@
 package com.example.rcbleproject;
 
+import static com.example.rcbleproject.Container.currDisIdxKey;
+
+import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ListView;
@@ -12,7 +16,6 @@ import com.example.rcbleproject.Database.DatabaseAdapterPortConnections;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.TreeMap;
 
 public class SettingPortConnectionsActivity extends BaseAppBluetoothActivity {
@@ -44,7 +47,6 @@ public class SettingPortConnectionsActivity extends BaseAppBluetoothActivity {
 
         //long currentDisplayID = getIntent().getLongExtra("display_id", -1);
         profileID = getIntent().getLongExtra("profile_id", -1);
-        currentDisplayIndex = getIntent().getIntExtra("display_index", -1);
         numOfDisplays = getIntent().getIntExtra("number_of_displays", -1);
 
         lv_controlled_ports = findViewById(R.id.lv_controlled_ports);
@@ -59,7 +61,6 @@ public class SettingPortConnectionsActivity extends BaseAppBluetoothActivity {
             adapter.notifyDataSetChanged();
             //Log.v("APP_TAG555", "" + adapter.portConnections.size());
         });
-        showCurrentDisplayNum(currentDisplayIndex, numOfDisplays);
         findViewById(R.id.bt_last).setOnClickListener((View v) -> prevDisplay());
         findViewById(R.id.bt_next).setOnClickListener((View v) -> nextDisplay());
     }
@@ -119,14 +120,20 @@ public class SettingPortConnectionsActivity extends BaseAppBluetoothActivity {
     @Override
     protected void onResume(){
         super.onResume();
+        SharedPreferences preferences = getSharedPreferences(currDisIdxKey, Context.MODE_PRIVATE);
+        currentDisplayIndex = preferences.getInt("current_display_index_"+profileID, 0);
         initPortConnectionsByDisplays(this);
         lv_controlled_ports.setAdapter(portConnectionsByDisplays.get(currentDisplayIndex));
+        showCurrentDisplayNum(currentDisplayIndex, numOfDisplays);
         notifyDataSetChanged();
     }
 
+    @SuppressLint("ApplySharedPref")
     @Override
     protected void onPause(){
         super.onPause();
+        SharedPreferences preferences = getSharedPreferences(currDisIdxKey, Context.MODE_PRIVATE);
+        preferences.edit().putInt("current_display_index_"+profileID, currentDisplayIndex).commit();
         savePortConnections();
     }
 
@@ -136,6 +143,7 @@ public class SettingPortConnectionsActivity extends BaseAppBluetoothActivity {
                 Container.getDbPortConnections(context).update(portConn);
             }
         }
+
     }
 
     public TreeMap<Long, TreeMap<String, List<Port>>> getHubPortsByDisplays() {

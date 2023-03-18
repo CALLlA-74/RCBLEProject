@@ -1,6 +1,11 @@
 package com.example.rcbleproject;
 
+import static com.example.rcbleproject.Container.currDisIdxKey;
+
+import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -86,9 +91,12 @@ public class ProfilesActivity extends BaseAppActivity implements IRemovable {
         if (btAddProfile.getVisibility() != visibility) btAddProfile.setVisibility(visibility);
     }
 
+    @SuppressLint({"CommitPrefEdits", "ApplySharedPref"})
     @Override
     public void remove(long id){
         lvAdapterProfilesControl.removeProfile(id);
+        SharedPreferences preferences = getSharedPreferences(currDisIdxKey, Context.MODE_PRIVATE);
+        preferences.edit().remove("current_display_index_"+id).commit();
     }
 
     @Override

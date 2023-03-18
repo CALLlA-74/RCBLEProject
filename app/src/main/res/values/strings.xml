@@ -21,7 +21,7 @@
     <string name="element_blocking" translatable="true">Element blocking</string>
     <string name="element_properties" translatable="true">Element properties</string>
     <string name="element_size" translatable="true">Element size</string>
-    <string name="controlled_ports" translatable="true">Controlled ports</string>
+    <string name="controlled_ports" translatable="true">Port connections</string>
     <string name="binding_ports" translatable="true">Bind ports</string>
     <string name="axis_word" translatable="true">axis</string>
     <string name="add_controlled_port" translatable="true">Add port connection</string>

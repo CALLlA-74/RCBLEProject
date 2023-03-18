@@ -18,6 +18,8 @@ import java.util.HashMap;
 import java.util.UUID;
 
 public class Container {
+    public static final String currDisIdxKey = "current display index preferences key";
+
     private static HashMap<String, BluetoothGatt> gatts = null;
     private static HashMap<BluetoothHub.HubTypes, UUID> serviceUUIDs = null,
                                                         characteristicUUIDs = null;
