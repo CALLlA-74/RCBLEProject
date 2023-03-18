@@ -27,7 +27,7 @@ public class SettingPortConnectionsActivity extends BaseAppBluetoothActivity {
     private DatabaseAdapterPortConnections dbPortConnections;
 
     // доступные порты хабов на каждом дисплее
-    private static TreeMap<Long, TreeMap<String, List<Port>>> hubPortsByDisplays = new TreeMap<>();
+    private static final TreeMap<Long, TreeMap<String, List<Port>>> hubPortsByDisplays = new TreeMap<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
