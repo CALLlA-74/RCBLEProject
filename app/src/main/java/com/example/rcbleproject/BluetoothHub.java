@@ -21,7 +21,7 @@ import java.util.UUID;
 
 
 public class BluetoothHub extends BaseParam {
-    public enum HubTypes {GeckoHub, PoweredUpHub, Unknown}
+    public enum HubTypes {PowerFunctionsHub, PoweredUpHub, Unknown}
 
     private String name;
     public final String address;
@@ -74,7 +74,7 @@ public class BluetoothHub extends BaseParam {
     @SuppressLint("MissingPermission")
     private String loadName(BluetoothDevice device, BaseAppBluetoothActivity context) {
         switch (hubType){
-            case GeckoHub:
+            case PowerFunctionsHub:
                 DatabaseAdapterForHubs dbHubs = Container.getDbForHubs(context);
                 dbHubs.loadHubName(this, context);
                 return "";
@@ -100,7 +100,7 @@ public class BluetoothHub extends BaseParam {
 
     public static HubTypes IntToHubTypes(int type){
         switch (type){
-            case 0: return HubTypes.GeckoHub;
+            case 0: return HubTypes.PowerFunctionsHub;
             case 1: return HubTypes.PoweredUpHub;
             default: return HubTypes.Unknown;
         }
@@ -108,7 +108,7 @@ public class BluetoothHub extends BaseParam {
     
     public void alarm(BaseAppBluetoothActivity activity){
         switch (hubType){
-            case GeckoHub:
+            case PowerFunctionsHub:
                 activity.writeCharacteristic(this, ("1").getBytes());
             case PoweredUpHub:
                 new Thread(() -> {
@@ -127,7 +127,7 @@ public class BluetoothHub extends BaseParam {
         if (portNum < 0 || portNum > 4) return;
         final int d = Integer.compare(direction, 0);
         switch (hubType){
-            case GeckoHub:
+            case PowerFunctionsHub:
                 new Thread(() -> {
                     byte[] gecko_message = {'0', '0', '0', '1', '0',
                             '2', '0', '3', '0',
@@ -159,7 +159,7 @@ public class BluetoothHub extends BaseParam {
                                      int speed){
         if (portNum < 0 || portNum > 4) return;
         switch (hubType){
-            case GeckoHub:
+            case PowerFunctionsHub:
                 byte[] gecko_message = {'0', '0', '0', '1', '0',
                         '2', '0', '3', '0',
                         '4', '0', '5', '0',
@@ -218,7 +218,7 @@ public class BluetoothHub extends BaseParam {
         switch (hubType){
             case PoweredUpHub:
                 return R.drawable.pu_hub;
-            case GeckoHub:
+            case PowerFunctionsHub:
                 return R.drawable.gecko_hub;
             case Unknown:
                 return R.drawable.unknown_param;

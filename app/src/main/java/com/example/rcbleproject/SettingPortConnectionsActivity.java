@@ -1,6 +1,8 @@
 package com.example.rcbleproject;
 
-import static com.example.rcbleproject.Container.currDisIdxKey;
+import static com.example.rcbleproject.Container.appPrefKey;
+import static com.example.rcbleproject.Container.chosenProfControlPrefKey;
+import static com.example.rcbleproject.Container.numOfDisplaysPrefKey;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -45,9 +47,9 @@ public class SettingPortConnectionsActivity extends BaseAppBluetoothActivity {
         dbHubsAdapter = Container.getDbForHubs(this);
         dbPortConnections = Container.getDbPortConnections(this);
 
-        //long currentDisplayID = getIntent().getLongExtra("display_id", -1);
-        profileID = getIntent().getLongExtra("profile_id", -1);
-        numOfDisplays = getIntent().getIntExtra("number_of_displays", -1);
+        SharedPreferences preferences = getSharedPreferences(appPrefKey, MODE_PRIVATE);
+        profileID = preferences.getLong(chosenProfControlPrefKey, -1);
+        numOfDisplays = preferences.getInt(numOfDisplaysPrefKey+profileID, -1);
 
         lv_controlled_ports = findViewById(R.id.lv_controlled_ports);
         //setLvAdapterConnectedDevices(portConnectionsByDisplays.get(currentDisplayIndex).getConnectedDevicesAdapter());
@@ -120,7 +122,7 @@ public class SettingPortConnectionsActivity extends BaseAppBluetoothActivity {
     @Override
     protected void onResume(){
         super.onResume();
-        SharedPreferences preferences = getSharedPreferences(currDisIdxKey, Context.MODE_PRIVATE);
+        SharedPreferences preferences = getSharedPreferences(appPrefKey, Context.MODE_PRIVATE);
         currentDisplayIndex = preferences.getInt("current_display_index_"+profileID, 0);
         initPortConnectionsByDisplays(this);
         lv_controlled_ports.setAdapter(portConnectionsByDisplays.get(currentDisplayIndex));
@@ -132,7 +134,7 @@ public class SettingPortConnectionsActivity extends BaseAppBluetoothActivity {
     @Override
     protected void onPause(){
         super.onPause();
-        SharedPreferences preferences = getSharedPreferences(currDisIdxKey, Context.MODE_PRIVATE);
+        SharedPreferences preferences = getSharedPreferences(appPrefKey, Context.MODE_PRIVATE);
         preferences.edit().putInt("current_display_index_"+profileID, currentDisplayIndex).commit();
         savePortConnections();
     }

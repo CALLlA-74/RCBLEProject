@@ -47,36 +47,6 @@
                     app:actionLayout="@layout/menu_item_changing_size"/>
             </menu>
         </item>
-        <item android:title="@string/controlled_ports"
-            android:layout_height="100dp"
-            android:layout_width="match_parent">
-            <menu>
-                <item
-                    android:id="@+id/item_controlled_ports_1"
-                    android:title=""
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:enabled="false"
-                    app:actionLayout="@layout/menu_item_controlled_ports" />
-                <item
-                    android:id="@+id/item_controlled_ports_2"
-                    android:title=""
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:enabled="false"
-                    app:actionLayout="@layout/menu_item_controlled_ports" />
-            </menu>
-        </item>
-    </group>
-    <group
-        android:id="@+id/group_game_mode"
-        android:checkableBehavior="single">
-        <item
-            android:id="@+id/item_edit_mode"
-            android:title="@string/edit_profile"
-            android:icon="@drawable/baseline_edit_20"
-            android:checkable="true"
-            android:layout_height="700dp"/>
     </group>
     <group
         android:id="@+id/group_element_control_menu_2"

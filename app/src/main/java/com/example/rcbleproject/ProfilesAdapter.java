@@ -1,6 +1,7 @@
 package com.example.rcbleproject;
 
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.util.Log;
@@ -19,6 +20,7 @@ public class ProfilesAdapter extends BaseAppCursorAdapter {
     private final DatabaseAdapterProfilesControl dbProfilesAdapter;
     private final ProfilesActivity activity;
     private final boolean isReverse;          // если true, профили будут выводить в обратном порядке
+    private long lastAddedProfileId = -2;
 
     public ProfilesAdapter(ProfilesActivity context, int resource, DatabaseAdapterProfilesControl adapter,
                            boolean isReverse){
@@ -40,7 +42,7 @@ public class ProfilesAdapter extends BaseAppCursorAdapter {
     }
 
     public void bindView(View convertView, Context context, Cursor cursor){
-        final ViewHolder holder = (ViewHolder) convertView.getTag();;
+        final ViewHolder holder = (ViewHolder) convertView.getTag();
         holder.id = cursor.getLong(cursor.getColumnIndexOrThrow(dbProfilesAdapter.ID));
 
         holder.et_profile_name.setOnEditorActionListener((v, actionId, event) -> {
@@ -63,6 +65,21 @@ public class ProfilesAdapter extends BaseAppCursorAdapter {
             dialog.show(activity.getSupportFragmentManager(), activity.getResources().getString(R.string.app_name));
         });
 
+        holder.bt_edit_name.setOnClickListener(v -> {
+            setFocusOnEditText((View)v.getParent());
+        });
+
+        holder.bt_play.setOnClickListener(v -> {
+            cancelEdit();
+            activity.intoProfileControl(((ViewHolder)((View)(v.getParent())).getTag()).id);
+        });
+
+        holder.bt_context_menu.setOnClickListener(v -> {
+            resetViewInConMenu();
+            viewInConMenu = (View)v.getParent();
+            setMode(Mode.context_menu_mode, (ViewHolder)(viewInConMenu.getTag()));
+        });
+
         holder.bt_cancel.setOnClickListener(v -> { cancelEdit(); });
 
         holder.bt_ok.setOnClickListener(v -> {
@@ -72,15 +89,18 @@ public class ProfilesAdapter extends BaseAppCursorAdapter {
         });
 
         holder.tv_profile_name.setText(cursor.getString(cursor.getColumnIndexOrThrow(dbProfilesAdapter.PROFILE_NAME)));
-        if (BuildConfig.DEBUG)
-            Log.v("APP_TAG", "get view. id = " + cursor.getLong(cursor.getColumnIndexOrThrow(dbProfilesAdapter.ID)));
+
+        if (lastAddedProfileId == holder.id){
+            lastAddedProfileId = -2;
+            setFocusOnEditText(convertView);
+        }
     }
 
     public long addProfile(String name){
         long id = dbProfilesAdapter.insert(name);
         if (BuildConfig.DEBUG) Log.v("APP_TAG", "addProf. id = " + id);
         swapCursor(dbProfilesAdapter.getProfiles_cursor(isReverse));
-        //setFocusOnEditText(getView((isReverse? 0 : getCount() - 1), ), id);
+        lastAddedProfileId = id;
         return id;
     }
 
@@ -89,13 +109,23 @@ public class ProfilesAdapter extends BaseAppCursorAdapter {
         swapCursor(dbProfilesAdapter.getProfiles_cursor(isReverse));
     }
 
-
-    public void cancelEdit(){
-        if (editingView == null) return;
+    public boolean cancelEdit(){
+        boolean isViewNull = resetViewInConMenu();
+        if (editingView == null) return isViewNull;
         ViewHolder vh = ((ViewHolder)editingView.getTag());
         setMode(Mode.view_mode, vh);
         activity.hideKeyboard(vh.et_profile_name);
         editingView = null;
+        return true;
+    }
+
+    public boolean resetViewInConMenu(){
+        if (viewInConMenu != null){
+            setMode(Mode.view_mode, (ViewHolder) (viewInConMenu.getTag()));
+            viewInConMenu = null;
+            return true;
+        }
+        return false;
     }
 
     public void setMode(Mode mode, ViewHolder vh){
@@ -106,16 +136,33 @@ public class ProfilesAdapter extends BaseAppCursorAdapter {
                 vh.bt_ok.setVisibility(View.GONE);
                 vh.bt_cancel.setVisibility(View.GONE);
                 vh.tv_profile_name.setVisibility(View.VISIBLE);
+                vh.bt_delete_profile.setVisibility(View.GONE);
+                vh.bt_edit_name.setVisibility(View.GONE);
+                vh.bt_context_menu.setVisibility(View.VISIBLE);
+                vh.bt_play.setVisibility(View.GONE);
+                activity.setImageButtonVisibility(View.VISIBLE);
+                break;
+            case context_menu_mode:
+                vh.et_profile_name.setVisibility(View.GONE);
+                vh.bt_ok.setVisibility(View.GONE);
+                vh.bt_cancel.setVisibility(View.GONE);
+                vh.tv_profile_name.setVisibility(View.VISIBLE);
                 vh.bt_delete_profile.setVisibility(View.VISIBLE);
+                vh.bt_edit_name.setVisibility(View.VISIBLE);
+                vh.bt_context_menu.setVisibility(View.GONE);
+                vh.bt_play.setVisibility(View.VISIBLE);
                 activity.setImageButtonVisibility(View.VISIBLE);
                 break;
             case edit_mode:
-                activity.setImageButtonVisibility(View.GONE);
-                vh.tv_profile_name.setVisibility(View.GONE);
-                vh.bt_delete_profile.setVisibility(View.GONE);
+                vh.et_profile_name.setVisibility(View.VISIBLE);
                 vh.bt_ok.setVisibility(View.VISIBLE);
                 vh.bt_cancel.setVisibility(View.VISIBLE);
-                vh.et_profile_name.setVisibility(View.VISIBLE);
+                vh.tv_profile_name.setVisibility(View.GONE);
+                vh.bt_delete_profile.setVisibility(View.GONE);
+                vh.bt_edit_name.setVisibility(View.GONE);
+                vh.bt_context_menu.setVisibility(View.GONE);
+                vh.bt_play.setVisibility(View.GONE);
+                activity.setImageButtonVisibility(View.GONE);
         }
     }
 
@@ -123,6 +170,7 @@ public class ProfilesAdapter extends BaseAppCursorAdapter {
         if (view == null) return;
         ViewHolder holder = (ViewHolder) view.getTag();
         if (holder == null) return;
+        resetViewInConMenu();
         resetEditingView();
         setEditingView(view);
         setMode(Mode.edit_mode, holder);
@@ -131,6 +179,7 @@ public class ProfilesAdapter extends BaseAppCursorAdapter {
         holder.et_profile_name.requestFocus();
         InputMethodManager imm = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.showSoftInput(holder.et_profile_name, InputMethodManager.SHOW_IMPLICIT);
+        //imm.toggleSoftInput(InputMethodManager.SHOW_IMPLICIT, 0);
     }
 
     public void setEditingView(View editingView) {
@@ -164,6 +213,9 @@ public class ProfilesAdapter extends BaseAppCursorAdapter {
         final ImageView bt_delete_profile;
         final ImageView bt_ok;
         final ImageView bt_cancel;
+        final ImageView bt_edit_name;
+        final ImageView bt_context_menu;
+        final ImageView bt_play;
         long id = 0;
 
         ViewHolder(View view){
@@ -172,6 +224,9 @@ public class ProfilesAdapter extends BaseAppCursorAdapter {
             bt_delete_profile = view.findViewById(R.id.bt_delete);
             bt_ok = view.findViewById(R.id.bt_ok);
             bt_cancel = view.findViewById(R.id.bt_cancel);
+            bt_edit_name = view.findViewById(R.id.bt_edit_name);
+            bt_context_menu = view.findViewById(R.id.bt_context_menu);
+            bt_play = view.findViewById(R.id.bt_play);
         }
     }
 }

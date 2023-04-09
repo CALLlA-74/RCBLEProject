@@ -57,7 +57,9 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 android:background="@drawable/circle_button_profile_control"
-                android:src="@drawable/baseline_more_vert_20"
+                android:src="@drawable/settings"
+                android:scaleType="centerInside"
+                android:padding="5dp"
                 android:layout_marginEnd="5dp"
                 android:layout_marginTop="5dp"/>
 
@@ -77,6 +79,22 @@
                 android:layout_marginStart="5dp"
                 android:layout_marginBottom="5dp"/>
 
+            <Button
+                android:id="@+id/bt_bind_ports"
+                android:textStyle="normal"
+                android:fontFamily="serif"
+                android:textSize="11sp"
+                android:text="@string/binding_ports"
+                android:paddingStart="9dp"
+                android:paddingEnd="9dp"
+                android:layout_width="wrap_content"
+                android:layout_height="30dp"
+                app:layout_constraintStart_toEndOf="@id/bt_element_control_menu"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:background="@drawable/rect_button_profile_control"
+                android:layout_marginStart="5dp"
+                android:layout_marginBottom="5dp"/>
+
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="30dp"
@@ -91,8 +109,9 @@
                     android:id="@+id/bt_last_display"
                     android:layout_width="30dp"
                     android:layout_height="30dip"
-                    android:background="@drawable/button_last_display"
-                    android:src="@drawable/baseline_arrow_back_ios_white_20"/>
+                    android:background="@drawable/button_next_display"
+                    android:src="@drawable/baseline_arrow_forward_ios_white_20"
+                    android:rotation="180"/>
                 <TextView
                     android:id="@+id/tv_num_display"
                     android:layout_width="wrap_content"
@@ -103,7 +122,10 @@
                     android:gravity="center"
                     android:layout_gravity="center"
                     android:fontFamily="serif"
-                    android:text=" 1 / 200 "/>
+                    android:text=" 1 / 200 "
+                    android:layout_marginStart="2dp"
+                    android:layout_marginEnd="2dp"
+                    android:padding="2dp"/>
                 <ImageButton
                     android:id="@+id/bt_next_display"
                     android:layout_width="30dp"

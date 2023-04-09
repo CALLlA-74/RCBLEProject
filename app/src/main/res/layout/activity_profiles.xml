@@ -5,11 +5,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="?attr/colorPrimary"
     tools:context=".ProfilesActivity"
     tools:showIn="@layout/content_profiles">
 
     <include
-        layout="@layout/content_profiles"/>
+        layout="@layout/content_profiles" />
 
     <ImageButton
         android:id="@+id/bt_add_profile"

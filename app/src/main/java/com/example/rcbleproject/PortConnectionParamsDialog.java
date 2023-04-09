@@ -4,25 +4,26 @@ import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.bluetooth.BluetoothDevice;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class PortConnectionParamsDialog extends Dialog {
-    public enum ParamTypes {HUB, PORT, CONTROLLER_AXIS}
+    public enum ParamType {HUB, PORT, CONTROLLER_AXIS}
+    private enum ParamListMode {EMPTY_LIST, NOT_EMPTY_LIST}
 
     private final List<BaseParam> params;
-    private final ParamTypes typeOfParam;
+    private final ParamType typeOfParam;
     private final SettingPortConnectionsActivity activity;
     private final PortConnection portConnection;
 
@@ -30,8 +31,8 @@ public class PortConnectionParamsDialog extends Dialog {
 
     RecyclerView lrVarsList;
 
-    public PortConnectionParamsDialog(SettingPortConnectionsActivity activity, ParamTypes typeOfParam,
-                                      PortConnection port, int currentDisplayIndex, int numOfDisplays,
+    public PortConnectionParamsDialog(SettingPortConnectionsActivity activity, ParamType typeOfParam,
+                                      PortConnection port,
                                       List<BaseParam> params){
         super(activity);
         this.activity = activity;
@@ -49,13 +50,75 @@ public class PortConnectionParamsDialog extends Dialog {
         ParamsListAdapter adapter = new ParamsListAdapter(getContext(), params);
         lrVarsList.setAdapter(adapter);
         activity.setLvAdapterConnectedDevices(adapter);
+        if (params.isEmpty()){
+            setListMode(ParamListMode.EMPTY_LIST);
+        }
+        else setListMode(ParamListMode.NOT_EMPTY_LIST);
+    }
+
+    private void setListMode(ParamListMode listMode){
+        switch (listMode){
+            case EMPTY_LIST:
+                findViewById(R.id.inc_empty_list_label).setVisibility(View.VISIBLE);
+                TextView msgEmptyList = findViewById(R.id.tv_msg_empty_list);
+                msgEmptyList.setText(getTextForEmptyTV());
+                Button btOnEmptyList = findViewById(R.id.bt_empty_list);
+                btOnEmptyList.setText(getTextForEmptyBt());
+                btOnEmptyList.setOnClickListener(v -> onBtEmptyClick());
+                lrVarsList.setVisibility(View.GONE);
+                break;
+            case NOT_EMPTY_LIST:
+                findViewById(R.id.inc_empty_list_label).setVisibility(View.GONE);
+                lrVarsList.setVisibility(View.VISIBLE);
+        }
+    }
+
+    private String getTextForEmptyTV(){
+        switch (typeOfParam){
+            case HUB:
+                return activity.getString(R.string.empty_hubs_list);
+            case PORT:
+                return activity.getString(R.string.empty_ports_list);
+            case CONTROLLER_AXIS:
+                return activity.getString(R.string.empty_controller_axes_list);
+        }
+        return "";
+    }
+
+    private String getTextForEmptyBt(){
+        switch (typeOfParam){
+            case HUB:
+                return activity.getString(R.string.connect_hubs);
+            case PORT:
+                return activity.getString(R.string.connect_more_hubs);
+            case CONTROLLER_AXIS:
+                return activity.getString(R.string.add_element_control);
+        }
+        return "";
+    }
+
+    private void onBtEmptyClick(){
+        Intent intent;
+        switch (typeOfParam){
+            case HUB:
+            case PORT:
+                intent = new Intent(activity, AddingHubsActivity.class);
+                activity.startActivity(intent);
+                dialogContext.dismiss();
+                break;
+            case CONTROLLER_AXIS:
+                intent = new Intent(activity, AddingElementControlActivity.class);
+                activity.startActivity(intent);
+                dialogContext.dismiss();
+                //activity.finish();
+        }
     }
 
     @Override
     public void dismiss(){
         super.dismiss();
         if (portConnection.port == null) return;
-        if (typeOfParam == ParamTypes.PORT){
+        if (typeOfParam == ParamType.PORT){
             List<Port> ports = (List) params;
             for (short idx = (short) (ports.size() - 1); idx >= 0; --idx){
                 if (ports.get(idx).portNum == portConnection.port.portNum){
@@ -85,7 +148,7 @@ public class PortConnectionParamsDialog extends Dialog {
         @SuppressLint("NotifyDataSetChanged")
         @Override
         public boolean setAvailability(boolean availability, BluetoothDevice device){
-            if (typeOfParam == ParamTypes.HUB){
+            if (typeOfParam == ParamType.HUB){
                 BluetoothHub hub;
                 for (short idx = 0; idx < paramsList.size(); ++idx){
                     hub = (BluetoothHub) paramsList.get(idx);
@@ -166,7 +229,6 @@ public class PortConnectionParamsDialog extends Dialog {
                     case CONTROLLER_AXIS:
                         portConnection.controllerAxis = (BaseControlElement.ControllerAxis) param;
                 }
-                Log.v("APP_TAG5555", portConnection.toString());
                 activity.notifyDataSetChanged();
                 dialogContext.dismiss();
             });

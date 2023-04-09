@@ -10,7 +10,8 @@ public abstract class BaseAppCursorAdapter extends SimpleCursorAdapter {
     protected final LayoutInflater inflater;
     protected final int layout;
     protected View editingView = null;
-    protected enum Mode{ view_mode, edit_mode };
+    protected View viewInConMenu = null;
+    protected enum Mode{ view_mode, context_menu_mode, edit_mode }
 
     public BaseAppCursorAdapter(Context context, int resource, Cursor cursor,
                                 String[] columns, int[] views, int flags){
@@ -21,5 +22,5 @@ public abstract class BaseAppCursorAdapter extends SimpleCursorAdapter {
 
     public abstract void bindView(View convertView, Context context, Cursor cursor);
     public abstract void resetEditingView();
-    public abstract void cancelEdit();
+    public abstract boolean cancelEdit();
 }

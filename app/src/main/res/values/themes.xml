@@ -16,7 +16,7 @@
         <item name="android:textColorPrimary">@color/white</item>
     </style>
 
-    <style name="Theme.RCBLEProject.AddingHubsActivity" parent="Theme.RCBLEProject">
+    <style name="Theme.RCBLEProject.NoBackground" parent="Theme.RCBLEProject">
         <item name="android:background">@null</item>
     </style>
 

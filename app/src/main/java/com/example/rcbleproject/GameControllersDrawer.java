@@ -1,6 +1,7 @@
 package com.example.rcbleproject;
 
-import static com.example.rcbleproject.Container.currDisIdxKey;
+import static com.example.rcbleproject.Container.appPrefKey;
+import static com.example.rcbleproject.Container.currDisIdxPrefKey;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -130,8 +131,8 @@ public class GameControllersDrawer extends SurfaceView implements SurfaceHolder.
     public void updateElementsControl(){
         ProfileControlActivity profileControlActivity = (ProfileControlActivity)getContext();
         SharedPreferences prefs = (profileControlActivity)
-                .getSharedPreferences(currDisIdxKey,Context.MODE_PRIVATE);
-        currentDisplayIndex = prefs.getInt("current_display_index_"+profileID, 0);
+                .getSharedPreferences(appPrefKey,Context.MODE_PRIVATE);
+        currentDisplayIndex = prefs.getInt(currDisIdxPrefKey +profileID, 0);
         countOfDisplays = dbProfilesControl.getNumOfScreens(profileID);
         profileControlActivity.showCurrentDisplayNum(currentDisplayIndex, countOfDisplays);
 
@@ -155,10 +156,9 @@ public class GameControllersDrawer extends SurfaceView implements SurfaceHolder.
 
     @SuppressLint({"CommitPrefEdits", "ApplySharedPref"})
     public void saveElementsParams(){
-
         SharedPreferences prefs = ((ProfileControlActivity)getContext())
-                .getSharedPreferences(currDisIdxKey, Context.MODE_PRIVATE);
-        prefs.edit().putInt("current_display_index_"+profileID, currentDisplayIndex).commit();
+                .getSharedPreferences(appPrefKey, Context.MODE_PRIVATE);
+        prefs.edit().putInt(currDisIdxPrefKey +profileID, currentDisplayIndex).commit();
 
         for (int i = displayIDs.size() - 1; i >= 0; --i){
             if (displayIDs.get(i) == null || displayIDs.get(i) < 0) dbDisplays.insert(profileID, i);

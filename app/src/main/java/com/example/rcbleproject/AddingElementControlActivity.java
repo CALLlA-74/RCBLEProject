@@ -1,5 +1,11 @@
 package com.example.rcbleproject;
 
+import static com.example.rcbleproject.Container.chosenProfControlPrefKey;
+import static com.example.rcbleproject.Container.currDisIdPrefKey;
+import static com.example.rcbleproject.Container.appPrefKey;
+import static com.example.rcbleproject.Container.numOfElementsPrefKey;
+
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.view.View;
@@ -7,7 +13,6 @@ import android.view.View;
 import com.example.rcbleproject.Database.DatabaseAdapterElementsControl;
 import com.example.rcbleproject.databinding.ActivityAddingElementControlBinding;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class AddingElementControlActivity extends BaseAppActivity {
@@ -19,8 +24,10 @@ public class AddingElementControlActivity extends BaseAppActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        displayID = getIntent().getLongExtra("display_id", -1);
-        int elementNumber = getIntent().getIntExtra("count_of_elements", -1);
+        SharedPreferences preferences = getSharedPreferences(appPrefKey, MODE_PRIVATE);
+        long profileId = preferences.getLong(chosenProfControlPrefKey, 0);
+        displayID = preferences.getLong(currDisIdPrefKey +profileId, -1);
+        int elementNumber = preferences.getInt(numOfElementsPrefKey+profileId, -1);
 
         displayMetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);

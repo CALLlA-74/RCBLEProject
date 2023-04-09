@@ -1,8 +1,6 @@
 package com.example.rcbleproject;
 
 import android.annotation.SuppressLint;
-import android.bluetooth.BluetoothDevice;
-import android.bluetooth.BluetoothGatt;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -10,13 +8,13 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.RequiresApi;
 
 import com.example.rcbleproject.databinding.ActivityAddingDevicesBinding;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 public class AddingHubsActivity extends BaseAppBluetoothActivity implements IRemovableHub {
     protected ConnectedDevicesAdapter lv_connected_devices_adapter;
@@ -29,7 +27,7 @@ public class AddingHubsActivity extends BaseAppBluetoothActivity implements IRem
         setContentView(binding.getRoot());
         setSupportActionBar(binding.tbActivityAddDevices.getRoot());
         setFullscreenMode(binding.layoutContent);
-        ((TextView) findViewById(R.id.tv_label)).setText(getResources().getString(R.string.devices));
+        ((TextView) findViewById(R.id.tv_label)).setText(getResources().getString(R.string.hubs));
         findViewById(R.id.bt_back).setOnClickListener((View v) -> {
             finish();
         });
@@ -51,12 +49,18 @@ public class AddingHubsActivity extends BaseAppBluetoothActivity implements IRem
                         lv_connected_devices_adapter.setFocusOnEditText(view);
                     return false;
         });
+        lv_connected_devices.setOnItemClickListener(
+                (AdapterView<?> parent, View view, int position, long id) -> {
+                    lv_connected_devices_adapter.cancelEdit();
+        });
         setLvAdapterConnectedDevices(lv_connected_devices_adapter);
         setLvAdapterFoundHubs(devicesAdapter);
     }
 
+    public void notifyNoHubConnection(){
+        Toast.makeText(this, "Нет соединения с хабом!", Toast.LENGTH_SHORT).show();
+    }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onResume() {
         super.onResume();

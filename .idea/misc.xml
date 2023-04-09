@@ -9,6 +9,7 @@
         <entry key="..\:/projects_for_Android/RCBLEProject/app/src/main/res/drawable-v24/item_button.xml" value="0.135" />
         <entry key="..\:/projects_for_Android/RCBLEProject/app/src/main/res/drawable-v24/item_button_with_red_background.xml" value="0.1" />
         <entry key="..\:/projects_for_Android/RCBLEProject/app/src/main/res/drawable-v24/item_button_with_red_gradient_background.xml" value="0.1" />
+        <entry key="..\:/projects_for_Android/RCBLEProject/app/src/main/res/drawable-xxxhdpi/button_back_with_red_grad.xml" value="0.1165" />
         <entry key="..\:/projects_for_Android/RCBLEProject/app/src/main/res/drawable-xxxhdpi/button_last_display.xml" value="0.1125" />
         <entry key="..\:/projects_for_Android/RCBLEProject/app/src/main/res/drawable-xxxhdpi/button_last_display_with_red_grad_back.xml" value="0.1" />
         <entry key="..\:/projects_for_Android/RCBLEProject/app/src/main/res/drawable-xxxhdpi/button_next_display.xml" value="0.1" />
@@ -51,12 +52,13 @@
         <entry key="..\:/projects_for_Android/RCBLEProject/app/src/main/res/layout/activity_add_element_control.xml" value="0.25" />
         <entry key="..\:/projects_for_Android/RCBLEProject/app/src/main/res/layout/activity_adding_devices.xml" value="0.33" />
         <entry key="..\:/projects_for_Android/RCBLEProject/app/src/main/res/layout/activity_adding_element_control.xml" value="0.16636446056210336" />
-        <entry key="..\:/projects_for_Android/RCBLEProject/app/src/main/res/layout/activity_profile_control.xml" value="0.18791946308724833" />
+        <entry key="..\:/projects_for_Android/RCBLEProject/app/src/main/res/layout/activity_profile_control.xml" value="0.15982905982905982" />
         <entry key="..\:/projects_for_Android/RCBLEProject/app/src/main/res/layout/activity_profiles.xml" value="0.2505091649694501" />
         <entry key="..\:/projects_for_Android/RCBLEProject/app/src/main/res/layout/activity_set_controlled_ports.xml" value="0.1" />
         <entry key="..\:/projects_for_Android/RCBLEProject/app/src/main/res/layout/activity_setting_controlled_ports.xml" value="0.25" />
-        <entry key="..\:/projects_for_Android/RCBLEProject/app/src/main/res/layout/app_list_item.xml" value="0.33" />
+        <entry key="..\:/projects_for_Android/RCBLEProject/app/src/main/res/layout/app_list_item.xml" value="0.21243523316062177" />
         <entry key="..\:/projects_for_Android/RCBLEProject/app/src/main/res/layout/app_toolbar.xml" value="0.33109919571045576" />
+        <entry key="..\:/projects_for_Android/RCBLEProject/app/src/main/res/layout/app_tv_and_bt.xml" value="0.1675929884566054" />
         <entry key="..\:/projects_for_Android/RCBLEProject/app/src/main/res/layout/content_add_devices.xml" value="0.25" />
         <entry key="..\:/projects_for_Android/RCBLEProject/app/src/main/res/layout/content_profiles.xml" value="0.18" />
         <entry key="..\:/projects_for_Android/RCBLEProject/app/src/main/res/layout/content_setting_controlled_ports.xml" value="0.16" />

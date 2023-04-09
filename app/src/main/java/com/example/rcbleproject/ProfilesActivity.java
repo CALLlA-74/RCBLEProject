@@ -1,6 +1,11 @@
 package com.example.rcbleproject;
 
-import static com.example.rcbleproject.Container.currDisIdxKey;
+import static com.example.rcbleproject.Container.chosenProfControlPrefKey;
+import static com.example.rcbleproject.Container.appPrefKey;
+import static com.example.rcbleproject.Container.currDisIdPrefKey;
+import static com.example.rcbleproject.Container.currDisIdxPrefKey;
+import static com.example.rcbleproject.Container.numOfDisplaysPrefKey;
+import static com.example.rcbleproject.Container.numOfElementsPrefKey;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -10,6 +15,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.AbsListView;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -25,6 +31,7 @@ public class ProfilesActivity extends BaseAppActivity implements IRemovable {
     private ProfilesAdapter lvAdapterProfilesControl;
     private int oldVisibleItem = 0;
     private ImageButton btAddProfile;
+    private Button btAddFirstProfile;
     private boolean isReverse = false;
 
     @Override
@@ -47,12 +54,14 @@ public class ProfilesActivity extends BaseAppActivity implements IRemovable {
                 dbAdapterProfilesControl, isReverse);
         lvProfiles.setAdapter(lvAdapterProfilesControl);
         btAddProfile = (ImageButton)findViewById(R.id.bt_add_profile);
-        btAddProfile.setOnClickListener(v -> {
-            long id = lvAdapterProfilesControl.addProfile(getResources().getString(R.string.default_profile_name));
-            dbDisplays.insert(id, 0);
-            /*int pos = lvAdapterProfilesControl.getPosition(profileControl);
-            View view = lvAdapterProfilesControl.getView(pos, null, lvProfiles);
-            setFocusOnEditText(view, view.getId());*/
+        btAddProfile.setOnClickListener(v -> addProfile());
+
+        ((TextView)findViewById(R.id.tv_msg_empty_list)).setText(R.string.empty_profiles_list);
+        btAddFirstProfile = findViewById(R.id.bt_empty_list);
+        btAddFirstProfile.setText(R.string.add_first_profile_control);
+        btAddFirstProfile.setOnClickListener(v -> {
+            findViewById(R.id.inc_empty_list_label).setVisibility(View.GONE);
+            addProfile();
         });
 
         lvProfiles.setOnItemLongClickListener((parent, view, position, id) -> {
@@ -61,14 +70,8 @@ public class ProfilesActivity extends BaseAppActivity implements IRemovable {
         });
 
         lvProfiles.setOnItemClickListener((parent, view, position, id) -> {
-            if (BuildConfig.DEBUG){
-                Log.v("APP_TAG", "size: " + lvAdapterProfilesControl.getCount());
-                Log.v("APP_TAG", "click. id = " + id);
-            }
-            lvAdapterProfilesControl.cancelEdit();
-            Intent intent = new Intent(this, ProfileControlActivity.class);
-            intent.putExtra("profile_id", id);
-            startActivity(intent);
+            if (lvAdapterProfilesControl.cancelEdit()) return;
+            intoProfileControl(id);
         });
 
         lvProfiles.setOnScrollListener(new AbsListView.OnScrollListener() {
@@ -87,6 +90,35 @@ public class ProfilesActivity extends BaseAppActivity implements IRemovable {
         });
     }
 
+    @Override
+    protected void onResume(){
+        super.onResume();
+
+        if (lvAdapterProfilesControl.getCount() <= 0)
+            findViewById(R.id.inc_empty_list_label).setVisibility(View.VISIBLE);
+        else findViewById(R.id.inc_empty_list_label).setVisibility(View.GONE);
+    }
+
+    private void addProfile(){
+        lvAdapterProfilesControl.cancelEdit();
+        long id = lvAdapterProfilesControl.addProfile(getResources().getString(R.string.default_profile_name));
+        dbDisplays.insert(id, 0);
+        /*int pos = lvAdapterProfilesControl.getPosition(profileControl);
+        View view = lvAdapterProfilesControl.getView(pos, null, lvProfiles); */
+    }
+
+    @SuppressLint("ApplySharedPref")
+    public void intoProfileControl(long profileId){
+        if (BuildConfig.DEBUG){
+            Log.v("APP_TAG", "size: " + lvAdapterProfilesControl.getCount());
+            Log.v("APP_TAG", "click. id = " + profileId);
+        }
+        Intent intent = new Intent(getBaseContext(), ProfileControlActivity.class);
+        SharedPreferences preferences = getSharedPreferences(appPrefKey, Context.MODE_PRIVATE);
+        preferences.edit().putLong(chosenProfControlPrefKey, profileId).commit();
+        startActivity(intent);
+    }
+
     public void setImageButtonVisibility(int visibility){
         if (btAddProfile.getVisibility() != visibility) btAddProfile.setVisibility(visibility);
     }
@@ -94,9 +126,14 @@ public class ProfilesActivity extends BaseAppActivity implements IRemovable {
     @SuppressLint({"CommitPrefEdits", "ApplySharedPref"})
     @Override
     public void remove(long id){
+        if (lvAdapterProfilesControl.getCount() <= 1)
+            findViewById(R.id.inc_empty_list_label).setVisibility(View.VISIBLE);
         lvAdapterProfilesControl.removeProfile(id);
-        SharedPreferences preferences = getSharedPreferences(currDisIdxKey, Context.MODE_PRIVATE);
-        preferences.edit().remove("current_display_index_"+id).commit();
+        SharedPreferences preferences = getSharedPreferences(appPrefKey, Context.MODE_PRIVATE);
+        preferences.edit().remove(currDisIdxPrefKey +id)
+                .remove(currDisIdPrefKey +id)
+                .remove(numOfElementsPrefKey +id)
+                .remove(numOfDisplaysPrefKey +id).commit();
     }
 
     @Override

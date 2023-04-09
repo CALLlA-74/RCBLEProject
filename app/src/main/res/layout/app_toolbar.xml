@@ -14,7 +14,7 @@
             android:id="@+id/bt_back"
             android:layout_width="30dp"
             android:layout_height="match_parent"
-            android:background="@drawable/button_last_display_with_red_grad_back"
+            android:background="@drawable/button_back_with_red_grad"
             android:src="@drawable/baseline_arrow_back_20"
             android:gravity="center_vertical"
             app:layout_constraintTop_toTopOf="parent"
@@ -46,7 +46,8 @@
                 android:layout_width="30dp"
                 android:layout_height="match_parent"
                 android:background="@drawable/button_last_display_with_red_grad_back"
-                android:src="@drawable/baseline_arrow_back_ios_white_20"/>
+                android:src="@drawable/baseline_arrow_forward_ios_white_20"
+                android:rotation="180"/>
             <TextView
                 android:id="@+id/tv_num_display"
                 android:layout_width="wrap_content"

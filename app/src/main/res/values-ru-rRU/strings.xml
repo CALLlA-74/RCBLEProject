@@ -1,11 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="profiles_control" translatable="true">Профили управления</string>
-    <string name="devices" translatable="true">Мои устройства</string>
+    <string name="hubs" translatable="true">Мои хабы</string>
     <string name="default_profile_name" translatable="true">Новый профиль</string>
+    <string name="empty_profiles_list" translatable="true">Нет созданных профилей управления</string>
+    <string name="add_first_profile_control" translatable="true">Создать профиль</string>
+
+    <string name="empty_hubs_list" translatable="true">Нет подключенных хабов</string>
+    <string name="connect_hubs" translatable="true">Подключить хабы</string>
+
+    <string name="empty_ports_list" translatable="true">Нет свободных портов</string>
+    <string name="connect_more_hubs" translatable="true">Подключить еще хабы</string>
+
+    <string name="empty_controller_axes_list" translatable="true">Дисплей пуст</string>
+    <string name="add_element_control" translatable="true">Добавить элемент управления</string>
 
     <string name="yes" translatable="true">Да</string>
     <string name="no" translatable="true">Нет</string>
+
     <string name="confirm_msg_profile" translatable="true">Удалить профиль</string>
     <string name="confirm_msg_device" translatable="true">Удалить устройство</string>
     <string name="confirm_msg_display" translatable="true">Удалить текущий экран?</string>
@@ -15,8 +27,8 @@
     <string name="joystick_x_name" translatable="true">1-осевой горизонтальный джойстик</string>
     <string name="joystick_y_name" translatable="true">1-осевой вертикальный джойстик</string>
     <string name="grid_align" translatable="true">Выравнивание по сетке</string>
-    <string name="add_display" translatable="true">Добавить экран</string>
-    <string name="remove_display" translatable="true">Удалить текущий экран</string>
+    <string name="add_display" translatable="true">Добавить дисплей</string>
+    <string name="remove_display" translatable="true">Удалить текущий дисплей</string>
     <string name="remove_element_control" translatable="true">Удалить элемент управления</string>
     <string name="element_blocking" translatable="true">Блокировка элемента</string>
     <string name="element_properties" translatable="true">Свойства элемента</string>

@@ -1,7 +1,19 @@
 <resources>
     <string name="app_name" translatable="false">Geckos Control</string>
     <string name="profiles_control" translatable="true">Profiles control</string>
-    <string name="devices" translatable="true">My devices</string>
+    <string name="hubs" translatable="true">My hubs</string>
+    <string name="empty_profiles_list" translatable="true">The list of profiles control is empty</string>
+    <string name="add_first_profile_control" translatable="true">Create profile</string>
+
+    <string name="empty_hubs_list" translatable="true">No connected hubs</string>
+    <string name="connect_hubs" translatable="true">Connect hubs</string>
+
+    <string name="empty_ports_list" translatable="true">No ports available</string>
+    <string name="connect_more_hubs" translatable="true">Connect more hubs</string>
+
+    <string name="empty_controller_axes_list" translatable="true">Display is empty</string>
+    <string name="add_element_control" translatable="true">Add element control</string>
+
     <string name="default_profile_name" translatable="true">New profile</string>
     <string name="default_hub_name" translatable="false">Gecko Hub</string>
     <string name="yes" translatable="true">Yes</string>

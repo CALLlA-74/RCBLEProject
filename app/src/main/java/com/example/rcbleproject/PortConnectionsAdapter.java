@@ -1,8 +1,8 @@
 package com.example.rcbleproject;
 
-import static com.example.rcbleproject.PortConnectionParamsDialog.ParamTypes.CONTROLLER_AXIS;
-import static com.example.rcbleproject.PortConnectionParamsDialog.ParamTypes.HUB;
-import static com.example.rcbleproject.PortConnectionParamsDialog.ParamTypes.PORT;
+import static com.example.rcbleproject.PortConnectionParamsDialog.ParamType.CONTROLLER_AXIS;
+import static com.example.rcbleproject.PortConnectionParamsDialog.ParamType.HUB;
+import static com.example.rcbleproject.PortConnectionParamsDialog.ParamType.PORT;
 
 import android.annotation.SuppressLint;
 import android.view.LayoutInflater;
@@ -12,6 +12,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.rcbleproject.Database.DatabaseAdapterPortConnections;
 
@@ -69,7 +70,10 @@ public class PortConnectionsAdapter extends ArrayAdapter<PortConnection> {
             holder.v_port.setOnClickListener((View v) -> {
                 ViewHolder vh = (ViewHolder) ((View)v.getParent()).getTag();
                 PortConnection portConn = portConnections.get(vh.position);
-                if (portConn.hub == null) return;
+                if (portConn.hub == null) {
+                    Toast.makeText(activity, "Сперва выберете хаб", Toast.LENGTH_SHORT).show();
+                    return;
+                }
 
                 List<Port> ports = activity.getHubPortsByDisplays().get(displayIds.get(currentDisplayIndex))
                         .get(portConnections.get(vh.position).hub.address);
@@ -86,7 +90,6 @@ public class PortConnectionsAdapter extends ArrayAdapter<PortConnection> {
                     });
                 }
                 new PortConnectionParamsDialog(activity, PORT, portConnections.get(vh.position),
-                        currentDisplayIndex, numOfDisplays,
                         (List) ports).show();
             });
         }
@@ -111,14 +114,14 @@ public class PortConnectionsAdapter extends ArrayAdapter<PortConnection> {
 
             viewHolder.v_hub.setOnClickListener((View v) ->
                     new PortConnectionParamsDialog(activity, HUB, portConnections.get(viewHolder.position),
-                            currentDisplayIndex, numOfDisplays, (List) hubs).show());
+                            (List) hubs).show());
 
             setPortsActiveness(viewHolder, isPortsActive);
 
             viewHolder.v_controller_axis.setOnClickListener((View v) -> {
                 ViewHolder holder = (ViewHolder) ((View)v.getParent()).getTag();
                 new PortConnectionParamsDialog(activity, CONTROLLER_AXIS,
-                        portConnections.get(holder.position), currentDisplayIndex, numOfDisplays,
+                        portConnections.get(holder.position),
                         (List) controllersAxes.get(currentDisplayIndex)).show();
             });
             viewHolder.bt_delete_port_conn.setOnClickListener((View v) -> {

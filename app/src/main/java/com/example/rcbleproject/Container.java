@@ -18,7 +18,12 @@ import java.util.HashMap;
 import java.util.UUID;
 
 public class Container {
-    public static final String currDisIdxKey = "current display index preferences key";
+    public static final String appPrefKey = "app_preferences_key";
+    public static final String currDisIdxPrefKey = "current_display_index_";
+    public static final String currDisIdPrefKey = "current_display_id_";
+    public static final String chosenProfControlPrefKey = "chosen_profile_control";
+    public static final String numOfElementsPrefKey = "number_of_elements_";
+    public static final String numOfDisplaysPrefKey = "number_of_displays_";
 
     private static HashMap<String, BluetoothGatt> gatts = null;
     private static HashMap<BluetoothHub.HubTypes, UUID> serviceUUIDs = null,
@@ -113,7 +118,7 @@ public class Container {
     public static HashMap<BluetoothHub.HubTypes, UUID> getServiceUUIDs(@NonNull Context context){
         if (serviceUUIDs == null){
             serviceUUIDs = new HashMap<>();
-            serviceUUIDs.put(BluetoothHub.HubTypes.GeckoHub, UUID.fromString(context.getString(R.string.gecko_service_uuid)));
+            serviceUUIDs.put(BluetoothHub.HubTypes.PowerFunctionsHub, UUID.fromString(context.getString(R.string.gecko_service_uuid)));
             serviceUUIDs.put(BluetoothHub.HubTypes.PoweredUpHub, UUID.fromString(context.getString(R.string.pu_service_uuid)));
         }
         return serviceUUIDs;
@@ -127,7 +132,7 @@ public class Container {
     public static HashMap<BluetoothHub.HubTypes, UUID> getCharacteristicUUIDs(@NonNull Context context){
         if (characteristicUUIDs == null){
             characteristicUUIDs = new HashMap<>();
-            characteristicUUIDs.put(BluetoothHub.HubTypes.GeckoHub, UUID.fromString(context.getString(R.string.gecko_characteristic_uuid)));
+            characteristicUUIDs.put(BluetoothHub.HubTypes.PowerFunctionsHub, UUID.fromString(context.getString(R.string.gecko_characteristic_uuid)));
             characteristicUUIDs.put(BluetoothHub.HubTypes.PoweredUpHub, UUID.fromString(context.getString(R.string.pu_characteristic_uuid)));
         }
         return characteristicUUIDs;

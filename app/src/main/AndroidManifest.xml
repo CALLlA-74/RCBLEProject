@@ -28,6 +28,7 @@
         <activity
             android:name=".SettingPortConnectionsActivity"
             android:screenOrientation="sensorLandscape"
+            android:theme="@style/Theme.RCBLEProject.NoBackground"
             android:exported="false" />
         <activity
             android:name=".AddingElementControlActivity"
@@ -44,6 +45,7 @@
         <activity
             android:name=".ProfilesActivity"
             android:exported="true"
+            android:theme="@style/Theme.RCBLEProject.NoBackground"
             android:windowSoftInputMode="adjustPan" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -56,7 +58,7 @@
             android:exported="false"
             android:screenOrientation="sensorLandscape"
             android:windowSoftInputMode="adjustPan"
-            android:theme="@style/Theme.RCBLEProject.AddingHubsActivity"/>
+            android:theme="@style/Theme.RCBLEProject.NoBackground"/>
     </application>
 
 </manifest>
