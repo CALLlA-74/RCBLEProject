@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 @SuppressLint("ViewConstructor")
 public class GameControllersDrawer extends SurfaceView implements SurfaceHolder.Callback {
@@ -51,6 +52,7 @@ public class GameControllersDrawer extends SurfaceView implements SurfaceHolder.
     private BaseControlElement focusableElement = null;
     private final ProfileControlActivity activity;
     private final HashMap<Integer, BaseControlElement> touchedElements = new HashMap<>();
+    private TreeSet<BluetoothHub> hubsForProfileControl;
     private Timer timerSenderCommands;
 
     private volatile boolean gridVisibility;
@@ -149,6 +151,9 @@ public class GameControllersDrawer extends SurfaceView implements SurfaceHolder.
 
             List<PortConnection> portConns = dbPortConnections.getPortConnectionsByDisplayID(
                     displayID, activity);
+            for (PortConnection portConnection : portConns){
+                hubsForProfileControl.add(portConnection.hub);
+            }
             portConnections.add((ArrayList) portConns);
         }
         setFocusOnElementWithUpperIndex();

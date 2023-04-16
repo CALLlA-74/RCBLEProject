@@ -18,8 +18,14 @@
     <string name="yes" translatable="true">Да</string>
     <string name="no" translatable="true">Нет</string>
 
+    <string name="no_hub_connection" translatable="true">Нет соединения с хабом</string>
+
+    <string name="no_found_hubs" translatable="true">Хабов не обнаружено</string>
+    <string name="start_searching_for_hubs" translatable="true">Начать поиск хабов</string>
+    <string name="searching_for_hubs" translatable="true">Идет поиск хабов…</string>
+
     <string name="confirm_msg_profile" translatable="true">Удалить профиль</string>
-    <string name="confirm_msg_device" translatable="true">Удалить устройство</string>
+    <string name="confirm_msg_hub" translatable="true">Отключиться от хаба</string>
     <string name="confirm_msg_display" translatable="true">Удалить текущий экран?</string>
     <string name="confirm_msg_element_control" translatable="true">Удалить выбранный элемент управления?</string>
     <string name="elements_control" translatable="true">выберете элемент для добавления</string>

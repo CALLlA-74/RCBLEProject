@@ -54,6 +54,7 @@ public class BaseAppBluetoothActivity extends BaseAppActivity{
     protected boolean permissionLocationRequested;
     protected boolean permissionScanRequested;
     protected boolean permissionConnectRequested;
+    protected boolean isLeScanStarted = false;
     protected ActivityResultLauncher launcher;
 
     protected BluetoothAdapter bluetoothAdapter;
@@ -176,7 +177,7 @@ public class BaseAppBluetoothActivity extends BaseAppActivity{
     @SuppressLint("MissingPermission")
     protected void startLEScan(){
         if (!checkBluetoothPeripherals()) return;
-        if (bluetoothAdapter.isEnabled()) {
+        if (bluetoothAdapter.isEnabled() && !isLeScanStarted) {
             BLEScanner = bluetoothAdapter.getBluetoothLeScanner();
             ScanSettings settings = new ScanSettings.Builder()
                     .setScanMode(ScanSettings.SCAN_MODE_LOW_POWER)
@@ -185,6 +186,7 @@ public class BaseAppBluetoothActivity extends BaseAppActivity{
                     .setNumOfMatches(ScanSettings.MATCH_NUM_ONE_ADVERTISEMENT).build();
             ArrayList<ScanFilter> filters = getScanFilters();
             BLEScanner.startScan(filters, settings, scanCallback);
+            isLeScanStarted = true;
             if (BuildConfig.DEBUG) Log.v("APP_TAG", "Start scan!");
         }
         Log.v("APP_TAG22", "gatts size: " + gatts.size());
@@ -200,8 +202,9 @@ public class BaseAppBluetoothActivity extends BaseAppActivity{
 
     @SuppressLint("MissingPermission")
     protected void stopLEScan(){
-        if (BLEScanner == null || !checkBluetoothPeripherals()) return;
+        if (BLEScanner == null || !checkBluetoothPeripherals() || !isLeScanStarted) return;
         BLEScanner.stopScan(scanCallback);
+        isLeScanStarted = false;
     }
 
     @SuppressLint("MissingPermission")

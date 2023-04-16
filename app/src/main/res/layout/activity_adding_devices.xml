@@ -16,25 +16,47 @@
 
     <TableRow
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
         android:layout_weight="1"
         android:gravity="fill">
 
-        <ListView
-            android:id="@+id/lv_connected_devices"
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_weight="1"
-            tools:listitem="@layout/app_list_item" />
+            android:layout_weight="1">
+            <ListView
+                android:id="@+id/lv_connected_devices"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                tools:listitem="@layout/app_list_item" />
 
-        <ListView
-            android:id="@+id/lv_found_devices"
+            <include
+                android:id="@+id/inc_empty_list_cnnctd_hubs"
+                layout="@layout/app_tv_and_bt"
+                android:layout_height="match_parent"
+                android:layout_width="match_parent"
+                android:visibility="gone" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:background="@drawable/border_left"
-            android:layout_weight="1"
-            tools:listitem="@layout/item_found_device"/>
+            android:background="@color/indigo_dye"
+            android:layout_weight="1">
+            <ListView
+                android:id="@+id/lv_found_devices"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                tools:listitem="@layout/item_found_device"/>
+
+            <include
+                android:id="@+id/inc_empty_list_fnd_hubs"
+                layout="@layout/app_tv_and_bt"
+                android:layout_height="match_parent"
+                android:layout_width="match_parent"
+                android:visibility="gone" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
     </TableRow>
-
 
 </LinearLayout>

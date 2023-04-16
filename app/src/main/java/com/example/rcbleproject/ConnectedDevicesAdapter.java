@@ -33,6 +33,8 @@ public class ConnectedDevicesAdapter extends BaseAppArrayAdapter<BluetoothHub> i
         dbAdapter = dbHubs;
         activity = context;
         hubs = dbAdapter.getConnectedHubs(context);
+
+        if (hubs.size() <= 0) activity.initIncEmptyListCnnctdHubsLblVisibility();
     }
 
     @Override
@@ -69,7 +71,7 @@ public class ConnectedDevicesAdapter extends BaseAppArrayAdapter<BluetoothHub> i
                 Bundle args = new Bundle();
                 args.putInt("type", ConfirmRemoveDialogFragment.FragmentType.Hub.ordinal());
                 args.putString("object_id", bluetoothHub.address);
-                args.putString("message", activity.getResources().getString(R.string.confirm_msg_device) + " \"" + bluetoothHub.getName() + "\" ?");
+                args.putString("message", activity.getResources().getString(R.string.confirm_msg_hub) + " \"" + bluetoothHub.getName() + "\" ?");
                 dialog.setArguments(args);
                 dialog.setCancelable(false);
                 dialog.show(activity.getSupportFragmentManager(), activity.getResources().getString(R.string.app_name));
@@ -78,8 +80,9 @@ public class ConnectedDevicesAdapter extends BaseAppArrayAdapter<BluetoothHub> i
         else {
             holder.tv_hub_name.setTextColor(activity.getColor(R.color.blue_ncs));
             holder.bt_light_alarm.setVisibility(View.GONE);
-            //holder.bt_delete_hub.setVisibility(View.GONE);
             holder.bt_context_menu.setVisibility(View.GONE);
+            holder.bt_delete_hub.setVisibility(View.GONE);
+            holder.bt_edit_name.setVisibility(View.GONE);
         }
 
         if (hub.hubType != BluetoothHub.HubTypes.Unknown)
@@ -128,6 +131,7 @@ public class ConnectedDevicesAdapter extends BaseAppArrayAdapter<BluetoothHub> i
         hub.availability = true;
         hub.stateConnection = true;
         dbAdapter.updateHub(hub, activity);
+        activity.hideIncEmptyListCnnctdHubsLblVisibility();
         notifyDataSetChanged();
         return true;
     }
@@ -139,6 +143,8 @@ public class ConnectedDevicesAdapter extends BaseAppArrayAdapter<BluetoothHub> i
             bluetoothHub.stateConnection = false;
             dbAdapter.updateHub(bluetoothHub, activity);
             notifyDataSetChanged();
+
+            if (hubs.size() <= 0) activity.initIncEmptyListCnnctdHubsLblVisibility();
         }
         return bluetoothHub;
     }

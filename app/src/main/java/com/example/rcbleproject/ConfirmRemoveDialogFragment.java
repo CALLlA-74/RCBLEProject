@@ -48,8 +48,7 @@ public class ConfirmRemoveDialogFragment extends DialogFragment {
                     .setIcon(null)
                     .setMessage(message)
                     .setNegativeButton(getResources().getString(R.string.no), (dialog, which) -> iRemovableHub.cancel())
-                    .setPositiveButton(getResources().getString(R.string.yes), (dialog, which) ->
-                            iRemovableHub.remove(address))
+                    .setPositiveButton(getResources().getString(R.string.yes), (dialog, which) -> iRemovableHub.remove(address))
                     .create();
         }
         return builder.create();

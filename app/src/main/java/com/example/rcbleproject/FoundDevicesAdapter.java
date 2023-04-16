@@ -45,6 +45,8 @@ public class FoundDevicesAdapter extends ArrayAdapter<BluetoothHub> implements I
                 }
             }
         }, 0, 1000);
+
+        if (hubs.size() <= 0) activity.initIncEmptyListFndHubsLbl();
     }
 
     @SuppressLint("MissingPermission")
@@ -59,7 +61,7 @@ public class FoundDevicesAdapter extends ArrayAdapter<BluetoothHub> implements I
         } else holder = (ViewHolder) convertView.getTag();
         holder.position = position;
 
-        holder.tv_device_name.setText(hub.getName() + " (" + hub.address + ")");
+        holder.tv_device_name.setText(hub.getName()/* + " (" + hub.address + ")"*/);
         if (hub.isActive) {
             setActiveness(Activeness.active,holder);
             convertView.setOnClickListener((View v) -> {
@@ -92,6 +94,7 @@ public class FoundDevicesAdapter extends ArrayAdapter<BluetoothHub> implements I
         hub.lastTimeAdv = System.currentTimeMillis();
         add(hub);
         notifyDataSetChanged();
+        activity.hideIncEmptyListFndHubsLblVisibility();
         return true;
     }
 
@@ -104,6 +107,7 @@ public class FoundDevicesAdapter extends ArrayAdapter<BluetoothHub> implements I
             BluetoothHub removableHub = getItem(pos);
             remove(removableHub);
             notifyDataSetChanged();
+            if (hubs.size() <= 0) activity.initIncEmptyListFndHubsLbl();
             return  removableHub;
         }
         return null;

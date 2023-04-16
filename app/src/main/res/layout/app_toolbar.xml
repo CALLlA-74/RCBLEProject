@@ -77,5 +77,14 @@
             app:layout_constraintTop_toTopOf="parent"
             android:background="@drawable/item_button_with_red_gradient_background"
             android:src="@drawable/baseline_bluetooth_searching_20"/>
+        <ImageView
+            android:id="@+id/iv_search_device"
+            android:layout_width="30dp"
+            android:layout_height="match_parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:background="@null"
+            android:src="@drawable/baseline_radar_24"
+            android:visibility="gone"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.appcompat.widget.Toolbar>

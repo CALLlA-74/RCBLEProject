@@ -12,7 +12,7 @@
         <shape
             android:shape="rectangle">
             <stroke
-                android:color="?attr/colorPrimary"
+                android:color="@color/indigo_dye"
                 android:width="1dp"/>
         </shape>
     </item>

@@ -110,7 +110,7 @@ public class PortConnectionParamsDialog extends Dialog {
                 intent = new Intent(activity, AddingElementControlActivity.class);
                 activity.startActivity(intent);
                 dialogContext.dismiss();
-                //activity.finish();
+                activity.finish();
         }
     }
 

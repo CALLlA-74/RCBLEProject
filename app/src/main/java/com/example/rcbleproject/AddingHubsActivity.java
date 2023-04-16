@@ -5,7 +5,13 @@ import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.view.animation.RotateAnimation;
 import android.widget.AdapterView;
+import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -20,6 +26,10 @@ public class AddingHubsActivity extends BaseAppBluetoothActivity implements IRem
     protected ConnectedDevicesAdapter lv_connected_devices_adapter;
     protected FoundDevicesAdapter devicesAdapter;
 
+    private ImageView ivRadarImage;
+    private View incEmptyListCnnctdHubsLbl,
+                 incEmptyListFndHubsLbl;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -31,7 +41,7 @@ public class AddingHubsActivity extends BaseAppBluetoothActivity implements IRem
         findViewById(R.id.bt_back).setOnClickListener((View v) -> {
             finish();
         });
-        findViewById(R.id.bt_add_device).setVisibility(View.GONE);
+        initBtForSearchingHubs();
 
         dbHubsAdapter = Container.getDbForHubs(this);
 
@@ -57,14 +67,85 @@ public class AddingHubsActivity extends BaseAppBluetoothActivity implements IRem
         setLvAdapterFoundHubs(devicesAdapter);
     }
 
+    public void initIncEmptyListFndHubsLbl(){
+        incEmptyListFndHubsLbl = findViewById(R.id.inc_empty_list_fnd_hubs);
+        incEmptyListFndHubsLbl.setVisibility(View.VISIBLE);
+        Button btStartLEScan = incEmptyListFndHubsLbl.findViewById(R.id.bt_empty_list);
+        btStartLEScan.setText(R.string.start_searching_for_hubs);
+        btStartLEScan.setOnClickListener(v -> startLEScan());
+    }
+
+    public void hideIncEmptyListFndHubsLblVisibility(){
+        incEmptyListFndHubsLbl = findViewById(R.id.inc_empty_list_fnd_hubs);
+        incEmptyListFndHubsLbl.setVisibility(View.GONE);
+    }
+
+    public void initIncEmptyListCnnctdHubsLblVisibility(){
+        incEmptyListCnnctdHubsLbl = findViewById(R.id.inc_empty_list_cnnctd_hubs);
+        incEmptyListCnnctdHubsLbl.setVisibility(View.VISIBLE);
+
+        incEmptyListCnnctdHubsLbl.findViewById(R.id.bt_empty_list).setVisibility(View.GONE);
+        TextView tvEmptyList = incEmptyListCnnctdHubsLbl.findViewById(R.id.tv_msg_empty_list);
+        tvEmptyList.setText(R.string.empty_hubs_list);
+    }
+
+    public void hideIncEmptyListCnnctdHubsLblVisibility(){
+        incEmptyListCnnctdHubsLbl = findViewById(R.id.inc_empty_list_cnnctd_hubs);
+        incEmptyListCnnctdHubsLbl.setVisibility(View.GONE);
+    }
+
     public void notifyNoHubConnection(){
-        Toast.makeText(this, "Нет соединения с хабом!", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, getString(R.string.no_hub_connection), Toast.LENGTH_SHORT).show();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         setFullscreenMode(binding.layoutContent);
+    }
+
+    private void initBtForSearchingHubs(){
+        ImageButton ibAddDevice = findViewById(R.id.bt_add_device);
+        ibAddDevice.setImageDrawable(null);
+        ibAddDevice.setOnClickListener(v -> {
+            if (!isLeScanStarted) startLEScan();
+            else stopLEScan();
+        });
+
+        ivRadarImage = findViewById(R.id.iv_search_device);
+        ivRadarImage.setVisibility(View.VISIBLE);
+    }
+
+    @SuppressLint("UseCompatLoadingForDrawables")
+    @Override
+    public void startLEScan(){
+        super.startLEScan();
+        incEmptyListFndHubsLbl.findViewById(R.id.bt_empty_list).setVisibility(View.INVISIBLE);
+        TextView tvEmptyListHubs = incEmptyListFndHubsLbl.findViewById(R.id.tv_msg_empty_list);
+        tvEmptyListHubs.setText(R.string.searching_for_hubs);
+        ivRadarImage.startAnimation(AnimationUtils.loadAnimation(this, R.anim.rotate));
+        ivRadarImage.getAnimation().setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {}
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                stopLEScan();
+
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {}
+        });
+    }
+
+    @Override
+    public void stopLEScan(){
+        super.stopLEScan();
+        incEmptyListFndHubsLbl.findViewById(R.id.bt_empty_list).setVisibility(View.VISIBLE);
+        TextView tvEmptyListHubs = incEmptyListFndHubsLbl.findViewById(R.id.tv_msg_empty_list);
+        tvEmptyListHubs.setText(R.string.no_found_hubs);
+        ivRadarImage.clearAnimation();
     }
 
     @Override
