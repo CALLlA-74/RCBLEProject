@@ -7,6 +7,8 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.rcbleproject.Model.BaseControlElement;
+
 import java.util.List;
 
 public class ElementsControlAdapter extends ArrayAdapter<BaseControlElement> {

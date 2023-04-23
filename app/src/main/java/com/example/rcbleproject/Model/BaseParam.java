@@ -1,4 +1,4 @@
-package com.example.rcbleproject;
+package com.example.rcbleproject.Model;
 
 /**
  * Класс BaseParam содержит поля и методы для взаимодействия с параметром соединения порта.

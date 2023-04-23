@@ -1,17 +1,18 @@
-package com.example.rcbleproject;
+package com.example.rcbleproject.Model;
+
+import androidx.annotation.NonNull;
 
 public class ProfileControl {
     private String name;
-    private long id;
+    private final long id;
 
     public ProfileControl(long id){
         this.id = id;
     }
 
-    public boolean setName(String name){
-        if (name.equals("") || name == null) return false;
+    public void setName(String name){
+        if (name == null || name.equals("")) return;
         this.name = name;
-        return true;
     }
 
     public String getName(){
@@ -22,6 +23,7 @@ public class ProfileControl {
         return id;
     }
 
+    @NonNull
     @Override
     public String toString() {
         return this.name;

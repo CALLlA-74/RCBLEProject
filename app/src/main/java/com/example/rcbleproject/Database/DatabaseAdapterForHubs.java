@@ -9,7 +9,7 @@ import android.util.Log;
 
 import com.example.rcbleproject.BaseAppActivity;
 import com.example.rcbleproject.BaseAppBluetoothActivity;
-import com.example.rcbleproject.BluetoothHub;
+import com.example.rcbleproject.Model.BluetoothHub;
 import com.example.rcbleproject.IListViewAdapterForHubs;
 import com.example.rcbleproject.R;
 

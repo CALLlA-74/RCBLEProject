@@ -1,4 +1,4 @@
-package com.example.rcbleproject;
+package com.example.rcbleproject.Model;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -8,6 +8,10 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PointF;
 import android.view.MotionEvent;
+
+import com.example.rcbleproject.GridParams;
+import com.example.rcbleproject.ProfileControlActivity;
+import com.example.rcbleproject.R;
 
 import java.util.ArrayList;
 
@@ -24,7 +28,7 @@ public abstract class BaseControlElement {
      * имеет одну ось. Двухосевой джойстик - две. Также возможно и отсутствие осей (например вставки
      * текста и изображений).
      */
-    public class ControllerAxis extends BaseParam{
+    public class ControllerAxis extends BaseParam {
         public final BaseControlElement parent;
         public final int axisNum;
         private final String axisName;

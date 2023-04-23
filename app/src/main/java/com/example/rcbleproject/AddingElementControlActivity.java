@@ -11,6 +11,7 @@ import android.util.DisplayMetrics;
 import android.view.View;
 
 import com.example.rcbleproject.Database.DatabaseAdapterElementsControl;
+import com.example.rcbleproject.Model.BaseControlElement;
 import com.example.rcbleproject.databinding.ActivityAddingElementControlBinding;
 
 import java.util.List;

@@ -5,21 +5,18 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.example.rcbleproject.BaseAppActivity;
-import com.example.rcbleproject.BaseControlElement;
-import com.example.rcbleproject.BluetoothHub;
+import com.example.rcbleproject.Model.BaseControlElement;
+import com.example.rcbleproject.Model.BluetoothHub;
 import com.example.rcbleproject.BuildConfig;
 import com.example.rcbleproject.Container;
 import com.example.rcbleproject.GameControllersDrawer;
-import com.example.rcbleproject.Port;
-import com.example.rcbleproject.PortConnection;
+import com.example.rcbleproject.Model.Port;
+import com.example.rcbleproject.Model.PortConnection;
 import com.example.rcbleproject.SettingPortConnectionsActivity;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.TreeMap;
 

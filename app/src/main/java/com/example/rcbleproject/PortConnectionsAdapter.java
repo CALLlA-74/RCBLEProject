@@ -15,6 +15,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.rcbleproject.Database.DatabaseAdapterPortConnections;
+import com.example.rcbleproject.Model.BaseControlElement;
+import com.example.rcbleproject.Model.BluetoothHub;
+import com.example.rcbleproject.Model.Port;
+import com.example.rcbleproject.Model.PortConnection;
 
 import java.util.ArrayList;
 import java.util.List;

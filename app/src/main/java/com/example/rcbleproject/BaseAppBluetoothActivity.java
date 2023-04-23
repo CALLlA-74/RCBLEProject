@@ -39,6 +39,7 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.RequiresApi;
 
 import com.example.rcbleproject.Database.DatabaseAdapterForHubs;
+import com.example.rcbleproject.Model.BluetoothHub;
 import com.example.rcbleproject.databinding.ActivityAddingDevicesBinding;
 
 import java.util.ArrayList;

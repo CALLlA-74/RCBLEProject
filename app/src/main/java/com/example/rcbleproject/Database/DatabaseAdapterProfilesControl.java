@@ -1,13 +1,12 @@
 package com.example.rcbleproject.Database;
 
 import android.content.ContentValues;
-import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 import com.example.rcbleproject.BaseAppActivity;
-import com.example.rcbleproject.ProfileControl;
+import com.example.rcbleproject.Model.ProfileControl;
 
 import java.util.ArrayList;
 

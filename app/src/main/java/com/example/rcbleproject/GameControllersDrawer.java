@@ -20,6 +20,10 @@ import com.example.rcbleproject.Database.DatabaseAdapterDisplays;
 import com.example.rcbleproject.Database.DatabaseAdapterElementsControl;
 import com.example.rcbleproject.Database.DatabaseAdapterPortConnections;
 import com.example.rcbleproject.Database.DatabaseAdapterProfilesControl;
+import com.example.rcbleproject.Model.BaseControlElement;
+import com.example.rcbleproject.Model.BluetoothHub;
+import com.example.rcbleproject.Model.Port;
+import com.example.rcbleproject.Model.PortConnection;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -52,7 +56,7 @@ public class GameControllersDrawer extends SurfaceView implements SurfaceHolder.
     private BaseControlElement focusableElement = null;
     private final ProfileControlActivity activity;
     private final HashMap<Integer, BaseControlElement> touchedElements = new HashMap<>();
-    private TreeSet<BluetoothHub> hubsForProfileControl;
+    private final TreeSet<BluetoothHub> hubsForProfileControl = new TreeSet<>();
     private Timer timerSenderCommands;
 
     private volatile boolean gridVisibility;
@@ -92,8 +96,7 @@ public class GameControllersDrawer extends SurfaceView implements SurfaceHolder.
                     if (portConn.port.portValue != portConn.controllerAxis.axisValue){
                         portConn.port.portValue = portConn.controllerAxis.axisValue;
                         Port port = portConn.port;
-                        portConn.hub.setOutputPortCommand(activity, port.portNum, port.getDirection(),
-                                portConn.controllerAxis.axisValue);
+                        portConn.hub.setOutputPortCommand(activity, port);
                     }
                 }
             }
@@ -152,6 +155,7 @@ public class GameControllersDrawer extends SurfaceView implements SurfaceHolder.
             List<PortConnection> portConns = dbPortConnections.getPortConnectionsByDisplayID(
                     displayID, activity);
             for (PortConnection portConnection : portConns){
+                if (portConnection.hub == null) continue;
                 hubsForProfileControl.add(portConnection.hub);
             }
             portConnections.add((ArrayList) portConns);

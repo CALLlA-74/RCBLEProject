@@ -11,6 +11,8 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.rcbleproject.Model.BluetoothHub;
+
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;

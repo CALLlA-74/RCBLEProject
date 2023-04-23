@@ -13,6 +13,7 @@ import com.example.rcbleproject.Database.DatabaseAdapterDisplays;
 import com.example.rcbleproject.Database.DatabaseAdapterElementsControl;
 import com.example.rcbleproject.Database.DatabaseAdapterForHubs;
 import com.example.rcbleproject.Database.DatabaseAdapterProfilesControl;
+import com.example.rcbleproject.Model.BluetoothHub;
 
 import java.util.HashMap;
 import java.util.UUID;

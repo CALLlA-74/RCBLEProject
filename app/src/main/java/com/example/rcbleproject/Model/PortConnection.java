@@ -1,4 +1,4 @@
-package com.example.rcbleproject;
+package com.example.rcbleproject.Model;
 
 /**
  * Класс PortConnection содержит поля и методы для управления подключением к порту хаба.
@@ -8,7 +8,7 @@ public class PortConnection{
     public Port port = null;
     public BaseControlElement.ControllerAxis controllerAxis = null;
 
-    private long id, displayID;
+    private final long id, displayID;
 
     public PortConnection(long id, long displayID) {
         this.id = id;

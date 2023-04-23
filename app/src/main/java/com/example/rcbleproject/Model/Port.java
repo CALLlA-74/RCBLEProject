@@ -1,8 +1,11 @@
-package com.example.rcbleproject;
+package com.example.rcbleproject.Model;
 
 import android.content.Context;
 
-public class Port extends BaseParam{
+import com.example.rcbleproject.BaseAppBluetoothActivity;
+import com.example.rcbleproject.R;
+
+public class Port extends BaseParam {
     public final Context context;
     private int direction = 0;
     public final BluetoothHub hub;
@@ -71,7 +74,7 @@ public class Port extends BaseParam{
 
     @Override
     public void act(Object obj){
-        hub.setOutputPortCommand((BaseAppBluetoothActivity) obj, portNum, direction);
+        hub.setOutputPortTestCommand((BaseAppBluetoothActivity) obj, this);
     }
 
     @Override

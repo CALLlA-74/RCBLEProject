@@ -16,6 +16,12 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.rcbleproject.Model.BaseControlElement;
+import com.example.rcbleproject.Model.BaseParam;
+import com.example.rcbleproject.Model.BluetoothHub;
+import com.example.rcbleproject.Model.Port;
+import com.example.rcbleproject.Model.PortConnection;
+
 import java.util.List;
 
 public class PortConnectionParamsDialog extends Dialog {

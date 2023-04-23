@@ -1,7 +1,6 @@
 package com.example.rcbleproject;
 
 import android.content.Context;
-import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.util.Log;
@@ -14,6 +13,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.rcbleproject.Database.DatabaseAdapterProfilesControl;
+import com.example.rcbleproject.Model.ProfileControl;
 
 public class ProfilesAdapter extends BaseAppCursorAdapter {
 

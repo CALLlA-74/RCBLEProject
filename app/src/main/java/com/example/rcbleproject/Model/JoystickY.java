@@ -1,4 +1,4 @@
-package com.example.rcbleproject;
+package com.example.rcbleproject.Model;
 
 import static java.lang.Math.abs;
 
@@ -11,14 +11,18 @@ import android.graphics.Rect;
 import android.util.Log;
 import android.view.MotionEvent;
 
+import com.example.rcbleproject.GridParams;
+import com.example.rcbleproject.ProfileControlActivity;
+import com.example.rcbleproject.R;
+
 import java.util.ArrayList;
 
 /**
- * Класс JoystickX релизует поля и методы для взаимодействия с одно-осевым горизонтальным
+ * Класс JoystickY релизует поля и методы для взаимодействия с одно-осевым вертикальным
  * джойстиком.
  */
-public class JoystickX extends BaseControlElement{
-    private volatile float width,                 // ширина внешнего контура джойстика
+public class JoystickY extends BaseControlElement{
+    private volatile float height,                // высота внешнего контура джойстика
                            stickPosX, stickPosY,  // координаты стика
                            stickRadius;           // радиус стика
     private volatile Paint paintBackground,       // параметры отрисовки внутреннего фона джойстика
@@ -39,11 +43,11 @@ public class JoystickX extends BaseControlElement{
         public PointF p1, p2, p3;
     }
 
-    private Triangle leftArrow, rightArrow;      // Координаты точек треугольных указателей
+    private Triangle upArrow, downArrow;      // Координаты точек треугольных указателей
 
     public volatile float deltaX, deltaY;
 
-    public JoystickX(long elementID, long displayID, Context context, GridParams gridParams,
+    public JoystickY(long elementID, long displayID, Context context, GridParams gridParams,
                      int elementIndex, int elementSize, boolean isGridVisible,
                      boolean isElementLocked, float pX, float pY){
         super(elementID, displayID, context, gridParams, elementIndex, elementSize, isGridVisible,
@@ -82,8 +86,8 @@ public class JoystickX extends BaseControlElement{
         lockBoard = new Board();
         border = new Board();
 
-        leftArrow = new Triangle();
-        rightArrow = new Triangle();
+        upArrow = new Triangle();
+        downArrow = new Triangle();
 
         setElementSize(elementSize);
         if (isGridVisible) alignToTheGrid();
@@ -93,7 +97,7 @@ public class JoystickX extends BaseControlElement{
      * Создает новый одно-осевой горизонтальный джойстик с параметрами по умолчанию.
      * @param context - используется для доступа к ресурсам приложения.
      */
-    public JoystickX(Context context, long displayID){
+    public JoystickY(Context context, long displayID){
         super(-1, displayID, context, null, 0, 0,
                 false,false,0 ,0 );
     }
@@ -103,14 +107,14 @@ public class JoystickX extends BaseControlElement{
      * @return тип элемента управления.
      */
     @Override
-    public ControlElementType getType() { return ControlElementType.JOYSTICK_X; }
+    public ControlElementType getType() { return ControlElementType.JOYSTICK_Y; }
 
     /**
      * Возвращает название элемента управления.
      * @return название элемента управления.
      */
     @Override
-    public String getName() { return context.getString(R.string.joystick_x_name); }
+    public String getName() { return context.getString(R.string.joystick_y_name); }
 
     /**
      * Изменяет размер элемента управления.
@@ -119,7 +123,7 @@ public class JoystickX extends BaseControlElement{
     @Override
     public void setElementSize(int newElementSize){
         elementSize = newElementSize;
-        width = (20 + elementSize)*gridParams.step;
+        height = (10 + elementSize)*gridParams.step;
         stickRadius = 3 * gridParams.step / 2.f;
         recalculateJoystickParams();
     }
@@ -143,8 +147,8 @@ public class JoystickX extends BaseControlElement{
                             border.right - 1, border.bottom - 1,
                               border.cornerRadius - 1, border.cornerRadius - 1,
                                  paintBackground);
-        drawTriangle(canvas, paintArrowAndStick, leftArrow.p1, leftArrow.p2, leftArrow.p3);
-        drawTriangle(canvas, paintArrowAndStick, rightArrow.p1, rightArrow.p2, rightArrow.p3);
+        drawTriangle(canvas, paintArrowAndStick, upArrow.p1, upArrow.p2, upArrow.p3);
+        drawTriangle(canvas, paintArrowAndStick, downArrow.p1, downArrow.p2, downArrow.p3);
 
         if (mode == ProfileControlActivity.MODE_TYPE.EDIT_MODE){
             if (paintTabletBoard == null) return;
@@ -226,38 +230,38 @@ public class JoystickX extends BaseControlElement{
     private void recalculateJoystickParams(){
         if (paintBackground == null) return;
 
-        border.left = posX - width / 2;
-        border.right = posX + width / 2;
-        border.top = posY - stickRadius;
-        border.bottom = posY + stickRadius;
+        border.left = posX - stickRadius;
+        border.right = posX + stickRadius;
+        border.top = posY - height/2;
+        border.bottom = posY + height/2;
         border.cornerRadius = stickRadius;
 
         String num = "#" + (elementIndex+1);
         Rect boundsNum = new Rect();
         paintBackground.getTextBounds(num, 0, num.length(), boundsNum);
-        numBoard.right = posX - gridParams.step*0.5f;
+        numBoard.right = posX + (boundsNum.width() + gridParams.step)/2.f;
         numBoard.left = numBoard.right - boundsNum.width() - gridParams.step;
-        numBoard.top = posY - gridParams.step*0.75f;
-        numBoard.bottom = posY + gridParams.step*0.75f;
+        numBoard.top = posY - gridParams.step*2;
+        numBoard.bottom = posY - gridParams.step*0.5f;
         numBoard.cornerRadius = gridParams.step*0.75f;
         numBoard.x = numBoard.left + gridParams.step*0.5f;
-        numBoard.y = posY + gridParams.step*0.25f;
+        numBoard.y = numBoard.bottom - gridParams.step*0.5f;//posY + gridParams.step*0.25f;
 
-        lockBoard.left = posX + gridParams.step*0.5f;
-        lockBoard.right = lockBoard.left + gridParams.step + bitmapLock.getWidth();
-        lockBoard.top = numBoard.top;
-        lockBoard.bottom = numBoard.bottom;
+        lockBoard.right = posX + (boundsNum.width() + gridParams.step)/2.f;
+        lockBoard.left = lockBoard.right - boundsNum.width() - gridParams.step;
+        lockBoard.top = posY + gridParams.step*0.5f;
+        lockBoard.bottom = posY + gridParams.step*2f;
         lockBoard.cornerRadius = numBoard.cornerRadius;
         lockBoard.x = lockBoard.left + gridParams.step*0.5f;
-        lockBoard.y = posY - bitmapLock.getHeight() / 2.f;
+        lockBoard.y = (lockBoard.top + lockBoard.bottom)/2 - bitmapLock.getHeight()/2f;
 
-        leftArrow.p1 = new PointF(posX-width/2+3*stickRadius*0.1f, posY);
-        leftArrow.p2 = new PointF(posX-width/2+3*stickRadius*0.2f, posY+3*stickRadius*0.1f);
-        leftArrow.p3 = new PointF(posX-width/2+3*stickRadius*0.2f, posY-3*stickRadius*0.1f);
+        upArrow.p1 = new PointF(posX, posY-height/2+3*stickRadius*0.1f);
+        upArrow.p2 = new PointF(posX+3*stickRadius*0.1f, posY-height/2+3*stickRadius*0.2f);
+        upArrow.p3 = new PointF(posX-3*stickRadius*0.1f, posY-height/2+3*stickRadius*0.2f);
 
-        rightArrow.p1 = new PointF(posX+width/2-3*stickRadius*0.1f, posY);
-        rightArrow.p2 = new PointF(posX+width/2-3*stickRadius*0.2f, posY+3*stickRadius*0.1f);
-        rightArrow.p3 = new PointF(posX+width/2-3*stickRadius*0.2f, posY-3*stickRadius*0.1f);
+        downArrow.p1 = new PointF(posX, posY+height/2-3*stickRadius*0.1f);
+        downArrow.p2 = new PointF(posX+3*stickRadius*0.1f, posY+height/2-3*stickRadius*0.2f);
+        downArrow.p3 = new PointF(posX-3*stickRadius*0.1f, posY+height/2-3*stickRadius*0.2f);
     }
 
     /**
@@ -279,6 +283,7 @@ public class JoystickX extends BaseControlElement{
                 stickPosX = posX;
                 stickPosY = posY;
                 controllerAxes.get(0).axisValue = 0;
+                Log.v("APP_TAG777", controllerAxes.get(0).axisValue+"");
             }
             return;
         }
@@ -288,18 +293,19 @@ public class JoystickX extends BaseControlElement{
 
         int pointerIndex = event.findPointerIndex(pointerID);
         float pointerX = event.getX(pointerIndex);
-        float halfWidth = width/2;
+        float pointerY = event.getY(pointerIndex);
+        float halfHeight = height/2;
 
-        if (abs(posX - pointerX) < (halfWidth - stickRadius))
-            stickPosX = pointerX;
+        if (abs(posY - pointerY) < (halfHeight - stickRadius))
+            stickPosY = pointerY;
         else{
-            if (pointerX < posX)
-                stickPosX = posX - (halfWidth - stickRadius);
+            if (pointerY < posY)
+                stickPosY = posY - (halfHeight - stickRadius);
             else
-                stickPosX = posX + (halfWidth - stickRadius);
+                stickPosY = posY + (halfHeight - stickRadius);
         }
 
-        controllerAxes.get(0).axisValue = (int)((posX - stickPosX)/(halfWidth - stickRadius)*100);
+        controllerAxes.get(0).axisValue = (int)((posY - stickPosY)/(halfHeight - stickRadius)*100);
     }
 
     /**
@@ -308,20 +314,20 @@ public class JoystickX extends BaseControlElement{
     @Override
     public void alignToTheGrid(){
         if (gridParams == null) return;
-        float left_X = posX-width/2;                     // x-координата самой левой точки внешнего круга джойстика
+        float left_X = posX-stickRadius;                  // x-координата самой левой точки внешнего круга джойстика
         float node_X = (int)((left_X-gridParams.left)/gridParams.step)
                 * gridParams.step + gridParams.left;     // x-координата ближайшего узла, левее джойстика
         float shift_X = left_X-node_X;          //???
-        if (abs(gridParams.step - shift_X) < abs(shift_X))
+        if (Math.abs(gridParams.step - shift_X) < abs(shift_X))
             shift_X = shift_X - gridParams.step;
         posX -= shift_X;
         stickPosX = posX;
 
-        float left_Y = posY-stickRadius;                       // y-координата самой верхней точки внешнего круга джойстика
+        float left_Y = posY-height/2;                       // y-координата самой верхней точки внешнего круга джойстика
         float node_Y = (int) ((left_Y-gridParams.top)/gridParams.step)
                 * gridParams.step + gridParams.top;            // y-координата ближайшего узла, выше джойстика
         float shift_Y = left_Y - node_Y;
-        if (abs(gridParams.step - shift_Y) < abs(shift_Y))
+        if (Math.abs(gridParams.step - shift_Y) < abs(shift_Y))
             shift_Y = shift_Y - gridParams.step;
         posY -= shift_Y;
         stickPosY = posY;
@@ -342,7 +348,7 @@ public class JoystickX extends BaseControlElement{
      */
     @Override
     public String[] getAxesNames() {
-        return new String[] {"X"};
+        return new String[] {"Y"};
     }
 
     /**
@@ -351,7 +357,7 @@ public class JoystickX extends BaseControlElement{
      */
     @Override
     public int getIconId() {
-        return R.drawable.joystick_x;
+        return R.drawable.joystick_y;
     }
 
     /**

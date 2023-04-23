@@ -18,6 +18,7 @@ import android.widget.TextView;
 import androidx.annotation.RequiresApi;
 
 import com.example.rcbleproject.Database.DatabaseAdapterForHubs;
+import com.example.rcbleproject.Model.BluetoothHub;
 
 import java.util.List;
 

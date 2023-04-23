@@ -7,7 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 import com.example.rcbleproject.BaseAppActivity;
-import com.example.rcbleproject.BaseControlElement;
+import com.example.rcbleproject.Model.BaseControlElement;
 import com.example.rcbleproject.GridParams;
 
 import java.util.ArrayList;

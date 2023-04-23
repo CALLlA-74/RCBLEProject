@@ -36,6 +36,8 @@ public class ProfileControlActivity extends BaseAppBluetoothActivity implements 
     private ActivityProfileControlBinding binding;
     private MODE_TYPE mode;
 
+    public final int maxNumOfDisplays = getResources().getInteger(R.integer.maxNumOfDisplays);
+
     public enum MODE_TYPE {GAME_MODE, EDIT_MODE}
 
     @SuppressLint({"ClickableViewAccessibility", "NonConstantResourceId"})
@@ -216,12 +218,10 @@ public class ProfileControlActivity extends BaseAppBluetoothActivity implements 
         else item.setIcon(R.drawable.baseline_grid_off_20);
 
         item = binding.nwMenuProfileControl.getMenu().findItem(R.id.item_add_display);
-        if (gameControllersDrawer.getCountOfDisplays() >= 5) item.setEnabled(false);
-        else item.setEnabled(true);
+        item.setEnabled(gameControllersDrawer.getCountOfDisplays() < maxNumOfDisplays);
 
         item = binding.nwMenuProfileControl.getMenu().findItem(R.id.item_remove_display);
-        if (gameControllersDrawer.getCountOfDisplays() < 2) item.setEnabled(false);
-        else item.setEnabled(true);
+        item.setEnabled(gameControllersDrawer.getCountOfDisplays() >= 2);
     }
 
     @SuppressLint({"UseCompatLoadingForDrawables", "SetTextI18n"})

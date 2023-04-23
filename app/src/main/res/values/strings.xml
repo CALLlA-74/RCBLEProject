@@ -23,7 +23,7 @@
 
     <string name="no_found_hubs" translatable="true">No hubs detected</string>
     <string name="start_searching_for_hubs" translatable="true">Start searching for hubs</string>
-    <string name="searching_for_hubs" translatable="true">There is a search for hubs…</string>
+    <string name="searching_for_hubs" translatable="true">There is a search for hubs…\n(Enable hubs to detect them)</string>
 
     <string name="confirm_msg_profile" translatable="true">Delete the profile</string>
     <string name="confirm_msg_hub" translatable="true">Disconnect hub</string>

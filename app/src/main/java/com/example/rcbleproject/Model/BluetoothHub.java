@@ -1,4 +1,4 @@
-package com.example.rcbleproject;
+package com.example.rcbleproject.Model;
 
 import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothDevice;
@@ -10,7 +10,10 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
+import com.example.rcbleproject.BaseAppBluetoothActivity;
+import com.example.rcbleproject.Container;
 import com.example.rcbleproject.Database.DatabaseAdapterForHubs;
+import com.example.rcbleproject.R;
 import com.google.android.gms.common.util.ArrayUtils;
 
 import java.nio.charset.StandardCharsets;
@@ -20,7 +23,7 @@ import java.util.Set;
 import java.util.UUID;
 
 
-public class BluetoothHub extends BaseParam {
+public class BluetoothHub extends BaseParam implements Comparable<BluetoothHub>{
     public enum HubTypes {PowerFunctionsHub, PoweredUpHub, Unknown}
 
     private String name;
@@ -98,6 +101,10 @@ public class BluetoothHub extends BaseParam {
         }
     }
 
+    public int compareTo(BluetoothHub hub){
+        return address.compareTo(hub.address);
+    }
+
     public static HubTypes IntToHubTypes(int type){
         switch (type){
             case 0: return HubTypes.PowerFunctionsHub;
@@ -123,41 +130,24 @@ public class BluetoothHub extends BaseParam {
         }
     }
 
-    public void setOutputPortCommand(BaseAppBluetoothActivity activity, int portNum, int direction){
-        if (portNum < 0 || portNum > 4) return;
-        final int d = Integer.compare(direction, 0);
-        switch (hubType){
-            case PowerFunctionsHub:
-                new Thread(() -> {
-                    byte[] gecko_message = {'0', '0', '0', '1', '0',
-                            '2', '0', '3', '0',
-                            '4', '0', '5', '0',
-                            '6', '0', '7', '0'};
-                    gecko_message[4*portNum + (d < 0? 2 : 0) + 2] = '7';
-                    activity.writeCharacteristic(this, gecko_message);
-                    try {
-                        Thread.sleep(500);
-                    } catch (InterruptedException e) { e.printStackTrace(); }
-                    gecko_message[4*portNum + (d < 0? 2 : 0) + 2] = '0';
-                    activity.writeCharacteristic(this, gecko_message);
-                }).start();
-                break;
-            case PoweredUpHub:
-                new Thread(() -> {
-                    byte[] pu_message = {0x05, 0x00, (byte) 0x81, (byte) portNum, 0x10, 0x01, (byte) (100*d)};
-                    activity.writeCharacteristic(this, pu_message);
-                    try {
-                        Thread.sleep(500);
-                    } catch (InterruptedException e) { e.printStackTrace(); }
-                    pu_message[6] = 0;
-                    activity.writeCharacteristic(this, pu_message);
-                }).start();
-        }
+    public void setOutputPortTestCommand(BaseAppBluetoothActivity activity, Port port){
+        if (port == null) return;
+        new Thread(() -> {
+            port.portValue = 100;
+            setOutputPortCommand(activity, port);
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) { e.printStackTrace(); }
+            port.portValue = 0;
+            setOutputPortCommand(activity, port);
+        }).start();
     }
 
-    public void setOutputPortCommand(BaseAppBluetoothActivity activity, int portNum, int direction,
-                                     int speed){
-        if (portNum < 0 || portNum > 4) return;
+    public void setOutputPortCommand(BaseAppBluetoothActivity activity, Port port){
+        if (port == null) return;
+        int portNum = port.portNum,
+            speed = port.portValue,
+            direction = port.getDirection();
         switch (hubType){
             case PowerFunctionsHub:
                 byte[] gecko_message = {'0', '0', '0', '1', '0',
