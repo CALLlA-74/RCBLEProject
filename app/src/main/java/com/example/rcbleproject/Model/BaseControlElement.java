@@ -10,8 +10,9 @@ import android.graphics.PointF;
 import android.view.MotionEvent;
 
 import com.example.rcbleproject.GridParams;
-import com.example.rcbleproject.ProfileControlActivity;
+import com.example.rcbleproject.ViewAndPresenter.ProfileControlMenu.ProfileControlActivity;
 import com.example.rcbleproject.R;
+import com.example.rcbleproject.ViewAndPresenter.SettingPortConnectionsMenu.BaseParam;
 
 import java.util.ArrayList;
 
@@ -28,7 +29,7 @@ public abstract class BaseControlElement {
      * имеет одну ось. Двухосевой джойстик - две. Также возможно и отсутствие осей (например вставки
      * текста и изображений).
      */
-    public class ControllerAxis extends BaseParam {
+    public class ControllerAxis implements BaseParam {
         public final BaseControlElement parent;
         public final int axisNum;
         private final String axisName;
@@ -112,7 +113,7 @@ public abstract class BaseControlElement {
     }
 
     /**
-     * Возврщает тип элемента управления.
+     * Возвращает тип элемента управления.
      * @return тип элемента управления.
      */
     public abstract ControlElementType getType();
@@ -124,7 +125,7 @@ public abstract class BaseControlElement {
     public abstract String getName();
 
     /**
-     * Изменяет размер элемента управления.
+     * Устанавливает размер элемента управления.
      * @param newElementSize - новый коэффициент размера элемента.
      */
     public abstract void setElementSize(int newElementSize);
@@ -150,9 +151,9 @@ public abstract class BaseControlElement {
     /**
      * Обрабатывает событие касания элемента в режиме редактирования профиля управления.
      * @param event - экземпляр жеста касания.
-     * @param isGridVisible - флаг режима выравнивания элементов по сетке.
+     * @param isToAlignToTheGrid - флаг режима выравнивания элементов по сетке.
      */
-    public abstract void onTouch(MotionEvent event, boolean isGridVisible);
+    public abstract void onTouch(MotionEvent event, boolean isToAlignToTheGrid);
 
     /**
      * Обрабатывает событие касания элемента в игровом режиме работы с профилем управления.
@@ -173,7 +174,7 @@ public abstract class BaseControlElement {
     public abstract int getNumberOfAxes();
 
     /**
-     * Возвращает названия осей элемента управления.
+     * Возвращает массив названий осей элемента управления.
      * @return массив строк названий осей элемента управления.
      */
     public abstract String[] getAxesNames();
@@ -272,11 +273,15 @@ public abstract class BaseControlElement {
      * @return список всех типов элементов управления с параметрами по умолчанию.
      */
     public static ArrayList<BaseControlElement> getAllDefaultElementControlTypes(Context context,
-                                                                                 long displayID){
+                                                                                 long displayID,
+                                                                                 int elementIndex,
+                                                                                 float pX,
+                                                                                 float pY){
         ArrayList<BaseControlElement> list = new ArrayList<>();
-        list.add(new JoystickXY(context, displayID));
-        list.add(new JoystickX(context, displayID));
-        list.add(new JoystickY(context, displayID));
+        int elementSize = context.getResources().getInteger(R.integer.defElementSize);
+        list.add(new JoystickXY(context, displayID, elementIndex, elementSize, pX, pY));
+        list.add(new JoystickX(context, displayID, elementIndex, elementSize, pX, pY));
+        list.add(new JoystickY(context, displayID, elementIndex, elementSize, pX, pY));
         return list;
     }
 

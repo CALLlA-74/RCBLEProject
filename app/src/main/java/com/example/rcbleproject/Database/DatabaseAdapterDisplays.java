@@ -8,7 +8,7 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
-import com.example.rcbleproject.BaseAppActivity;
+import com.example.rcbleproject.ViewAndPresenter.BaseAppActivity;
 import com.example.rcbleproject.BuildConfig;
 import com.example.rcbleproject.Container;
 import com.example.rcbleproject.R;

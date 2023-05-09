@@ -1,4 +1,4 @@
-package com.example.rcbleproject;
+package com.example.rcbleproject.ViewAndPresenter.ProfileControlMenu;
 
 import static com.example.rcbleproject.Container.appPrefKey;
 import static com.example.rcbleproject.Container.chosenProfControlPrefKey;
@@ -22,9 +22,16 @@ import android.widget.TextView;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
+import com.example.rcbleproject.ViewAndPresenter.AddingElementsMenu.AddingElementControlActivity;
+import com.example.rcbleproject.ViewAndPresenter.BaseAppBluetoothActivity;
+import com.example.rcbleproject.Container;
 import com.example.rcbleproject.Database.DatabaseAdapterDisplays;
 import com.example.rcbleproject.Database.DatabaseAdapterElementsControl;
 import com.example.rcbleproject.Database.DatabaseAdapterProfilesControl;
+import com.example.rcbleproject.R;
+import com.example.rcbleproject.ViewAndPresenter.SettingPortConnectionsMenu.SettingPortConnectionsActivity;
+import com.example.rcbleproject.ViewAndPresenter.ConfirmRemoveDialogFragment;
+import com.example.rcbleproject.ViewAndPresenter.IRemovable;
 import com.example.rcbleproject.databinding.ActivityProfileControlBinding;
 
 public class ProfileControlActivity extends BaseAppBluetoothActivity implements IRemovable {
@@ -36,7 +43,7 @@ public class ProfileControlActivity extends BaseAppBluetoothActivity implements 
     private ActivityProfileControlBinding binding;
     private MODE_TYPE mode;
 
-    public final int maxNumOfDisplays = getResources().getInteger(R.integer.maxNumOfDisplays);
+    private int maxNumOfDisplays;
 
     public enum MODE_TYPE {GAME_MODE, EDIT_MODE}
 
@@ -44,6 +51,7 @@ public class ProfileControlActivity extends BaseAppBluetoothActivity implements 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        maxNumOfDisplays = getResources().getInteger(R.integer.maxNumOfDisplays);
         SharedPreferences preferences = getSharedPreferences(appPrefKey, MODE_PRIVATE);
         profileID = preferences.getLong(chosenProfControlPrefKey, 0);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN
@@ -63,7 +71,7 @@ public class ProfileControlActivity extends BaseAppBluetoothActivity implements 
                 dbAdapterElementsControl, dbProfiles, dbDisplays, profileID);
         binding.svGameControllers.getHolder().addCallback(gameControllersDrawer);
         binding.svGameControllers.setOnTouchListener((View v, MotionEvent event) -> {
-            gameControllersDrawer.onTouch(v, event);
+            gameControllersDrawer.onTouch(event);
             return true;
         });
 

@@ -5,6 +5,11 @@
     <string name="empty_profiles_list" translatable="true">The list of profiles control is empty</string>
     <string name="add_first_profile_control" translatable="true">Create profile</string>
 
+    <string name="no_bluetooth_adapter" translatable="true">No Bluetooth adapter on the device</string>
+    <string name="bluetooth_not_enabled" translatable="true">Bluetooth is not enabled</string>
+    <string name="no_access_to_geo" translatable="true">No access to geolocation</string>
+    <string name="geo_not_enabled" translatable="true">Geolocation is not enabled</string>
+
     <string name="empty_hubs_list" translatable="true">No connected hubs</string>
     <string name="connect_hubs" translatable="true">Connect hubs</string>
 

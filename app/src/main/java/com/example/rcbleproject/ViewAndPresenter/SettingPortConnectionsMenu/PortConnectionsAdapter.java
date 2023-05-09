@@ -1,8 +1,8 @@
-package com.example.rcbleproject;
+package com.example.rcbleproject.ViewAndPresenter.SettingPortConnectionsMenu;
 
-import static com.example.rcbleproject.PortConnectionParamsDialog.ParamType.CONTROLLER_AXIS;
-import static com.example.rcbleproject.PortConnectionParamsDialog.ParamType.HUB;
-import static com.example.rcbleproject.PortConnectionParamsDialog.ParamType.PORT;
+import static com.example.rcbleproject.ViewAndPresenter.SettingPortConnectionsMenu.PortConnectionParamsDialog.ParamType.CONTROLLER_AXIS;
+import static com.example.rcbleproject.ViewAndPresenter.SettingPortConnectionsMenu.PortConnectionParamsDialog.ParamType.HUB;
+import static com.example.rcbleproject.ViewAndPresenter.SettingPortConnectionsMenu.PortConnectionParamsDialog.ParamType.PORT;
 
 import android.annotation.SuppressLint;
 import android.view.LayoutInflater;
@@ -14,11 +14,14 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.rcbleproject.Container;
 import com.example.rcbleproject.Database.DatabaseAdapterPortConnections;
 import com.example.rcbleproject.Model.BaseControlElement;
 import com.example.rcbleproject.Model.BluetoothHub;
 import com.example.rcbleproject.Model.Port;
 import com.example.rcbleproject.Model.PortConnection;
+import com.example.rcbleproject.R;
+import com.example.rcbleproject.ViewAndPresenter.ProfileControlMenu.GameControllersDrawer;
 
 import java.util.ArrayList;
 import java.util.List;

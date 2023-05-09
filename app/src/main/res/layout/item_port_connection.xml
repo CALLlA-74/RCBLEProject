@@ -10,7 +10,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/v_hub"
         android:layout_width="130dp"
-        android:layout_height="wrap_content"
+        android:layout_height="140dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -28,7 +28,7 @@
         <TextView
             android:id="@+id/tv_hub_name"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="20dp"
             android:text="TECH"
             android:textColor="@color/white"
             android:fontFamily="serif"
@@ -43,7 +43,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/v_port"
         android:layout_width="130dp"
-        android:layout_height="wrap_content"
+        android:layout_height="140dp"
         android:layout_marginStart="20dp"
         app:layout_constraintStart_toEndOf="@id/v_hub"
         app:layout_constraintTop_toTopOf="parent"
@@ -62,7 +62,7 @@
         <TextView
             android:id="@+id/tv_port_name"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="20dp"
             android:text="Выберете порт"
             android:textColor="@color/white"
             android:fontFamily="serif"
@@ -77,7 +77,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/v_controller_axis"
         android:layout_width="130dp"
-        android:layout_height="wrap_content"
+        android:layout_height="140dp"
         android:layout_marginStart="20dp"
         app:layout_constraintStart_toEndOf="@id/v_port"
         app:layout_constraintTop_toTopOf="parent"
@@ -86,12 +86,13 @@
         android:background="@drawable/rect_white_border">
         <ImageView
             android:id="@+id/iv_controller_axis_icon"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
             android:src="@drawable/joystick_xy"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/tv_controller_axis_name"
             android:background="@null"/>
         <TextView
             android:id="@+id/tv_controller_axis_name"
@@ -101,10 +102,10 @@
             android:textColor="@color/white"
             android:fontFamily="serif"
             android:textAlignment="center"
-            app:layout_constraintTop_toBottomOf="@id/iv_controller_axis_icon"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
+            android:paddingTop="5dp"
             android:background="@null"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
 

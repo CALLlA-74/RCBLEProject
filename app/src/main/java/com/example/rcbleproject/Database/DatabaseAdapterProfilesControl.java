@@ -1,11 +1,12 @@
 package com.example.rcbleproject.Database;
 
+import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
-import com.example.rcbleproject.BaseAppActivity;
+import com.example.rcbleproject.ViewAndPresenter.BaseAppActivity;
 import com.example.rcbleproject.Model.ProfileControl;
 
 import java.util.ArrayList;
@@ -45,8 +46,7 @@ public class DatabaseAdapterProfilesControl extends DatabaseAdapter{
 
     public long delete(long profileId){
         return database.delete(TABLE_NAME,
-                    ID + " = ?",
-                               new String[]{String.valueOf(profileId)});
+                    ID + " = ?", new String[]{String.valueOf(profileId)});
     }
 
     public Cursor getProfile_cursor(long id){
@@ -65,6 +65,7 @@ public class DatabaseAdapterProfilesControl extends DatabaseAdapter{
         return profileControl;
     }
 
+    @SuppressLint("Recycle")
     public int getNumOfScreens(long profileId){
         Cursor cursor = database.query(TABLE_NAME, new String[]{NUMBER_OF_SCREENS},
                 ID + " = " + profileId, null, null, null, null);
@@ -72,6 +73,7 @@ public class DatabaseAdapterProfilesControl extends DatabaseAdapter{
         return cursor.getInt(cursor.getColumnIndexOrThrow(NUMBER_OF_SCREENS));
     }
 
+    @SuppressLint("Recycle")
     public boolean getProfileGridAlignment(long profileId){
         Cursor cursor = database.query(TABLE_NAME, new String[] {GRID_ALIGNMENT},
                 ID + " = " + profileId, null, null, null, null);
@@ -99,7 +101,7 @@ public class DatabaseAdapterProfilesControl extends DatabaseAdapter{
 
     public ArrayList<ProfileControl> getProfiles(boolean isReverse){
         ArrayList<ProfileControl> list = new ArrayList<>();
-        Cursor cursor = getAllRows(isReverse);
+        Cursor cursor = getProfiles_cursor(isReverse);
         while (cursor.moveToNext()){
             int idx = cursor.getColumnIndex(ID);
             if (idx < 0) return null;
@@ -114,10 +116,6 @@ public class DatabaseAdapterProfilesControl extends DatabaseAdapter{
     }
 
     public Cursor getProfiles_cursor(boolean isReverse){
-        return getAllRows(isReverse);
-    }
-
-    private Cursor getAllRows(boolean isReverse){
         if (!isReverse)
             return database.query(TABLE_NAME, getColumns(), null,
                               null, null, null, null);

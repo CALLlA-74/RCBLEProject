@@ -8,7 +8,7 @@
     android:layout_height="match_parent"
     android:background="?attr/fullscreenBackgroundColor"
     android:theme="@style/ThemeOverlay.RCBLEProject.FullscreenContainer"
-    tools:context=".AddingElementControlActivity">
+    tools:context=".ViewAndPresenter.AddingElementsMenu.AddingElementControlActivity">
 
     <include
         android:id="@+id/tb_activity_add_element"

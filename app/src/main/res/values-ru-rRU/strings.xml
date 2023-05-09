@@ -6,6 +6,11 @@
     <string name="empty_profiles_list" translatable="true">Нет созданных профилей управления</string>
     <string name="add_first_profile_control" translatable="true">Создать профиль</string>
 
+    <string name="no_bluetooth_adapter" translatable="true">Нет Bluetooth на устройстве</string>
+    <string name="bluetooth_not_enabled" translatable="true">Bluetooth не включен</string>
+    <string name="no_access_to_geo" translatable="true">Нет доступа к геоданным</string>
+    <string name="geo_not_enabled" translatable="true">Геоданные не включены</string>
+
     <string name="empty_hubs_list" translatable="true">Нет подключенных хабов</string>
     <string name="connect_hubs" translatable="true">Подключить хабы</string>
 
@@ -28,7 +33,7 @@
     <string name="confirm_msg_hub" translatable="true">Отключиться от хаба</string>
     <string name="confirm_msg_display" translatable="true">Удалить текущий экран?</string>
     <string name="confirm_msg_element_control" translatable="true">Удалить выбранный элемент управления?</string>
-    <string name="elements_control" translatable="true">выберете элемент для добавления</string>
+    <string name="elements_control" translatable="true">Выберете элемент для добавления</string>
     <string name="joystick_xy_name" translatable="true">2-осевой джойстик</string>
     <string name="joystick_x_name" translatable="true">1-осевой горизонтальный джойстик</string>
     <string name="joystick_y_name" translatable="true">1-осевой вертикальный джойстик</string>

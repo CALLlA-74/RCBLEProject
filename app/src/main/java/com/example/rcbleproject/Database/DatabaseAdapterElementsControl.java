@@ -6,7 +6,8 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
-import com.example.rcbleproject.BaseAppActivity;
+import com.example.rcbleproject.BuildConfig;
+import com.example.rcbleproject.ViewAndPresenter.BaseAppActivity;
 import com.example.rcbleproject.Model.BaseControlElement;
 import com.example.rcbleproject.GridParams;
 
@@ -57,24 +58,28 @@ public class DatabaseAdapterElementsControl extends DatabaseAdapter{
                 + "UNIQUE(" + DISPLAY_ID + ", " + ELEMENT_NUMBER + "));");
     }
 
-    public long insert(int elementNumber, long displayId, int type, int size, int numOfAxes,
-                       float x_coordinate, float y_coordinate){
+    public long insert(BaseControlElement controlElement){
         ContentValues contentValues = new ContentValues();
-        contentValues.put(ELEMENT_NUMBER, elementNumber);
-        contentValues.put(DISPLAY_ID, displayId);
-        contentValues.put(ELEMENT_TYPE, type);
-        contentValues.put(ELEMENT_SIZE, size);
-        contentValues.put(NUMBER_OF_AXES, numOfAxes);
-        contentValues.put(X_COORDINATE, x_coordinate);
-        contentValues.put(Y_COORDINATE, y_coordinate);
-        Log.v("APP_TAG3", "number:" + elementNumber);
-        Log.v("APP_TAG3", "type:" + type);
-        Log.v("APP_TAG3", "size:" + size);
-        Log.v("APP_TAG3", "X, Y:" + x_coordinate + " " + y_coordinate);
+        contentValues.put(ELEMENT_NUMBER, controlElement.elementIndex);
+        contentValues.put(DISPLAY_ID, controlElement.displayID);
+        contentValues.put(ELEMENT_TYPE, controlElement.getType().ordinal());
+        contentValues.put(ELEMENT_SIZE, controlElement.elementSize);
+        contentValues.put(NUMBER_OF_AXES, controlElement.getNumberOfAxes());
+        contentValues.put(X_COORDINATE, controlElement.getPosX());
+        contentValues.put(Y_COORDINATE, controlElement.getPosY());
+
+        if (BuildConfig.DEBUG){
+            Log.v("APP_TAG3", "number:" + controlElement.elementIndex);
+            Log.v("APP_TAG3", "type:" + controlElement.getType().ordinal());
+            Log.v("APP_TAG3", "size:" + controlElement.elementSize);
+            Log.v("APP_TAG3", "X, Y:" + controlElement.getPosX() + " "
+                    + controlElement.getPosY());
+        }
+
         return database.insert(TABLE_NAME, null, contentValues);
     }
 
-    public long insertUnknownTypeElement(long displayId){
+    public void insertUnknownTypeElement(long displayId){
         ContentValues contentValues = new ContentValues();
         contentValues.put(ELEMENT_NUMBER, -1);
         contentValues.put(DISPLAY_ID, displayId);
@@ -83,7 +88,7 @@ public class DatabaseAdapterElementsControl extends DatabaseAdapter{
         contentValues.put(NUMBER_OF_AXES, 0);
         contentValues.put(X_COORDINATE, -100);
         contentValues.put(Y_COORDINATE, -100);
-        return database.insert(TABLE_NAME, null, contentValues);
+        database.insert(TABLE_NAME, null, contentValues);
     }
 
     public ArrayList<BaseControlElement> getElementsControlByDisplayID(Context context,

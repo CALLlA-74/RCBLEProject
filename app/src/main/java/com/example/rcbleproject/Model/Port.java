@@ -2,10 +2,11 @@ package com.example.rcbleproject.Model;
 
 import android.content.Context;
 
-import com.example.rcbleproject.BaseAppBluetoothActivity;
+import com.example.rcbleproject.ViewAndPresenter.BaseAppBluetoothActivity;
 import com.example.rcbleproject.R;
+import com.example.rcbleproject.ViewAndPresenter.SettingPortConnectionsMenu.BaseParam;
 
-public class Port extends BaseParam {
+public class Port implements BaseParam {
     public final Context context;
     private int direction = 0;
     public final BluetoothHub hub;
@@ -82,6 +83,13 @@ public class Port extends BaseParam {
 
     @Override
     public boolean equals(Object obj){
-        return (((Port)obj).portNum == portNum) && (((Port)obj).getDirection() == getDirection());
+        if (obj == null) return false;
+        try {
+            Port port = (Port) obj;
+            return (port.portNum == portNum) && (port.getDirection() == getDirection());
+        }
+        catch (Exception e){
+            return false;
+        }
     }
 }

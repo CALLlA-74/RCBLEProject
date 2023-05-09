@@ -1,4 +1,4 @@
-package com.example.rcbleproject;
+package com.example.rcbleproject.ViewAndPresenter.MainMenu;
 
 import static com.example.rcbleproject.Container.chosenProfControlPrefKey;
 import static com.example.rcbleproject.Container.appPrefKey;
@@ -20,8 +20,15 @@ import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.example.rcbleproject.ViewAndPresenter.AddingHubsMenu.AddingHubsActivity;
+import com.example.rcbleproject.ViewAndPresenter.BaseAppActivity;
+import com.example.rcbleproject.BuildConfig;
+import com.example.rcbleproject.Container;
 import com.example.rcbleproject.Database.DatabaseAdapterDisplays;
 import com.example.rcbleproject.Database.DatabaseAdapterProfilesControl;
+import com.example.rcbleproject.ViewAndPresenter.IRemovable;
+import com.example.rcbleproject.ViewAndPresenter.ProfileControlMenu.ProfileControlActivity;
+import com.example.rcbleproject.R;
 
 public class ProfilesActivity extends BaseAppActivity implements IRemovable {
 
@@ -41,7 +48,10 @@ public class ProfilesActivity extends BaseAppActivity implements IRemovable {
         setSupportActionBar(findViewById(R.id.tb_activity_profiles));
         ((TextView)findViewById(R.id.tv_label)).setText(R.string.profiles_control);
         findViewById(R.id.bt_back).setVisibility(View.GONE);
-        findViewById(R.id.bt_add_device).setVisibility(View.GONE);
+        findViewById(R.id.bt_add_device).setOnClickListener(v -> {
+            Intent intent = new Intent(this, AddingHubsActivity.class);
+            startActivity(intent);
+        });
 
         lvProfiles = findViewById(R.id.lv_profiles);
 

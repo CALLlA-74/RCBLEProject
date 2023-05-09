@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:baselineAligned="false"
-    tools:context=".AddingHubsActivity"
+    tools:context=".ViewAndPresenter.AddingHubsMenu.AddingHubsActivity"
     android:background="?attr/colorPrimary">
 
     <include

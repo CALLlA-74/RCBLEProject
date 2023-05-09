@@ -1,4 +1,4 @@
-package com.example.rcbleproject;
+package com.example.rcbleproject.ViewAndPresenter.ProfileControlMenu;
 
 import static com.example.rcbleproject.Container.appPrefKey;
 import static com.example.rcbleproject.Container.currDisIdxPrefKey;
@@ -16,14 +16,18 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 
+import com.example.rcbleproject.BuildConfig;
+import com.example.rcbleproject.Container;
 import com.example.rcbleproject.Database.DatabaseAdapterDisplays;
 import com.example.rcbleproject.Database.DatabaseAdapterElementsControl;
 import com.example.rcbleproject.Database.DatabaseAdapterPortConnections;
 import com.example.rcbleproject.Database.DatabaseAdapterProfilesControl;
+import com.example.rcbleproject.GridParams;
 import com.example.rcbleproject.Model.BaseControlElement;
 import com.example.rcbleproject.Model.BluetoothHub;
 import com.example.rcbleproject.Model.Port;
 import com.example.rcbleproject.Model.PortConnection;
+import com.example.rcbleproject.R;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -59,7 +63,7 @@ public class GameControllersDrawer extends SurfaceView implements SurfaceHolder.
     private final TreeSet<BluetoothHub> hubsForProfileControl = new TreeSet<>();
     private Timer timerSenderCommands;
 
-    private volatile boolean gridVisibility;
+    private volatile boolean isGridVisible;
     private volatile int currentDisplayIndex;
 
 
@@ -74,7 +78,7 @@ public class GameControllersDrawer extends SurfaceView implements SurfaceHolder.
         dbPortConnections = Container.getDbPortConnections(activity);
         this.dbDisplays = dbDisplays;
         this.profileID = profileID;
-        gridVisibility = dbAdapterProfiles.getProfileGridAlignment(profileID);
+        isGridVisible = dbAdapterProfiles.getProfileGridAlignment(profileID);
 
         gridParams = new GridParams(displayMetrics);
         paintBackground.setColor(profileControlActivity.getColor(R.color.honolulu_blue));
@@ -147,7 +151,7 @@ public class GameControllersDrawer extends SurfaceView implements SurfaceHolder.
         controlElementTreeMap = new TreeMap<>();
         for (Long displayID : displayIDs){
             ArrayList<BaseControlElement> elements = dbElementsControl.getElementsControlByDisplayID(
-                    getContext(), displayID, gridParams, gridVisibility);
+                    getContext(), displayID, gridParams, isGridVisible);
             controlElements.add(elements);
             for (BaseControlElement element : elements)
                 controlElementTreeMap.put(element.elementID, element);
@@ -175,7 +179,7 @@ public class GameControllersDrawer extends SurfaceView implements SurfaceHolder.
         }
         for (ArrayList<BaseControlElement> display : controlElements)
             dbElementsControl.updateAllRows(display);
-        dbProfilesControl.updateProfileGridAlignment(profileID, gridVisibility);
+        dbProfilesControl.updateProfileGridAlignment(profileID, isGridVisible);
         dbProfilesControl.updateProfileNumOfDisplays(profileID, countOfDisplays);
     }
 
@@ -193,7 +197,7 @@ public class GameControllersDrawer extends SurfaceView implements SurfaceHolder.
         controlElements.add(currentDisplayIndex+1, new ArrayList<>());
         portConnections.add(new ArrayList<>());
         currentDisplayIndex++;
-        ((ProfileControlActivity)getContext()).showCurrentDisplayNum(currentDisplayIndex, countOfDisplays);
+        activity.showCurrentDisplayNum(currentDisplayIndex, countOfDisplays);
         setFocusOnElementWithUpperIndex();
     }
 
@@ -227,32 +231,25 @@ public class GameControllersDrawer extends SurfaceView implements SurfaceHolder.
         setFocusOnElementWithUpperIndex();
     }
 
-    public int getCurrentDisplayIndex() {
-        return currentDisplayIndex;
-    }
-
     public int getNumOfDisplays() {
         return countOfDisplays;
     }
 
     public void setGridVisibility(boolean visibility){
         if (drawingThread == null) return;
-        if (gridVisibility != visibility){
+        if (isGridVisible != visibility){
             ArrayList<BaseControlElement> elementsOnCurrentDisplay = controlElements.get(currentDisplayIndex);
             for (BaseControlElement controlElement: elementsOnCurrentDisplay)
                 controlElement.alignToTheGrid();
         }
-        gridVisibility = visibility;
+        isGridVisible = visibility;
     }
 
     public boolean getGridVisibility(){
-        return gridVisibility;
+        return isGridVisible;
     }
-    public String[] getElementAxesNames() { return focusableElement.getAxesNames(); }
-    public long getFocusableElementID() { return focusableElement.elementID; }
     public boolean isFocused() {
-        if (focusableElement == null) return false;
-        return true;
+        return focusableElement != null;
     }
 
     public boolean getElementLocking() { return focusableElement.isElementLocked; }
@@ -267,7 +264,7 @@ public class GameControllersDrawer extends SurfaceView implements SurfaceHolder.
         focusableElement.setElementSize(newElementSize);
     }
 
-    public void onTouch(View view, MotionEvent event){
+    public void onTouch(MotionEvent event){
         ArrayList<BaseControlElement> elementsOnDisplay = controlElements.get(currentDisplayIndex);
         int act = event.getActionMasked();
         int pointerIndex = event.getActionIndex();
@@ -276,14 +273,14 @@ public class GameControllersDrawer extends SurfaceView implements SurfaceHolder.
                 for (int i = elementsOnDisplay.size() - 1; i >= 0; i--){
                     BaseControlElement element = elementsOnDisplay.get(i);
                     if (element.contains(event.getX(pointerIndex), event.getY(pointerIndex))){
-                        element.onTouch(event, gridVisibility);
+                        element.onTouch(event, isGridVisible);
                         setFocus(element);
                         return;
                     }
                 }
             }
             else if (focusableElement != null && focusableElement.contains(event.getX(pointerIndex), event.getY(pointerIndex))) {
-                focusableElement.onTouch(event, gridVisibility);
+                focusableElement.onTouch(event, isGridVisible);
             }
         }
         else {
@@ -352,7 +349,7 @@ public class GameControllersDrawer extends SurfaceView implements SurfaceHolder.
 
 
     class DrawingThread extends Thread{
-        private SurfaceHolder holder;
+        private final SurfaceHolder holder;
         private volatile boolean running;
 
         DrawingThread(SurfaceHolder holder){
@@ -371,7 +368,7 @@ public class GameControllersDrawer extends SurfaceView implements SurfaceHolder.
                 if (c != null){
                     try{
                         c.drawRect(0, 0, c.getWidth(), c.getHeight(), paintBackground);
-                        if (gridVisibility && activity.getMode() == ProfileControlActivity.MODE_TYPE.EDIT_MODE){
+                        if (isGridVisible && activity.getMode() == ProfileControlActivity.MODE_TYPE.EDIT_MODE){
                             for (int i = gridParams.left; i <= c.getWidth(); i+= gridParams.step)
                                 for (int j = gridParams.top; j <= c.getHeight(); j+= gridParams.step){
                                     c.drawCircle(i, j, 1, paintGrid);

@@ -1,4 +1,4 @@
-package com.example.rcbleproject;
+package com.example.rcbleproject.ViewAndPresenter.SettingPortConnectionsMenu;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
@@ -16,11 +16,14 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.rcbleproject.ViewAndPresenter.AddingElementsMenu.AddingElementControlActivity;
+import com.example.rcbleproject.ViewAndPresenter.IListViewAdapterForHubs;
 import com.example.rcbleproject.Model.BaseControlElement;
-import com.example.rcbleproject.Model.BaseParam;
 import com.example.rcbleproject.Model.BluetoothHub;
 import com.example.rcbleproject.Model.Port;
 import com.example.rcbleproject.Model.PortConnection;
+import com.example.rcbleproject.R;
+import com.example.rcbleproject.ViewAndPresenter.AddingHubsMenu.AddingHubsActivity;
 
 import java.util.List;
 
@@ -135,7 +138,7 @@ public class PortConnectionParamsDialog extends Dialog {
     }
 
     private class ParamsListAdapter extends RecyclerView.Adapter<ParamsListAdapter.ViewHolder>
-                                                                implements IListViewAdapterForHubs{
+                                                                implements IListViewAdapterForHubs {
         List<BaseParam> paramsList;
         LayoutInflater inflater;
         final int itemId = R.layout.item_for_params_list;

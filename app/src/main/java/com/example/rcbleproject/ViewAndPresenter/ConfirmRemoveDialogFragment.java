@@ -1,4 +1,4 @@
-package com.example.rcbleproject;
+package com.example.rcbleproject.ViewAndPresenter;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -7,8 +7,11 @@ import android.os.Bundle;
 
 import androidx.fragment.app.DialogFragment;
 
+import com.example.rcbleproject.ViewAndPresenter.AddingHubsMenu.IRemovableHub;
+import com.example.rcbleproject.R;
+
 public class ConfirmRemoveDialogFragment extends DialogFragment {
-    enum FragmentType {ProfileControl, Hub, Unknown}
+    public enum FragmentType {ProfileControl, Hub, Unknown}
     private IRemovable iRemovable;
     private IRemovableHub iRemovableHub;
 

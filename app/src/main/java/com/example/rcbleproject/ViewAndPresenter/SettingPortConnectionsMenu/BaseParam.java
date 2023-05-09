@@ -1,37 +1,37 @@
-package com.example.rcbleproject.Model;
+package com.example.rcbleproject.ViewAndPresenter.SettingPortConnectionsMenu;
 
 /**
  * Класс BaseParam содержит поля и методы для взаимодействия с параметром соединения порта.
  */
-public abstract class BaseParam {
+public interface BaseParam {
     /**
      * Используется для получения имени параметра.
      * @return название параметра.
      */
-    public abstract String getName();
+    String getName();
 
     /**
      * Используется для установления иконки параметра.
      * @return id ресурса иконки параметра.
      */
-    public abstract int getIconId();
+    int getIconId();
 
     /**
      * Используется для замены стандартной иконки меню параметра.
      * @return id ресурса для иконки меню параметра.
      */
-    public abstract int getMenuIconId();
+    int getMenuIconId();
 
     /**
      * Используется для выполнения действия, ассоциированного с параметром.
      * @param obj - объект, необходимый для выполнения действия.
      */
-    public abstract void act(Object obj);
+    void act(Object obj);
 
     /**
      * Используется для получения состояния флага, уведомляющего о возможности
      * выполнить дейстия метода act().
      * @return флаг активности.
      */
-    public abstract boolean getAvailabilityForAct();
+    boolean getAvailabilityForAct();
 }

@@ -30,24 +30,24 @@
             android:resource="@anim/rotate" />
 
         <activity
-            android:name=".SettingPortConnectionsActivity"
+            android:name=".ViewAndPresenter.SettingPortConnectionsMenu.SettingPortConnectionsActivity"
             android:exported="false"
             android:screenOrientation="sensorLandscape"
             android:theme="@style/Theme.RCBLEProject.NoBackground" />
         <activity
-            android:name=".AddingElementControlActivity"
+            android:name=".ViewAndPresenter.AddingElementsMenu.AddingElementControlActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:exported="false"
             android:screenOrientation="sensorLandscape"
             android:theme="@style/Theme.RCBLEProject.Fullscreen" />
         <activity
-            android:name=".ProfileControlActivity"
+            android:name=".ViewAndPresenter.ProfileControlMenu.ProfileControlActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:exported="false"
             android:screenOrientation="sensorLandscape"
             android:theme="@style/Theme.RCBLEProject.ProfileControlActivity" />
         <activity
-            android:name=".ProfilesActivity"
+            android:name=".ViewAndPresenter.MainMenu.ProfilesActivity"
             android:exported="true"
             android:theme="@style/Theme.RCBLEProject.NoBackground"
             android:windowSoftInputMode="adjustPan">
@@ -58,7 +58,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".AddingHubsActivity"
+            android:name=".ViewAndPresenter.AddingHubsMenu.AddingHubsActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:exported="false"
             android:screenOrientation="sensorLandscape"

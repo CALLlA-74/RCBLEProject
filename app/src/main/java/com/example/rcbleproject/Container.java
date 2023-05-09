@@ -14,6 +14,7 @@ import com.example.rcbleproject.Database.DatabaseAdapterElementsControl;
 import com.example.rcbleproject.Database.DatabaseAdapterForHubs;
 import com.example.rcbleproject.Database.DatabaseAdapterProfilesControl;
 import com.example.rcbleproject.Model.BluetoothHub;
+import com.example.rcbleproject.ViewAndPresenter.BaseAppActivity;
 
 import java.util.HashMap;
 import java.util.UUID;

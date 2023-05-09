@@ -1,4 +1,4 @@
-package com.example.rcbleproject;
+package com.example.rcbleproject.ViewAndPresenter;
 
 import static android.bluetooth.BluetoothDevice.BOND_BONDED;
 import static android.bluetooth.BluetoothDevice.BOND_BONDING;
@@ -38,15 +38,18 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.RequiresApi;
 
+import com.example.rcbleproject.BuildConfig;
+import com.example.rcbleproject.Container;
 import com.example.rcbleproject.Database.DatabaseAdapterForHubs;
 import com.example.rcbleproject.Model.BluetoothHub;
+import com.example.rcbleproject.R;
 import com.example.rcbleproject.databinding.ActivityAddingDevicesBinding;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;
 
-public class BaseAppBluetoothActivity extends BaseAppActivity{
+public class BaseAppBluetoothActivity extends BaseAppActivity {
     private IListViewAdapterForHubs lvAdapterConnectedDevices = Container.getDbForHubs(this);
     private IListViewAdapterForHubs lvAdapterFoundHubs;
 
@@ -64,10 +67,10 @@ public class BaseAppBluetoothActivity extends BaseAppActivity{
 
     protected DatabaseAdapterForHubs dbHubsAdapter;
 
-    protected final HashMap<String, BluetoothGatt> gatts = Container.getGatts();
+    protected static final HashMap<String, BluetoothGatt> gatts = Container.getGatts();
     protected final BaseAppBluetoothActivity activity = this;
 
-    protected void setLvAdapterConnectedDevices(IListViewAdapterForHubs adapter){
+    public void setLvAdapterConnectedDevices(IListViewAdapterForHubs adapter){
         lvAdapterConnectedDevices = adapter;
     }
 
@@ -109,7 +112,10 @@ public class BaseAppBluetoothActivity extends BaseAppActivity{
     }
 
     public boolean checkBluetoothPeripherals(){
-        if (bluetoothAdapter == null) return false;
+        if (bluetoothAdapter == null) {
+            Toast.makeText(this, R.string.no_bluetooth_adapter, Toast.LENGTH_SHORT).show();
+            return false;
+        }
         if (bluetoothAdapter.isEnabled()
                 && checkPermissionLocation()
                 && checkLocation()
@@ -119,24 +125,28 @@ public class BaseAppBluetoothActivity extends BaseAppActivity{
             Intent intent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             launcher.launch(intent);
             bluetoothRequested = true;
+            Toast.makeText(this, R.string.bluetooth_not_enabled, Toast.LENGTH_SHORT).show();
             return false;
         }
 
         if (bluetoothAdapter.isEnabled() && !permissionLocationRequested && !checkPermissionLocation()) {
             permissionLocationRequested = true;
             requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+            Toast.makeText(this, R.string.no_access_to_geo, Toast.LENGTH_SHORT).show();
             return false;
         }
 
         if (bluetoothAdapter.isEnabled() && !permissionScanRequested && !checkPermissionBLE_SCAN()){
             requestPermissions(new String[]{Manifest.permission.BLUETOOTH_SCAN}, 2);
             permissionScanRequested = true;
+            Toast.makeText(this, R.string.no_access_to_geo, Toast.LENGTH_SHORT).show();
             return false;
         }
 
         if (bluetoothAdapter.isEnabled() && !permissionConnectRequested && !checkPermissionBLE_CONNECT()){
             requestPermissions(new String[]{Manifest.permission.BLUETOOTH_CONNECT}, 3);
             permissionConnectRequested = true;
+            Toast.makeText(this, R.string.no_access_to_geo, Toast.LENGTH_SHORT).show();
             return false;
         }
 
@@ -144,6 +154,7 @@ public class BaseAppBluetoothActivity extends BaseAppActivity{
             Intent enableLocationIntent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
             launcher.launch(enableLocationIntent);
             locationRequested = true;
+            Toast.makeText(this, R.string.geo_not_enabled, Toast.LENGTH_SHORT).show();
             return false;
         }
 

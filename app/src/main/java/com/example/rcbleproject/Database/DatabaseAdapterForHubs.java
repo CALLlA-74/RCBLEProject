@@ -7,10 +7,10 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
-import com.example.rcbleproject.BaseAppActivity;
-import com.example.rcbleproject.BaseAppBluetoothActivity;
+import com.example.rcbleproject.ViewAndPresenter.BaseAppActivity;
+import com.example.rcbleproject.ViewAndPresenter.BaseAppBluetoothActivity;
 import com.example.rcbleproject.Model.BluetoothHub;
-import com.example.rcbleproject.IListViewAdapterForHubs;
+import com.example.rcbleproject.ViewAndPresenter.IListViewAdapterForHubs;
 import com.example.rcbleproject.R;
 
 import java.util.ArrayList;
@@ -99,7 +99,10 @@ public class DatabaseAdapterForHubs extends DatabaseAdapter implements IListView
     @SuppressLint("ResourceType")
     public Map<String, BluetoothHub> getAllHubs(BaseAppActivity activity){
         if (allHubs != null) return allHubs;
-        if (connectedHubs == null) connectedHubs = Collections.synchronizedList(new ArrayList<>(context.getResources().getInteger(R.integer.maxNumOfHubs)));
+        if (connectedHubs == null){
+            connectedHubs = Collections.synchronizedList(new ArrayList<>(context.getResources()
+                    .getInteger(R.integer.maxNumOfHubs)));
+        }
         allHubs = Collections.synchronizedMap(new TreeMap<>());
         GetConnectedHubsAsync getAsync = new GetConnectedHubsAsync(activity);
         getAsync.execute();

@@ -11,7 +11,7 @@ import android.graphics.Rect;
 import android.view.MotionEvent;
 
 import com.example.rcbleproject.GridParams;
-import com.example.rcbleproject.ProfileControlActivity;
+import com.example.rcbleproject.ViewAndPresenter.ProfileControlMenu.ProfileControlActivity;
 import com.example.rcbleproject.R;
 
 import java.util.ArrayList;
@@ -96,9 +96,10 @@ public class JoystickX extends BaseControlElement{
      * Создает новый одно-осевой горизонтальный джойстик с параметрами по умолчанию.
      * @param context - используется для доступа к ресурсам приложения.
      */
-    public JoystickX(Context context, long displayID){
-        super(-1, displayID, context, null, 0, 0,
-                false,false,0 ,0 );
+    public JoystickX(Context context, long displayID, int elementIndex, int elementSize,
+                     float pX, float pY){
+        super(-1, displayID, context, null, elementIndex, elementSize,
+                false,false, pX, pY);
     }
 
     /**
@@ -193,10 +194,10 @@ public class JoystickX extends BaseControlElement{
     /**
      * Обрабатывает событие касания элемента в режиме редактирования профиля управления.
      * @param event - экземпляр жеста касания.
-     * @param isGridVisible - флаг режима выравнивания элементов по сетке.
+     * @param isToAlignToTheGrid - флаг режима выравнивания элементов по сетке.
      */
     @Override
-    public void onTouch(MotionEvent event, boolean isGridVisible){
+    public void onTouch(MotionEvent event, boolean isToAlignToTheGrid){
         if (isElementLocked) return;
 
         int pointerIndex = event.getActionIndex();
@@ -218,7 +219,7 @@ public class JoystickX extends BaseControlElement{
                 break;
             case MotionEvent.ACTION_UP:
                 checkOutDisplay();
-                if (isGridVisible) alignToTheGrid();
+                if (isToAlignToTheGrid) alignToTheGrid();
                 break;
         }
     }

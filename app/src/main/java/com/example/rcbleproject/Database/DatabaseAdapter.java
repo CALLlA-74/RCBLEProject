@@ -3,7 +3,7 @@ package com.example.rcbleproject.Database;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 
-import com.example.rcbleproject.BaseAppActivity;
+import com.example.rcbleproject.ViewAndPresenter.BaseAppActivity;
 
 public class DatabaseAdapter {
 

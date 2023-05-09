@@ -6,7 +6,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ProfileControlActivity"
+    tools:context=".ViewAndPresenter.ProfileControlMenu.ProfileControlActivity"
     tools:openDrawer="start">
 
     <SurfaceView
@@ -125,7 +125,8 @@
                     android:text=" 1 / 200 "
                     android:layout_marginStart="2dp"
                     android:layout_marginEnd="2dp"
-                    android:padding="2dp"/>
+                    android:padding="2dp"
+                    tools:ignore="HardcodedText" />
                 <ImageButton
                     android:id="@+id/bt_next_display"
                     android:layout_width="30dp"
@@ -148,5 +149,6 @@
         android:backgroundTint="?attr/colorPrimary"
         android:backgroundTintMode="screen"
         android:theme="@style/MenuItemStyle"
-        app:menu="@menu/menu_profile_control" />
+        app:menu="@menu/menu_profile_control"
+        tools:ignore="InOrMmUsage" />
 </androidx.drawerlayout.widget.DrawerLayout>

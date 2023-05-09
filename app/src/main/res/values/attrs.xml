@@ -9,4 +9,5 @@
     <attr name="act" format="integer">0x02</attr>
     <integer name="maxNumOfHubs">35</integer>
     <integer name="maxNumOfDisplays">5</integer>
+    <integer name="defElementSize">2</integer>
 </resources>

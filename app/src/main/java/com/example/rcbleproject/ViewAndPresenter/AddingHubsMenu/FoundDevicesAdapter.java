@@ -1,4 +1,4 @@
-package com.example.rcbleproject;
+package com.example.rcbleproject.ViewAndPresenter.AddingHubsMenu;
 
 import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothDevice;
@@ -11,7 +11,10 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.rcbleproject.BuildConfig;
+import com.example.rcbleproject.ViewAndPresenter.IListViewAdapterForHubs;
 import com.example.rcbleproject.Model.BluetoothHub;
+import com.example.rcbleproject.R;
 
 import java.util.List;
 import java.util.Timer;

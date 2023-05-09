@@ -1,4 +1,4 @@
-package com.example.rcbleproject;
+package com.example.rcbleproject.ViewAndPresenter;
 
 import android.bluetooth.BluetoothDevice;
 

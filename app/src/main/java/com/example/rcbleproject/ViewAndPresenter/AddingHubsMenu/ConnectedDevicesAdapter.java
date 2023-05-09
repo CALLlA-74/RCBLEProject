@@ -1,36 +1,45 @@
-package com.example.rcbleproject;
+package com.example.rcbleproject.ViewAndPresenter.AddingHubsMenu;
 
 import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 import android.graphics.Color;
-import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.annotation.RequiresApi;
-
 import com.example.rcbleproject.Database.DatabaseAdapterForHubs;
+import com.example.rcbleproject.ViewAndPresenter.IListViewAdapterForHubs;
 import com.example.rcbleproject.Model.BluetoothHub;
+import com.example.rcbleproject.R;
+import com.example.rcbleproject.ViewAndPresenter.ConfirmRemoveDialogFragment;
 
 import java.util.List;
 
-public class ConnectedDevicesAdapter extends BaseAppArrayAdapter<BluetoothHub> implements IListViewAdapterForHubs {
+public class ConnectedDevicesAdapter extends ArrayAdapter<BluetoothHub> implements IListViewAdapterForHubs {
     private static final int resource = R.layout.app_list_item;
 
+    private View editingView = null;
+    private View viewInConMenu = null;
+    private enum Mode{ view_mode, context_menu_mode, edit_mode }
     private final DatabaseAdapterForHubs dbAdapter;
     private final List<BluetoothHub> hubs;
+    private final LayoutInflater inflater;
+    private final int layout;
     AddingHubsActivity activity;
 
     public ConnectedDevicesAdapter(AddingHubsActivity context, DatabaseAdapterForHubs dbHubs){
         super(context, resource, dbHubs.getConnectedHubs(context));
+        inflater = LayoutInflater.from(context);
+        layout = resource;
         dbAdapter = dbHubs;
         activity = context;
         hubs = dbAdapter.getConnectedHubs(context);
@@ -137,7 +146,6 @@ public class ConnectedDevicesAdapter extends BaseAppArrayAdapter<BluetoothHub> i
         return true;
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     public BluetoothHub removeHub(String hubAddress){
         BluetoothHub bluetoothHub = dbAdapter.findConnectedHubByAddress(hubAddress);
         if (bluetoothHub != null){
@@ -150,7 +158,6 @@ public class ConnectedDevicesAdapter extends BaseAppArrayAdapter<BluetoothHub> i
         return bluetoothHub;
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @SuppressLint("MissingPermission")
     public boolean setAvailability(boolean flag, BluetoothDevice device){
         BluetoothHub hub = dbAdapter.findConnectedHubByAddress(device.getAddress());
@@ -182,24 +189,21 @@ public class ConnectedDevicesAdapter extends BaseAppArrayAdapter<BluetoothHub> i
         holder.iv_hub_icon.setVisibility(View.VISIBLE);
     }
 
-    public boolean cancelEdit(){
-        boolean isViewNull = resetViewInConMenu();
-        if (editingView == null) return isViewNull;
+    public void cancelEdit(){
+        resetViewInConMenu();
+        if (editingView == null) return;
         ViewHolder vh = ((ViewHolder)editingView.getTag());
         setMode(Mode.view_mode, vh);
         activity.hideKeyboard(vh.et_hub_name);
         editingView = null;
         vh.iv_hub_icon.setVisibility(View.VISIBLE);
-        return true;
     }
 
-    public boolean resetViewInConMenu(){
+    public void resetViewInConMenu(){
         if (viewInConMenu != null){
             setMode(Mode.view_mode, (ViewHolder) (viewInConMenu.getTag()));
             viewInConMenu = null;
-            return true;
         }
-        return false;
     }
 
     protected void saveChanges(ViewHolder vh){

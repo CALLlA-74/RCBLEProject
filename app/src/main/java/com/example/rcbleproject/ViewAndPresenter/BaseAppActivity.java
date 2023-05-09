@@ -1,16 +1,17 @@
-package com.example.rcbleproject;
+package com.example.rcbleproject.ViewAndPresenter;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
 import android.view.View;
 import android.view.WindowInsets;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.rcbleproject.R;
 
 public class BaseAppActivity extends AppCompatActivity {
 

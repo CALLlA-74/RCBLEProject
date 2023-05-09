@@ -1,4 +1,4 @@
-package com.example.rcbleproject;
+package com.example.rcbleproject.ViewAndPresenter.SettingPortConnectionsMenu;
 
 import static com.example.rcbleproject.Container.appPrefKey;
 import static com.example.rcbleproject.Container.chosenProfControlPrefKey;
@@ -14,10 +14,16 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.example.rcbleproject.ViewAndPresenter.BaseAppBluetoothActivity;
+import com.example.rcbleproject.Container;
 import com.example.rcbleproject.Database.DatabaseAdapterPortConnections;
 import com.example.rcbleproject.Model.BluetoothHub;
 import com.example.rcbleproject.Model.Port;
 import com.example.rcbleproject.Model.PortConnection;
+import com.example.rcbleproject.R;
+import com.example.rcbleproject.ViewAndPresenter.AddingHubsMenu.AddingHubsActivity;
+import com.example.rcbleproject.ViewAndPresenter.BaseAppActivity;
+import com.example.rcbleproject.ViewAndPresenter.ProfileControlMenu.GameControllersDrawer;
 
 import java.util.ArrayList;
 import java.util.List;

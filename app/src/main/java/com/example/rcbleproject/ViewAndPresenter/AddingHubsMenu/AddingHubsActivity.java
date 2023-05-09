@@ -1,13 +1,11 @@
-package com.example.rcbleproject;
+package com.example.rcbleproject.ViewAndPresenter.AddingHubsMenu;
 
 import android.annotation.SuppressLint;
-import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.view.animation.RotateAnimation;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -16,8 +14,10 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.RequiresApi;
-
+import com.example.rcbleproject.ViewAndPresenter.BaseAppBluetoothActivity;
+import com.example.rcbleproject.BuildConfig;
+import com.example.rcbleproject.Container;
+import com.example.rcbleproject.R;
 import com.example.rcbleproject.databinding.ActivityAddingDevicesBinding;
 
 import java.util.ArrayList;
@@ -120,6 +120,7 @@ public class AddingHubsActivity extends BaseAppBluetoothActivity implements IRem
     @Override
     public void startLEScan(){
         super.startLEScan();
+        if (!isLeScanStarted) return;
         incEmptyListFndHubsLbl.findViewById(R.id.bt_empty_list).setVisibility(View.INVISIBLE);
         TextView tvEmptyListHubs = incEmptyListFndHubsLbl.findViewById(R.id.tv_msg_empty_list);
         tvEmptyListHubs.setText(R.string.searching_for_hubs);
@@ -131,7 +132,6 @@ public class AddingHubsActivity extends BaseAppBluetoothActivity implements IRem
             @Override
             public void onAnimationEnd(Animation animation) {
                 stopLEScan();
-
             }
 
             @Override

@@ -6,15 +6,15 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
-import com.example.rcbleproject.BaseAppActivity;
+import com.example.rcbleproject.ViewAndPresenter.BaseAppActivity;
 import com.example.rcbleproject.Model.BaseControlElement;
 import com.example.rcbleproject.Model.BluetoothHub;
 import com.example.rcbleproject.BuildConfig;
 import com.example.rcbleproject.Container;
-import com.example.rcbleproject.GameControllersDrawer;
+import com.example.rcbleproject.ViewAndPresenter.ProfileControlMenu.GameControllersDrawer;
 import com.example.rcbleproject.Model.Port;
 import com.example.rcbleproject.Model.PortConnection;
-import com.example.rcbleproject.SettingPortConnectionsActivity;
+import com.example.rcbleproject.ViewAndPresenter.SettingPortConnectionsMenu.SettingPortConnectionsActivity;
 
 import java.util.ArrayList;
 import java.util.List;

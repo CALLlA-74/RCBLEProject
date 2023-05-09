@@ -1,25 +1,35 @@
-package com.example.rcbleproject;
+package com.example.rcbleproject.ViewAndPresenter.MainMenu;
 
 import android.content.Context;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 
+import com.example.rcbleproject.BuildConfig;
+import com.example.rcbleproject.ViewAndPresenter.ConfirmRemoveDialogFragment;
 import com.example.rcbleproject.Database.DatabaseAdapterProfilesControl;
 import com.example.rcbleproject.Model.ProfileControl;
+import com.example.rcbleproject.R;
 
-public class ProfilesAdapter extends BaseAppCursorAdapter {
+public class ProfilesAdapter extends SimpleCursorAdapter {
+    protected enum Mode{ view_mode, context_menu_mode, edit_mode }
 
+    private final LayoutInflater inflater;
+    private final int layout;
+    private View editingView = null;
+    private View viewInConMenu = null;
     private final DatabaseAdapterProfilesControl dbProfilesAdapter;
     private final ProfilesActivity activity;
-    private final boolean isReverse;          // если true, профили будут выводить в обратном порядке
+    private final boolean isReverse;          // если true, профили будут отображаться в обратном порядке
     private long lastAddedProfileId = -2;
 
     public ProfilesAdapter(ProfilesActivity context, int resource, DatabaseAdapterProfilesControl adapter,
@@ -27,6 +37,8 @@ public class ProfilesAdapter extends BaseAppCursorAdapter {
         super(context, resource, adapter.getProfiles_cursor(isReverse), adapter.getColumns(),
                 new int[]{R.id.et_name, R.id.tv_name, R.id.bt_delete,
                             R.id.bt_cancel, R.id.bt_ok}, 0);
+        inflater = LayoutInflater.from(context);
+        layout = resource;
         this.isReverse = isReverse;
         dbProfilesAdapter = adapter;
         activity = context;
@@ -65,9 +77,7 @@ public class ProfilesAdapter extends BaseAppCursorAdapter {
             dialog.show(activity.getSupportFragmentManager(), activity.getResources().getString(R.string.app_name));
         });
 
-        holder.bt_edit_name.setOnClickListener(v -> {
-            setFocusOnEditText((View)v.getParent());
-        });
+        holder.bt_edit_name.setOnClickListener(v -> setFocusOnEditText((View)v.getParent()));
 
         holder.bt_play.setOnClickListener(v -> {
             cancelEdit();
@@ -80,7 +90,7 @@ public class ProfilesAdapter extends BaseAppCursorAdapter {
             setMode(Mode.context_menu_mode, (ViewHolder)(viewInConMenu.getTag()));
         });
 
-        holder.bt_cancel.setOnClickListener(v -> { cancelEdit(); });
+        holder.bt_cancel.setOnClickListener(v -> cancelEdit());
 
         holder.bt_ok.setOnClickListener(v -> {
             ViewHolder vh = ((ViewHolder)editingView.getTag());
@@ -186,7 +196,6 @@ public class ProfilesAdapter extends BaseAppCursorAdapter {
         this.editingView = editingView;
     }
 
-    @Override
     public void resetEditingView(){
         if (editingView == null) return;
         ViewHolder holder = (ViewHolder) editingView.getTag();

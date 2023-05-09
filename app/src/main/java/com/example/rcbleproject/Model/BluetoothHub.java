@@ -10,10 +10,11 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
-import com.example.rcbleproject.BaseAppBluetoothActivity;
+import com.example.rcbleproject.ViewAndPresenter.BaseAppBluetoothActivity;
 import com.example.rcbleproject.Container;
 import com.example.rcbleproject.Database.DatabaseAdapterForHubs;
 import com.example.rcbleproject.R;
+import com.example.rcbleproject.ViewAndPresenter.SettingPortConnectionsMenu.BaseParam;
 import com.google.android.gms.common.util.ArrayUtils;
 
 import java.nio.charset.StandardCharsets;
@@ -23,7 +24,7 @@ import java.util.Set;
 import java.util.UUID;
 
 
-public class BluetoothHub extends BaseParam implements Comparable<BluetoothHub>{
+public class BluetoothHub implements BaseParam, Comparable<BluetoothHub>{
     public enum HubTypes {PowerFunctionsHub, PoweredUpHub, Unknown}
 
     private String name;
@@ -151,9 +152,9 @@ public class BluetoothHub extends BaseParam implements Comparable<BluetoothHub>{
         switch (hubType){
             case PowerFunctionsHub:
                 byte[] gecko_message = {'0', '0', '0', '1', '0',
-                        '2', '0', '3', '0',
-                        '4', '0', '5', '0',
-                        '6', '0', '7', '0'};
+                                        '2', '0', '3', '0',
+                                        '4', '0', '5', '0',
+                                        '6', '0', '7', '0'};
                 gecko_message[4*portNum + (direction < 0? 2 : 0) + 2] = '7';
                 activity.writeCharacteristic(this, gecko_message);
                 break;
@@ -165,12 +166,10 @@ public class BluetoothHub extends BaseParam implements Comparable<BluetoothHub>{
         }
     }
 
-    public boolean updateHubNameInDB(String newHubName) {
+    public void updateHubNameInDB(String newHubName) {
         if (hubType == HubTypes.PoweredUpHub){
             name = newHubName;
-            return true;
         }
-        return false;
     }
 
     @SuppressLint("UseCompatLoadingForDrawables")
@@ -183,15 +182,10 @@ public class BluetoothHub extends BaseParam implements Comparable<BluetoothHub>{
                 Toast.makeText(activity, toastText, Toast.LENGTH_SHORT).show();
                 return false;
             }
-            Log.v("APP_TAG222", "type: " + hubType);
-            Log.v("APP_TAG222", newName);
-            Log.v("APP_TAG222", Integer.toString(newName.length()));
             new Thread(() -> {
                 byte[] header = {0x02, 0x00, 0x01, 0x01, 0x01};
                 header[0] += name.length;
                 byte[] message = ArrayUtils.concatByteArrays(header, name);
-                Log.v("APP_TAG", "len: " + message.length + " msg:");
-                for (byte b : message) Log.v("APP_TAG", Byte.toString(b));
                 activity.writeCharacteristic(this, message);
             }).start();
         }
