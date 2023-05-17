@@ -1,5 +1,7 @@
 package com.example.rcbleproject.Model;
 
+import static java.lang.Math.abs;
+
 import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.le.ScanResult;
@@ -10,6 +12,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
+import com.example.rcbleproject.BuildConfig;
 import com.example.rcbleproject.ViewAndPresenter.BaseAppBluetoothActivity;
 import com.example.rcbleproject.Container;
 import com.example.rcbleproject.Database.DatabaseAdapterForHubs;
@@ -151,17 +154,20 @@ public class BluetoothHub implements BaseParam, Comparable<BluetoothHub>{
             direction = port.getDirection();
         switch (hubType){
             case PowerFunctionsHub:
-                byte[] gecko_message = {'0', '0', '0', '1', '0',
-                                        '2', '0', '3', '0',
-                                        '4', '0', '5', '0',
-                                        '6', '0', '7', '0'};
-                gecko_message[4*portNum + (direction < 0? 2 : 0) + 2] = '7';
+                byte[] gecko_message = {'0', (byte) (2*portNum), 0,
+                                             (byte) (2*portNum + 1), 0};
+                direction*=speed;
+                speed = (int)(abs(speed) * 0.07f + 0.5);
+                gecko_message[(direction < 0? 2 : 0) + 2] = (byte) (Math.min(7, speed));
+                if (BuildConfig.DEBUG)
+                    Log.v("APP_TAG777", "hub: " + address+" " + portNum+" "+speed);
                 activity.writeCharacteristic(this, gecko_message);
                 break;
             case PoweredUpHub:
                 byte[] pu_message = {0x05, 0x00, (byte) 0x81, (byte) portNum, 0x10, 0x01,
                         (byte) (speed*direction)};
-                Log.v("APP_TAG778", "hub: " + address+" " + portNum+" "+speed);
+                if (BuildConfig.DEBUG)
+                    Log.v("APP_TAG778", "hub: " + address+" " + portNum+" "+speed);
                 activity.writeCharacteristic(this, pu_message);
         }
     }

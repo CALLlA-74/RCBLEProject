@@ -37,6 +37,7 @@
     <string name="joystick_xy_name" translatable="true">2-осевой джойстик</string>
     <string name="joystick_x_name" translatable="true">1-осевой горизонтальный джойстик</string>
     <string name="joystick_y_name" translatable="true">1-осевой вертикальный джойстик</string>
+    <string name="image_name" translatable="true">изображение</string>
     <string name="grid_align" translatable="true">Выравнивание по сетке</string>
     <string name="add_display" translatable="true">Добавить дисплей</string>
     <string name="remove_display" translatable="true">Удалить текущий дисплей</string>
@@ -46,6 +47,7 @@
     <string name="element_size" translatable="true">Размер элемента</string>
     <string name="controlled_ports" translatable="true">Соединения портов</string>
     <string name="binding_ports" translatable="true">Привязать порты</string>
+    <string name="loading_image" translatable="true">Загрузить изображение из галереи</string>
     <string name="axis_word" translatable="true">ось</string>
     <string name="add_controlled_port" translatable="true">Добавить соединение порта</string>
     <string name="edit_profile" translatable="true">Редактировать профиль</string>
@@ -54,6 +56,9 @@
     <string name="unknown_hub_name" translatable="true">Выберете хаб</string>
     <string name="unknown_port_name" translatable="true">Выберете порт</string>
     <string name="unknown_controller_axis_name" translatable="true">Выберете элемент управления</string>
+    <string name="back" translatable="true">В главное меню</string>
+    <string name="editor" translatable="true">Редактор профиля</string>
+    <string name="connecting" translatable="true">Подключение</string>
 
     <string name="port_a" translatable="true">порт А</string>
     <string name="port_a_inv" translatable="true">порт А инверс.</string>

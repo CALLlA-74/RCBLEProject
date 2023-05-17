@@ -60,6 +60,7 @@
         <entry key="..\:/projects_for_Android/RCBLEProject/app/src/main/res/layout/app_list_item.xml" value="0.21243523316062177" />
         <entry key="..\:/projects_for_Android/RCBLEProject/app/src/main/res/layout/app_toolbar.xml" value="0.33109919571045576" />
         <entry key="..\:/projects_for_Android/RCBLEProject/app/src/main/res/layout/app_tv_and_bt.xml" value="0.1675929884566054" />
+        <entry key="..\:/projects_for_Android/RCBLEProject/app/src/main/res/layout/connecting_to_hubs_dialog.xml" value="0.33" />
         <entry key="..\:/projects_for_Android/RCBLEProject/app/src/main/res/layout/content_add_devices.xml" value="0.25" />
         <entry key="..\:/projects_for_Android/RCBLEProject/app/src/main/res/layout/content_profiles.xml" value="0.18" />
         <entry key="..\:/projects_for_Android/RCBLEProject/app/src/main/res/layout/content_setting_controlled_ports.xml" value="0.16" />
@@ -75,6 +76,7 @@
         <entry key="..\:/projects_for_Android/RCBLEProject/app/src/main/res/layout/item_profile.xml" value="0.20416666666666666" />
         <entry key="..\:/projects_for_Android/RCBLEProject/app/src/main/res/layout/menu_item_changing_size.xml" value="0.21103327495621715" />
         <entry key="..\:/projects_for_Android/RCBLEProject/app/src/main/res/layout/menu_item_controlled_ports.xml" value="0.33" />
+        <entry key="..\:/projects_for_Android/RCBLEProject/app/src/main/res/layout/menu_item_load_image.xml" value="0.6203966005665722" />
         <entry key="..\:/projects_for_Android/RCBLEProject/app/src/main/res/layout/menu_profile_control.xml" value="0.16673792218896966" />
         <entry key="..\:/projects_for_Android/RCBLEProject/app/src/main/res/layout/toast_view.xml" value="0.1" />
         <entry key="..\:/projects_for_Android/RCBLEProject/app/src/main/res/menu/menu_profile_control.xml" value="0.22" />

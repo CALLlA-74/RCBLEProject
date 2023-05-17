@@ -38,6 +38,7 @@
     <string name="joystick_xy_name" translatable="true">2-axis joystick</string>
     <string name="joystick_x_name" translatable="true">1-axis horizontal joystick</string>
     <string name="joystick_y_name" translatable="true">1-axis vertical joystick</string>
+    <string name="image_name" translatable="true">image</string>
     <string name="grid_align" translatable="true">Grid alignment</string>
     <string name="add_display" translatable="true">Add display</string>
     <string name="remove_display" translatable="true">Remove current display</string>
@@ -47,6 +48,7 @@
     <string name="element_size" translatable="true">Element size</string>
     <string name="controlled_ports" translatable="true">Port connections</string>
     <string name="binding_ports" translatable="true">Bind ports</string>
+    <string name="loading_image" translatable="true">Load image from gallery</string>
     <string name="axis_word" translatable="true">axis</string>
     <string name="add_controlled_port" translatable="true">Add port connection</string>
     <string name="edit_profile" translatable="true">Edit profile</string>
@@ -55,6 +57,9 @@
     <string name="unknown_hub_name" translatable="true">choose a hub</string>
     <string name="unknown_port_name" translatable="true">choose a port</string>
     <string name="unknown_controller_axis_name" translatable="true">choose an element control</string>
+    <string name="back" translatable="true">Back</string>
+    <string name="editor" translatable="true">Profile editor</string>
+    <string name="connecting" translatable="true">Connecting</string>
 
     <string name="port_a" translatable="true">port A</string>
     <string name="port_a_inv" translatable="true">port А inverse</string>

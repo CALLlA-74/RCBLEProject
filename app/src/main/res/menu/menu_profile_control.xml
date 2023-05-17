@@ -58,4 +58,14 @@
             android:layout_height="30dp"
             android:checkable="true"/>
     </group>
+    <group
+        android:id="@+id/group_element_load_image"
+        android:checkableBehavior="none">
+        <item
+            android:id="@+id/item_load_image"
+            android:title=""
+            android:layout_width="match_parent"
+            android:enabled="false"
+            app:actionLayout="@layout/menu_item_load_image"/>
+    </group>
 </menu>

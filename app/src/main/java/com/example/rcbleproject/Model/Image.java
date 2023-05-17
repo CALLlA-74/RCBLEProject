@@ -1,76 +1,66 @@
 package com.example.rcbleproject.Model;
 
 import static java.lang.Math.abs;
+import static java.lang.Math.max;
+import static java.lang.Math.min;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Paint;
-import android.graphics.PointF;
 import android.graphics.Rect;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.net.Uri;
+import android.os.ParcelFileDescriptor;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.MotionEvent;
 
 import com.example.rcbleproject.GridParams;
-import com.example.rcbleproject.ViewAndPresenter.ProfileControlMenu.ProfileControlActivity;
 import com.example.rcbleproject.R;
+import com.example.rcbleproject.ViewAndPresenter.BaseAppActivity;
+import com.example.rcbleproject.ViewAndPresenter.ProfileControlMenu.ProfileControlActivity;
 
-import java.util.ArrayList;
+import java.io.FileDescriptor;
+import java.io.IOException;
+import java.io.InputStream;
 
-/**
- * Класс JoystickXY релизует поля и методы для взаимодействия с двух-осевым джойстиком
- */
-public class JoystickXY extends BaseControlElement{
-    private volatile float radius,                // радиус внешнего контура джойстика
-                           stickPosX, stickPosY,  // координаты стика
-                           stickRadius;           // радиус стика
+public class Image extends BaseControlElement{
+
+    private volatile float width,  height;        // размеры внешнего контура джойстика
     private volatile Paint paintBackground,       // параметры отрисовки внутреннего фона джойстика
-                           paintBorder,           // параметры отрисовки границы джойстика
-                           paintArrowAndStick,    // параметры отрисовки указателей и стика
-                           paintTabletBoard;      // параметры отрисовки табличек условных обозначений
+            paintBorder,           // параметры отрисовки границы джойстика
+            paintTabletBoard;      // параметры отрисовки области для условных обозначений
+
+    private static class ImageConfig{
+        private volatile Bitmap bitmapImage,        // изображение
+                scaledBitmapImage;  // изображение, масштабированное под размеры рамки
+        private volatile float hwcoef,       // отношение высоты к ширине изображения
+                               left, top;    // параметры для отрисовки
+    }
 
     private static class Board {
         public volatile float right, left,
-                              top, bottom,
-                              cornerRadius;
+                top, bottom,
+                cornerRadius;
         public volatile float x, y;
     }
 
-    private Board numBoard, settingsBoard, lockBoard ;  // Параметры табличек для номера, настроек и с "замком"
-
-    private class Triangle {
-        public PointF p1, p2, p3;
-    }
-
-    private Triangle upArrow, downArrow,         // Координаты точек треугольных указателей
-                     leftArrow, rightArrow;
+    private Board numBoard, lockBoard, // Параметры табличек для номера и с "замком"
+            border, settingsBoard;     // Параметры границы элемента и таблички настроек
+    private ImageConfig imageConfig;        // параметры изображения
 
     public volatile float deltaX, deltaY;
 
-    /**
-     * Создает новый двух-осевой джойстик с заданными параметрами.
-     * @param elementID - id элемента в СУБД.
-     * @param context - используется для доступа к ресурсам приложения.
-     * @param gridParams - параметры сетки для выравнивания на экране.
-     * @param elementIndex - индекс элемента в списке элементов дисплея.
-     * @param elementSize - коэффициент размера элемента управления.
-     * @param isGridVisible - флаг режима выравнивания элементов по сетке.
-     * @param isElementLocked - флаг блокировки элемента управления.
-     * @param pX - координата X центра элемента управления.
-     * @param pY - координата Y центра элемента управления.
-     */
-    public JoystickXY(long elementID, long displayID, Context context, GridParams gridParams,
-                      int elementIndex, int elementSize, boolean isGridVisible,
-                      boolean isElementLocked,  float pX, float pY){
+    public Image(long elementID, long displayID, Context context, GridParams gridParams,
+                     int elementIndex, int elementSize, boolean isGridVisible,
+                     boolean isElementLocked, float pX, float pY, String strResource){
         super(elementID, displayID, context, gridParams, elementIndex, elementSize, isGridVisible,
                 isElementLocked, pX, pY);
-        stickPosX = pX;
-        stickPosY = pY;
-
-        String[] axisNames = getAxesNames();
-        controllerAxes = new ArrayList<>(axisNames.length);
-        for (short i = 0; i < axisNames.length; ++i)
-            controllerAxes.add(new ControllerAxis(this, axisNames[i], i, false));
+        this.strResource = strResource;
 
         paintBackground = new Paint();
         paintBackground.setColor(context.getColor(R.color.black));
@@ -83,34 +73,32 @@ public class JoystickXY extends BaseControlElement{
         paintBorder.setStyle(Paint.Style.FILL);
         paintBorder.setAntiAlias(true);
 
-        paintArrowAndStick = new Paint();
-        paintArrowAndStick.setColor(context.getColor(R.color.white));
-        paintArrowAndStick.setStyle(Paint.Style.FILL);
-        paintArrowAndStick.setAntiAlias(true);
-
         paintTabletBoard = new Paint();
         paintTabletBoard.setColor(context.getColor(R.color.white));
         paintTabletBoard.setAntiAlias(true);
 
         numBoard = new Board();
         lockBoard = new Board();
+        border = new Board();
         settingsBoard = new Board();
 
-        upArrow = new Triangle();
-        downArrow = new Triangle();
-        leftArrow = new Triangle();
-        rightArrow = new Triangle();
+        imageConfig = new ImageConfig();
+        /*imageConfig.bitmapImage = BitmapFactory
+                .decodeResource(context.getResources(), R.drawable.image_icon);
+        imageConfig.hwcoef = (float) imageConfig.bitmapImage.getHeight() / imageConfig
+                .bitmapImage.getWidth();*/
+        updateStrResource(strResource);
 
         setElementSize(elementSize);
         if (isGridVisible) alignToTheGrid();
     }
 
     /**
-     * Создает новый двух-осевой джойстик с параметрами по умолчанию.
+     * Создает новый одно-осевой горизонтальный джойстик с параметрами по умолчанию.
      * @param context - используется для доступа к ресурсам приложения.
      */
-    public JoystickXY(Context context, long displayID, int elementIndex, int elementSize,
-                      float pX, float pY){
+    public Image(Context context, long displayID, int elementIndex, int elementSize,
+                     float pX, float pY){
         super(-1, displayID, context, null, elementIndex, elementSize,
                 false,false, pX, pY);
     }
@@ -120,14 +108,14 @@ public class JoystickXY extends BaseControlElement{
      * @return тип элемента управления.
      */
     @Override
-    public ControlElementType getType() { return ControlElementType.JOYSTICK_XY; }
+    public ControlElementType getType() { return ControlElementType.IMAGE; }
 
     /**
      * Возвращает название элемента управления.
      * @return название элемента управления.
      */
     @Override
-    public String getName() { return context.getString(R.string.joystick_xy_name); }
+    public String getName() { return context.getString(R.string.image_name); }
 
     /**
      * Изменяет размер элемента управления.
@@ -136,9 +124,13 @@ public class JoystickXY extends BaseControlElement{
     @Override
     public void setElementSize(int newElementSize){
         elementSize = newElementSize;
-        radius = (6 + elementSize)/2f*gridParams.step;
-        stickRadius = radius / 3;
-        recalculateJoystickParams();
+        width = (2 + elementSize)*gridParams.step;
+        height = width * imageConfig.hwcoef;
+        float koeff = height/gridParams.step;
+        koeff += (((int)(koeff * 1000))%1000 > 0? 1 : 0);
+        height = gridParams.step * ((int)koeff);
+
+        recalculateImageParams();
     }
 
     /**
@@ -151,14 +143,17 @@ public class JoystickXY extends BaseControlElement{
     @SuppressLint("DrawAllocation")
     @Override
     public void onDraw(Canvas canvas, ProfileControlActivity.MODE_TYPE mode){
-        if (canvas == null || paintArrowAndStick == null || paintBackground == null) return;
+        if (canvas == null ||  paintBackground == null) return;
         if (paintBorder == null) return;
-        canvas.drawCircle(posX, posY, radius, paintBorder);
-        canvas.drawCircle(posX, posY, radius - 1, paintBackground);
-        drawTriangle(canvas, paintArrowAndStick, upArrow.p1, upArrow.p2, upArrow.p3);
-        drawTriangle(canvas, paintArrowAndStick, downArrow.p1, downArrow.p2, downArrow.p3);
-        drawTriangle(canvas, paintArrowAndStick, leftArrow.p1, leftArrow.p2, leftArrow.p3);
-        drawTriangle(canvas, paintArrowAndStick, rightArrow.p1, rightArrow.p2, rightArrow.p3);
+        canvas.drawRoundRect(border.left, border.top,
+                border.right, border.bottom,
+                border.cornerRadius, border.cornerRadius, paintBorder);
+        canvas.drawRoundRect(border.left + 1, border.top + 1,
+                border.right - 1, border.bottom - 1,
+                border.cornerRadius - 1, border.cornerRadius - 1,
+                paintBackground);
+        canvas.drawBitmap(imageConfig.scaledBitmapImage, imageConfig.left, imageConfig.top,
+                null);
 
         if (mode == ProfileControlActivity.MODE_TYPE.EDIT_MODE){
             if (paintTabletBoard == null) return;
@@ -166,30 +161,28 @@ public class JoystickXY extends BaseControlElement{
 
             if (focus) paintTabletBoard.setColor(context.getColor(R.color.yellow));
             else paintTabletBoard.setColor(context.getColor(R.color.white));
+            paintBackground.setTextSize(gridParams.step);
 
             if (isElementLocked) {
                 canvas.drawRoundRect(lockBoard.left, lockBoard.top,
-                                     lockBoard.right, lockBoard.bottom,
-                                     lockBoard.cornerRadius, lockBoard.cornerRadius,
-                                     paintTabletBoard);
+                        lockBoard.right, lockBoard.bottom,
+                        lockBoard.cornerRadius, lockBoard.cornerRadius,
+                        paintTabletBoard);
                 canvas.drawBitmap(bitmapLock, lockBoard.x, lockBoard.y,
-                                  paintBackground);
+                        paintBackground);
             }
 
             canvas.drawRoundRect(numBoard.left, numBoard.top,
-                                 numBoard.right, numBoard.bottom,
-                                 numBoard.cornerRadius, numBoard.cornerRadius,
-                                 paintTabletBoard);
+                    numBoard.right, numBoard.bottom,
+                    numBoard.cornerRadius, numBoard.cornerRadius,
+                    paintTabletBoard);
             canvas.drawText(num, numBoard.x, numBoard.y, paintBackground);
 
             canvas.drawRoundRect(settingsBoard.left, settingsBoard.top,
-                                 settingsBoard.right, settingsBoard.bottom,
-                                 settingsBoard.cornerRadius, settingsBoard.cornerRadius,
-                                 paintTabletBoard);
+                    settingsBoard.right, settingsBoard.bottom,
+                    settingsBoard.cornerRadius, settingsBoard.cornerRadius,
+                    paintTabletBoard);
             canvas.drawBitmap(bitmapSettings, settingsBoard.x, settingsBoard.y, paintBackground);
-        }
-        else {
-            canvas.drawCircle(stickPosX, stickPosY, stickRadius, paintArrowAndStick);
         }
     }
 
@@ -202,7 +195,9 @@ public class JoystickXY extends BaseControlElement{
      */
     @Override
     public boolean contains(float pointerX, float pointerY){
-        return square(pointerX - posX) + square(pointerY - posY) <= square(radius);
+        return pointerX >= min(border.left, numBoard.left)
+                && pointerX <= max(border.right, settingsBoard.right)
+                && pointerY >= border.top && pointerY <= border.bottom;
     }
 
     /**
@@ -244,9 +239,7 @@ public class JoystickXY extends BaseControlElement{
             case MotionEvent.ACTION_MOVE:
                 posX = (int)(pointerX - deltaX);
                 posY = (int)(pointerY - deltaY);
-                stickPosX = posX;
-                stickPosY = posY;
-                recalculateJoystickParams();
+                recalculateImageParams();
                 break;
             case MotionEvent.ACTION_UP:
                 checkOutDisplay();
@@ -258,10 +251,15 @@ public class JoystickXY extends BaseControlElement{
     }
 
     /**
-     * Пересчитывает координаты внутренних элементов джойстика.
+     * Пересчитывает координаты внутренних элементов изображения.
      */
-    private void recalculateJoystickParams(){
+    private void recalculateImageParams(){
         if (paintBackground == null) return;
+
+        border.left = posX - width / 2;
+        border.right = posX + width / 2;
+        border.top = posY - height / 2;
+        border.bottom = posY + height / 2;
 
         String num = "#" + (elementIndex+1);
         Rect boundsNum = new Rect();
@@ -290,21 +288,16 @@ public class JoystickXY extends BaseControlElement{
         lockBoard.x = lockBoard.left + gridParams.step*0.5f;
         lockBoard.y = lockBoard.top + gridParams.step*0.75f - bitmapLock.getHeight() / 2.f;
 
-        upArrow.p1 = new PointF(posX, posY-radius*0.95f);
-        upArrow.p2 = new PointF(posX-radius*0.1f, posY-radius*0.85f);
-        upArrow.p3 = new PointF(posX+radius*0.1f, posY-radius*0.85f);
+        recalculateImageConfigParams();
+    }
 
-        downArrow.p1 = new PointF(posX, posY+radius*0.95f);
-        downArrow.p2 = new PointF(posX-radius*0.1f, posY+radius*0.85f);
-        downArrow.p3 = new PointF(posX+radius*0.1f, posY+radius*0.85f);
-
-        leftArrow.p1 = new PointF(posX-radius*0.95f, posY);
-        leftArrow.p2 = new PointF(posX-radius*0.85f, posY+radius*0.1f);
-        leftArrow.p3 = new PointF(posX-radius*0.85f, posY-radius*0.1f);
-
-        rightArrow.p1 = new PointF(posX+radius*0.95f, posY);
-        rightArrow.p2 = new PointF(posX+radius*0.85f, posY+radius*0.1f);
-        rightArrow.p3 = new PointF(posX+radius*0.85f, posY-radius*0.1f);
+    private void recalculateImageConfigParams(){
+        int newWidthImg = (int)(width - 4),
+                newHeightImg = (int)(height - 4);
+        imageConfig.scaledBitmapImage = Bitmap.createScaledBitmap(imageConfig.bitmapImage,
+                newWidthImg, newHeightImg, false);
+        imageConfig.left = posX - (float) imageConfig.scaledBitmapImage.getWidth()/2;
+        imageConfig.top = posY - (float) imageConfig.scaledBitmapImage.getHeight()/2;
     }
 
     /**
@@ -313,51 +306,7 @@ public class JoystickXY extends BaseControlElement{
      * @param event - экземпляр жеста касания.
      */
     @Override
-    public void onControl(int touchedPointerID, MotionEvent event){
-        int act = event.getActionMasked();
-        if (act == MotionEvent.ACTION_DOWN || act == MotionEvent.ACTION_POINTER_DOWN){
-            if (pointerID == -1)
-                pointerID = touchedPointerID;
-            else if (pointerID != touchedPointerID) return;
-        }
-        else if (act == MotionEvent.ACTION_UP || act == MotionEvent.ACTION_POINTER_UP){
-            if (pointerID == touchedPointerID){
-                pointerID = -1;
-                stickPosX = posX;
-                stickPosY = posY;
-                for (ControllerAxis axis : controllerAxes) axis.axisValue = 0;
-            }
-            return;
-        }
-        else if (act == MotionEvent.ACTION_MOVE){
-            if (pointerID != touchedPointerID) return;
-        }
-
-        int pointerIndex = event.findPointerIndex(pointerID);
-        float pointerX = event.getX(pointerIndex);
-        float pointerY = event.getY(pointerIndex);
-
-        if (abs(posX - pointerX) < (radius - stickRadius))
-            stickPosX = pointerX;
-        else{
-            if (pointerX < posX)
-                stickPosX = posX - (radius - stickRadius);
-            else
-                stickPosX = posX + (radius - stickRadius);
-        }
-
-        if (abs(posY - pointerY) < (radius - stickRadius))
-            stickPosY = pointerY;
-        else{
-            if (pointerY < posY)
-                stickPosY = posY - (radius - stickRadius);
-            else
-                stickPosY = posY + (radius - stickRadius);
-        }
-
-        controllerAxes.get(0).axisValue = (int)((posX - stickPosX)/(radius - stickRadius)*100);
-        controllerAxes.get(1).axisValue = (int)((posY - stickPosY)/(radius - stickRadius)*100);
-    }
+    public void onControl(int touchedPointerID, MotionEvent event){}
 
     /**
      * Выравнивает элемент управления по узлам сетки.
@@ -365,25 +314,23 @@ public class JoystickXY extends BaseControlElement{
     @Override
     public void alignToTheGrid(){
         if (gridParams == null) return;
-        float left_X = posX-radius;                           // x-координата самой левой точки внешнего круга джойстика
+        float left_X = posX-width/2;                     // x-координата самой левой точки внешнего круга джойстика
         float node_X = (int)((left_X-gridParams.left)/gridParams.step)
-                * gridParams.step + gridParams.left;          // x-координата ближайшего узла, левее джойстика
+                * gridParams.step + gridParams.left;     // x-координата ближайшего узла, левее джойстика
         float shift_X = left_X-node_X;          //???
         if (Math.abs(gridParams.step - shift_X) < abs(shift_X))
             shift_X = shift_X - gridParams.step;
         posX -= shift_X;
-        stickPosX = posX;
 
-        float left_Y = posY-radius;                            // y-координата самой верхней точки внешнего круга джойстика
+        float left_Y = posY-height/2;                       // y-координата самой верхней точки внешнего круга джойстика
         float node_Y = (int) ((left_Y-gridParams.top)/gridParams.step)
                 * gridParams.step + gridParams.top;            // y-координата ближайшего узла, выше джойстика
         float shift_Y = left_Y - node_Y;
         if (Math.abs(gridParams.step - shift_Y) < abs(shift_Y))
             shift_Y = shift_Y - gridParams.step;
         posY -= shift_Y;
-        stickPosY = posY;
 
-        recalculateJoystickParams();
+        recalculateImageParams();
     }
 
     /**
@@ -391,7 +338,7 @@ public class JoystickXY extends BaseControlElement{
      * @return количество осей элемента управления.
      */
     @Override
-    public int getNumberOfAxes() { return 2; }
+    public int getNumberOfAxes() { return 0; }
 
     /**
      * Возвращает названия осей элемента управления.
@@ -399,7 +346,7 @@ public class JoystickXY extends BaseControlElement{
      */
     @Override
     public String[] getAxesNames() {
-        return new String[] {"X", "Y"};
+        return new String[] {};
     }
 
     /**
@@ -408,7 +355,7 @@ public class JoystickXY extends BaseControlElement{
      */
     @Override
     public int getIconId() {
-        return R.drawable.joystick_xy;
+        return R.drawable.image_icon;
     }
 
     /**
@@ -434,5 +381,68 @@ public class JoystickXY extends BaseControlElement{
     protected boolean onTouchSettings(MotionEvent event){
         return event.getX() >= settingsBoard.left && event.getX() <= settingsBoard.right
                 && event.getY() >= settingsBoard.top && event.getY() <= settingsBoard.bottom;
+    }
+
+    /**
+     * Обновляет значение строкового ресурса и изменяет изображение.
+     * @param newResource - новое значение ресурса.
+     */
+    @Override
+    public void updateStrResource(String newResource){
+        strResource = newResource;
+        if (imageConfig == null || newResource == null) return;
+        Uri uri = Uri.parse(strResource);
+        Log.v("APPTAG999999", "uri: " + uri);
+        Log.v("APPTAG999999", "old bitmap: " + imageConfig.bitmapImage);
+        //ParcelFileDescriptor parcelFileDescriptor = null;
+        Drawable imgDrawable = null;
+        InputStream inputStream = null;
+        try {
+            /*parcelFileDescriptor =
+                    context.getContentResolver().openFileDescriptor(uri, "r");
+            FileDescriptor fileDescriptor = parcelFileDescriptor.getFileDescriptor();
+            imageConfig.bitmapImage = BitmapFactory.decodeFileDescriptor(fileDescriptor);
+            parcelFileDescriptor.close();*/
+            inputStream = context.getContentResolver().openInputStream(uri);
+            imgDrawable = Drawable.createFromStream(inputStream, uri.toString());
+        } catch (IOException e) {
+            e.printStackTrace();
+            Log.e("APPTAG999999", "nooooo! " + e);
+            imageConfig.bitmapImage = BitmapFactory
+                    .decodeResource(context.getResources(), R.drawable.image_icon);
+        } finally {
+            /*try {
+                if (parcelFileDescriptor != null) {
+                    parcelFileDescriptor.close();
+                }
+            } catch (IOException e) {
+                Log.e("APPTAG999999", "nooooo! nooo!" + e);
+            }*/
+            if (inputStream != null) {
+                try {
+                    inputStream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        if (imgDrawable != null){
+            imageConfig.bitmapImage = ((BitmapDrawable)imgDrawable).getBitmap();
+        }
+        Log.v("APPTAG999999", "new bitmap:"+imageConfig.bitmapImage);
+        Log.v("APPTAG999999", "old koeff:"+imageConfig.hwcoef);
+        imageConfig.hwcoef = (float) imageConfig.bitmapImage.getHeight() / imageConfig
+                .bitmapImage.getWidth();
+        Log.v("APPTAG999999", "new koeff:"+imageConfig.hwcoef);
+        recalculateImageConfigParams();
+    }
+
+    /**
+     * Возвращает флаг необходимости в доступе к галерее.
+     * @return true - если нужен доступ к галерее.
+     *         false - доступ не требуется.
+     */
+    public boolean getGalleryAccess(){
+        return true;
     }
 }

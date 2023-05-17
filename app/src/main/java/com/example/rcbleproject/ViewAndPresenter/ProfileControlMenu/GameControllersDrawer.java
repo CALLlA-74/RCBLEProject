@@ -14,7 +14,6 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-import android.view.View;
 
 import com.example.rcbleproject.BuildConfig;
 import com.example.rcbleproject.Container;
@@ -57,7 +56,7 @@ public class GameControllersDrawer extends SurfaceView implements SurfaceHolder.
 
     private final long profileID;
     private int countOfDisplays;
-    private BaseControlElement focusableElement = null;
+    private BaseControlElement focusedElement = null;
     private final ProfileControlActivity activity;
     private final HashMap<Integer, BaseControlElement> touchedElements = new HashMap<>();
     private final TreeSet<BluetoothHub> hubsForProfileControl = new TreeSet<>();
@@ -167,6 +166,10 @@ public class GameControllersDrawer extends SurfaceView implements SurfaceHolder.
         setFocusOnElementWithUpperIndex();
     }
 
+    public TreeSet<BluetoothHub> getHubsForProfileControl(){
+        return hubsForProfileControl;
+    }
+
     @SuppressLint({"CommitPrefEdits", "ApplySharedPref"})
     public void saveElementsParams(){
         SharedPreferences prefs = ((ProfileControlActivity)getContext())
@@ -184,8 +187,8 @@ public class GameControllersDrawer extends SurfaceView implements SurfaceHolder.
     }
 
     public void removeElementControl(){
-        dbElementsControl.deleteElementControlByID(focusableElement.elementID);
-        controlElements.get(currentDisplayIndex).remove(focusableElement.elementIndex);
+        dbElementsControl.deleteElementControlByID(focusedElement.elementID);
+        controlElements.get(currentDisplayIndex).remove(focusedElement.elementIndex);
         for (int i = 0; i < controlElements.get(currentDisplayIndex).size(); i++)
             controlElements.get(currentDisplayIndex).get(i).elementIndex = i;
         setFocusOnElementWithUpperIndex();
@@ -249,19 +252,45 @@ public class GameControllersDrawer extends SurfaceView implements SurfaceHolder.
         return isGridVisible;
     }
     public boolean isFocused() {
-        return focusableElement != null;
+        return focusedElement != null;
     }
 
-    public boolean getElementLocking() { return focusableElement.isElementLocked; }
-    public void setElementLocking(boolean locking){ focusableElement.isElementLocked = locking; }
+    public boolean getFocusedElementLocking() { return focusedElement.isElementLocked; }
+    public void setFocusedElementLocking(boolean locking){ focusedElement.isElementLocked = locking; }
 
     public long getCurrentDisplayID() { return displayIDs.get(currentDisplayIndex); }
     public int getCountOfElements() { return controlElements.get(currentDisplayIndex).size(); }
 
-    public int getElementSize() { return focusableElement.getElementSize(); }
-    public void setElementSize(int newElementSize) {
-        if (focusableElement == null) return;
-        focusableElement.setElementSize(newElementSize);
+    public int getFocusedElementSize() {
+        return isFocused()? focusedElement.getElementSize() : 0;
+    }
+    public void setFocusedElementSize(int newElementSize) {
+        if (focusedElement == null) return;
+        focusedElement.setElementSize(newElementSize);
+    }
+
+    public long getFocusedElementID(){
+        return isFocused()? focusedElement.elementID : -1;
+    }
+
+    /**
+     * Обновляет значений ресурса у элемента управления на текущем дисплее.
+     * @param elemId - идентификатор элемента управления.
+     * @param resource - новое значение ресурса.
+     */
+    public void updateElementResource(long elemId, String resource){
+        BaseControlElement element = getElementByID(elemId);
+        if (element != null && resource != null) element.updateStrResource(resource);
+    }
+
+    /**
+     * Возвращает флаг необходимости в доступе к галерее для элемента управления под фокусом.
+     * @return true - если нужен доступ к галерее.
+     *         false - доступ не требуется.
+     */
+    public boolean getGalleryAccess(){
+        if (focusedElement == null) return false;
+        return focusedElement.getGalleryAccess();
     }
 
     public void onTouch(MotionEvent event){
@@ -273,14 +302,16 @@ public class GameControllersDrawer extends SurfaceView implements SurfaceHolder.
                 for (int i = elementsOnDisplay.size() - 1; i >= 0; i--){
                     BaseControlElement element = elementsOnDisplay.get(i);
                     if (element.contains(event.getX(pointerIndex), event.getY(pointerIndex))){
-                        element.onTouch(event, isGridVisible);
                         setFocus(element);
+                        if (element.onTouch(event, isGridVisible))
+                            openElementControlMenu();
                         return;
                     }
                 }
             }
-            else if (focusableElement != null && focusableElement.contains(event.getX(pointerIndex), event.getY(pointerIndex))) {
-                focusableElement.onTouch(event, isGridVisible);
+            else if (focusedElement != null && focusedElement.contains(event.getX(pointerIndex), event.getY(pointerIndex))) {
+                if (focusedElement.onTouch(event, isGridVisible))
+                    openElementControlMenu();
             }
         }
         else {
@@ -313,10 +344,14 @@ public class GameControllersDrawer extends SurfaceView implements SurfaceHolder.
         }
     }
 
+    public void openElementControlMenu(){
+        activity.onBtElementControlMenuClick();
+    }
+
     public void setFocus(BaseControlElement element){
-        if (focusableElement != null) focusableElement.focus = false;
-        focusableElement = element;
-        if (element != null) focusableElement.focus = true;
+        if (focusedElement != null) focusedElement.focus = false;
+        focusedElement = element;
+        if (element != null) focusedElement.focus = true;
     }
 
     @Override
@@ -377,7 +412,8 @@ public class GameControllersDrawer extends SurfaceView implements SurfaceHolder.
                         if (currentDisplayIndex < controlElements.size()){
                             ArrayList<BaseControlElement> elementsOnDisplay = controlElements.get(currentDisplayIndex);
                             for (BaseControlElement element : elementsOnDisplay){
-                                element.onDraw(c, activity.getMode());
+                                if (element != null)
+                                    element.onDraw(c, activity.getMode());
                             }
                         }
                     }

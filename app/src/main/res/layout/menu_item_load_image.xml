@@ -9,7 +9,7 @@
     android:padding="15dip"
     tools:ignore="RtlSymmetry">
 
-    <TextView
+    <!--TextView
         android:id="@+id/tv_axis_name"
         android:layout_width="wrap_content"
         android:layout_height="30dip"
@@ -19,17 +19,18 @@
         android:paddingRight="9dp"
         android:gravity="center_vertical"
         android:layout_marginEnd="15dp"
-        app:layout_constraintEnd_toStartOf="@id/bt_add_controlled_ports"
-        app:layout_constraintTop_toTopOf="parent"/>
+        app:layout_constraintEnd_toStartOf="@id/bt_load_image"
+        app:layout_constraintTop_toTopOf="parent"/-->
     <Button
-        android:id="@+id/bt_add_controlled_ports"
-        android:layout_width="150dp"
-        android:layout_height="30dip"
+        android:id="@+id/bt_load_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="8dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         android:textColor="@color/black"
         android:fontFamily="serif"
         android:textSize="11sp"
-        android:text="@string/binding_ports"
+        android:text="@string/loading_image"
         android:background="@drawable/background_for_bt_add_ports"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

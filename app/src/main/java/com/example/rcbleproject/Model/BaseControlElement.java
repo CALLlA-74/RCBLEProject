@@ -67,17 +67,22 @@ public abstract class BaseControlElement {
     protected int pointerID = -1;               // id указателя, перехватившего управление элементом
     protected ArrayList<ControllerAxis> controllerAxes;  // массиив осей элемента управления
 
+    protected volatile boolean isSettingsTouchedDown = false;  // флаг нажатия на настройки элемента
     protected volatile float posX, posY;        // координаты центра элемента управления
     public volatile int elementSize;            // коэффициент размера элемента управления
     public volatile int elementIndex;           // индекс элемента в списке элементов дисплея
     public volatile boolean isElementLocked;    // флаг блокировки элемента управления
 
-    public enum ControlElementType {JOYSTICK_XY, JOYSTICK_X, JOYSTICK_Y, BUTTON, UNKNOWN}
+
+    public enum ControlElementType {JOYSTICK_XY, JOYSTICK_X, JOYSTICK_Y, BUTTON, IMAGE, UNKNOWN}
 
     public final long elementID;                // id элемента в СУБД
     public final long displayID;                // id дисплея в СУБД, на котором находится элемент
     public final GridParams gridParams;         // параметры сетки для выравнивания на экране
-    public final Bitmap bitmapLock;             // значок заблокированного элемента
+    protected Bitmap bitmapLock,             // значок заблокированного элемента
+                        bitmapSettings;         // значок параметров элемента
+
+    protected String strResource = "";          // поле для хранения строкового ресурса элемента
 
     public boolean focus = false;               // флаг присутствия фокуса на элементе управления
 
@@ -106,9 +111,13 @@ public abstract class BaseControlElement {
         controllerAxes = new ArrayList<>();
 
         bitmapLock = BitmapFactory.decodeResource(context.getResources(), R.drawable.baseline_lock_black_18);
+        bitmapSettings = BitmapFactory.decodeResource(context.getResources(), R.drawable.settings_black);
+        bitmapSettings = Bitmap.createScaledBitmap(bitmapSettings, bitmapLock.getWidth(),
+                bitmapLock.getHeight(), false);
 
         posX = pX;
         posY = pY;
+        this.strResource = strResource;
         if (isGridVisible) alignToTheGrid();
     }
 
@@ -152,8 +161,10 @@ public abstract class BaseControlElement {
      * Обрабатывает событие касания элемента в режиме редактирования профиля управления.
      * @param event - экземпляр жеста касания.
      * @param isToAlignToTheGrid - флаг режима выравнивания элементов по сетке.
+     * @return true - если нажата кнопка настроек
+     *         false - в ином случае
      */
-    public abstract void onTouch(MotionEvent event, boolean isToAlignToTheGrid);
+    public abstract boolean onTouch(MotionEvent event, boolean isToAlignToTheGrid);
 
     /**
      * Обрабатывает событие касания элемента в игровом режиме работы с профилем управления.
@@ -191,12 +202,19 @@ public abstract class BaseControlElement {
     protected abstract void checkOutDisplay();
 
     /**
+     * Определяет касание значка настроек на элементе
+     * @param event параметры касания
+     * @return true - если каснулись значка настроек
+     *         false - в противном случае
+     */
+    protected abstract boolean onTouchSettings(MotionEvent event);
+
+    /**
      * Возводит полученное значение во вторую степень.
      * @param value - значение для возведения в степень.
      * @return полученное значение во второй степени.
      */
     protected float square(float value){ return value*value; }
-
 
     /**
      * По заданным точкам p1, p2, p3 строит треугольник в экзепляре canvas
@@ -251,7 +269,7 @@ public abstract class BaseControlElement {
                                                        Context context, GridParams gridParams,
                                                        int elementIndex, int elementSize,
                                                        boolean isGridVisible, boolean isElementLocked,
-                                                       float pX, float pY){
+                                                       float pX, float pY, String strResource){
         switch (elementType){
             case JOYSTICK_XY:
                 return new JoystickXY(elementID, displayID, context, gridParams, elementIndex,
@@ -262,6 +280,9 @@ public abstract class BaseControlElement {
             case JOYSTICK_Y:
                 return new JoystickY(elementID, displayID, context, gridParams, elementIndex,
                         elementSize, isGridVisible, isElementLocked, pX, pY);
+            case IMAGE:
+                return new Image(elementID, displayID, context, gridParams, elementIndex,
+                        elementSize, isGridVisible, isElementLocked, pX, pY, strResource);
         }
         return null;
     }
@@ -282,6 +303,7 @@ public abstract class BaseControlElement {
         list.add(new JoystickXY(context, displayID, elementIndex, elementSize, pX, pY));
         list.add(new JoystickX(context, displayID, elementIndex, elementSize, pX, pY));
         list.add(new JoystickY(context, displayID, elementIndex, elementSize, pX, pY));
+        list.add(new Image(context, displayID, elementIndex, elementSize, pX, pY));
         return list;
     }
 
@@ -305,5 +327,30 @@ public abstract class BaseControlElement {
      */
     public ArrayList<ControllerAxis> getControllerAxes(){
         return controllerAxes;
+    }
+
+    /**
+     * Обновляет значение строкового ресурса.
+     * @param newResource - новое значение ресурса.
+     */
+    public void updateStrResource(String newResource){
+        strResource = newResource;
+    }
+
+    /**
+     * Возвращает значение строкового ресурса.
+     * @return значение поля strResource.
+     */
+    public String getStrResource() {
+        return strResource;
+    }
+
+    /**
+     * Возвращает флаг необходимости в доступе к галерее.
+     * @return true - если нужен доступ к галерее.
+     *         false - доступ не требуется.
+     */
+    public boolean getGalleryAccess(){
+        return false;
     }
 }

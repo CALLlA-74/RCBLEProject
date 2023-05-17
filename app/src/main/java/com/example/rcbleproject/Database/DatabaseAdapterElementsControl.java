@@ -24,6 +24,7 @@ public class DatabaseAdapterElementsControl extends DatabaseAdapter{
     public static final String NUMBER_OF_AXES = "number_of_axis";
     public static final String X_COORDINATE = "x_coordinate";
     public static final String Y_COORDINATE = "y_coordinate";
+    public static final String STR_RESOURCE = "str_resource";
 
     public DatabaseAdapterElementsControl(BaseAppActivity context){
         super(context);
@@ -51,7 +52,8 @@ public class DatabaseAdapterElementsControl extends DatabaseAdapter{
                     + NUMBER_OF_AXES + " <= 2),"
                 + X_COORDINATE + " REAL NOT NULL, "
                 + Y_COORDINATE + " REAL NOT NULL, "
-                + "FOREIGN KEY (" + DISPLAY_ID +") REFERENCES "
+                + STR_RESOURCE + " TEXT DEFAULT \"\", "
+                + "FOREIGN KEY (" + DISPLAY_ID + ") REFERENCES "
                     + DatabaseAdapterDisplays.TABLE_NAME + "("
                         + DatabaseAdapterDisplays.ID + ") ON DELETE CASCADE, "
                 + "FOREIGN KEY (" + ELEMENT_TYPE + ") REFERENCES enum_types_of_element (_id), "
@@ -67,6 +69,7 @@ public class DatabaseAdapterElementsControl extends DatabaseAdapter{
         contentValues.put(NUMBER_OF_AXES, controlElement.getNumberOfAxes());
         contentValues.put(X_COORDINATE, controlElement.getPosX());
         contentValues.put(Y_COORDINATE, controlElement.getPosY());
+        contentValues.put(STR_RESOURCE, controlElement.getStrResource());
 
         if (BuildConfig.DEBUG){
             Log.v("APP_TAG3", "number:" + controlElement.elementIndex);
@@ -105,6 +108,7 @@ public class DatabaseAdapterElementsControl extends DatabaseAdapter{
         int elementBlockingIdx = cursor.getColumnIndexOrThrow(ELEMENT_BLOCKING);
         int xCoordIdx = cursor.getColumnIndexOrThrow(X_COORDINATE);
         int yCoordIdx = cursor.getColumnIndexOrThrow(Y_COORDINATE);
+        int strResIdx = cursor.getColumnIndexOrThrow(STR_RESOURCE);
         while (cursor.moveToNext()){
             long id = cursor.getLong(idIdx);
             int typeOfElement = cursor.getInt(typeOfElementIdx);
@@ -113,11 +117,13 @@ public class DatabaseAdapterElementsControl extends DatabaseAdapter{
             boolean elementBlocking = cursor.getInt(elementBlockingIdx) != 0;
             float posX = cursor.getFloat(xCoordIdx);
             float posY = cursor.getFloat(yCoordIdx);
+            String strResource = cursor.getString(strResIdx);
 
             BaseControlElement.ControlElementType type = BaseControlElement.IntToControlElementType(typeOfElement);
             if (type == BaseControlElement.ControlElementType.UNKNOWN) continue;
-            list.add(BaseControlElement.getElementControl(type, id, displayID, context, params,
-                    elementIndex, elementSize, isGridVisible, elementBlocking, posX, posY));
+            list.add(BaseControlElement.getElementControl(type, id, displayID,
+                    context, params, elementIndex, elementSize, isGridVisible, elementBlocking,
+                    posX, posY, strResource));
         }
         cursor.close();
 
@@ -146,6 +152,7 @@ public class DatabaseAdapterElementsControl extends DatabaseAdapter{
                 contentValues.put(NUMBER_OF_AXES, elements.get(j).getNumberOfAxes());
                 contentValues.put(X_COORDINATE, elements.get(j).getPosX());
                 contentValues.put(Y_COORDINATE, elements.get(j).getPosY());
+                contentValues.put(STR_RESOURCE, elements.get(j).getStrResource());
                 database.update(TABLE_NAME, contentValues,
                         ID + " = " + elements.get(j).elementID, null);
             }
@@ -159,7 +166,7 @@ public class DatabaseAdapterElementsControl extends DatabaseAdapter{
 
     public String[] getColumns(){
         return new String[]{ID, ELEMENT_NUMBER, DISPLAY_ID, ELEMENT_TYPE, ELEMENT_SIZE,
-                ELEMENT_BLOCKING, NUMBER_OF_AXES, X_COORDINATE, Y_COORDINATE};
+                ELEMENT_BLOCKING, NUMBER_OF_AXES, X_COORDINATE, Y_COORDINATE, STR_RESOURCE};
     }
 
     private Cursor getAllRowsByDisplayID(long displayID){

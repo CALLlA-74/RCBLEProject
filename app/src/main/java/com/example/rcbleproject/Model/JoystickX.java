@@ -36,7 +36,8 @@ public class JoystickX extends BaseControlElement{
         public volatile float x, y;
     }
 
-    private Board numBoard, lockBoard, border;  // Параметры табличек для номера и с "замком"
+    private Board numBoard, lockBoard, // Параметры табличек для номера и с "замком"
+            border, settingsBoard;     // Параметры границы элемента и таблички настроек
 
     private class Triangle {
         public PointF p1, p2, p3;
@@ -84,6 +85,7 @@ public class JoystickX extends BaseControlElement{
         numBoard = new Board();
         lockBoard = new Board();
         border = new Board();
+        settingsBoard = new Board();
 
         leftArrow = new Triangle();
         rightArrow = new Triangle();
@@ -172,6 +174,12 @@ public class JoystickX extends BaseControlElement{
                     numBoard.cornerRadius, numBoard.cornerRadius,
                     paintTabletBoard);
             canvas.drawText(num, numBoard.x, numBoard.y, paintBackground);
+
+            canvas.drawRoundRect(settingsBoard.left, settingsBoard.top,
+                    settingsBoard.right, settingsBoard.bottom,
+                    settingsBoard.cornerRadius, settingsBoard.cornerRadius,
+                    paintTabletBoard);
+            canvas.drawBitmap(bitmapSettings, settingsBoard.x, settingsBoard.y, paintBackground);
         }
         else {
             canvas.drawCircle(stickPosX, stickPosY, stickRadius, paintArrowAndStick);
@@ -195,10 +203,27 @@ public class JoystickX extends BaseControlElement{
      * Обрабатывает событие касания элемента в режиме редактирования профиля управления.
      * @param event - экземпляр жеста касания.
      * @param isToAlignToTheGrid - флаг режима выравнивания элементов по сетке.
+     * @return true - если нажата кнопка настроек
+     *         false - в ином случае
      */
     @Override
-    public void onTouch(MotionEvent event, boolean isToAlignToTheGrid){
-        if (isElementLocked) return;
+    public boolean onTouch(MotionEvent event, boolean isToAlignToTheGrid){
+        if (event.getActionMasked() == MotionEvent.ACTION_DOWN){
+            if (onTouchSettings(event)) {
+                isSettingsTouchedDown = true;
+            }
+        }
+        else if (event.getActionMasked() == MotionEvent.ACTION_UP){
+            if (isSettingsTouchedDown && onTouchSettings(event)){
+                isSettingsTouchedDown = false;
+                return true;
+            }
+        }
+        else {
+            isSettingsTouchedDown = false;
+        }
+
+        if (isElementLocked) return false;
 
         int pointerIndex = event.getActionIndex();
         float pointerX = event.getX(pointerIndex);
@@ -222,6 +247,8 @@ public class JoystickX extends BaseControlElement{
                 if (isToAlignToTheGrid) alignToTheGrid();
                 break;
         }
+
+        return false;
     }
 
     /**
@@ -239,7 +266,7 @@ public class JoystickX extends BaseControlElement{
         String num = "#" + (elementIndex+1);
         Rect boundsNum = new Rect();
         paintBackground.getTextBounds(num, 0, num.length(), boundsNum);
-        numBoard.right = posX - gridParams.step*0.5f;
+        numBoard.right = posX - gridParams.step*1.75f;
         numBoard.left = numBoard.right - boundsNum.width() - gridParams.step;
         numBoard.top = posY - gridParams.step*0.75f;
         numBoard.bottom = posY + gridParams.step*0.75f;
@@ -247,13 +274,21 @@ public class JoystickX extends BaseControlElement{
         numBoard.x = numBoard.left + gridParams.step*0.5f;
         numBoard.y = posY + gridParams.step*0.25f;
 
-        lockBoard.left = posX + gridParams.step*0.5f;
+        lockBoard.left = posX - gridParams.step*0.75f;
         lockBoard.right = lockBoard.left + gridParams.step + bitmapLock.getWidth();
         lockBoard.top = numBoard.top;
         lockBoard.bottom = numBoard.bottom;
         lockBoard.cornerRadius = numBoard.cornerRadius;
         lockBoard.x = lockBoard.left + gridParams.step*0.5f;
         lockBoard.y = posY - bitmapLock.getHeight() / 2.f;
+
+        settingsBoard.left = posX + gridParams.step*1.75f;
+        settingsBoard.right = settingsBoard.left + gridParams.step + bitmapSettings.getWidth();
+        settingsBoard.top = numBoard.top;
+        settingsBoard.bottom = numBoard.bottom;
+        settingsBoard.cornerRadius = numBoard.cornerRadius;
+        settingsBoard.x = settingsBoard.left + gridParams.step*0.5f;
+        settingsBoard.y = posY - bitmapSettings.getHeight() / 2.f;
 
         leftArrow.p1 = new PointF(posX-width/2+3*stickRadius*0.1f, posY);
         leftArrow.p2 = new PointF(posX-width/2+3*stickRadius*0.2f, posY+3*stickRadius*0.1f);
@@ -369,5 +404,17 @@ public class JoystickX extends BaseControlElement{
 
         if (posY < 0) posY = 0;
         else if (posY > gridParams.displayHeight) posY = gridParams.displayHeight;
+    }
+
+    /**
+     * Определяет касание значка настроек на элементе
+     * @param event параметры касания
+     * @return true - если каснулись значка настроек
+     *         false - в противном случае
+     */
+    @Override
+    protected boolean onTouchSettings(MotionEvent event){
+        return event.getX() >= settingsBoard.left && event.getX() <= settingsBoard.right
+                && event.getY() >= settingsBoard.top && event.getY() <= settingsBoard.bottom;
     }
 }
