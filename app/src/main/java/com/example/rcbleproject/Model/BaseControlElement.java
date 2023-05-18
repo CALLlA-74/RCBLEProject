@@ -330,14 +330,6 @@ public abstract class BaseControlElement {
     }
 
     /**
-     * Обновляет значение строкового ресурса.
-     * @param newResource - новое значение ресурса.
-     */
-    public void updateStrResource(String newResource){
-        strResource = newResource;
-    }
-
-    /**
      * Возвращает значение строкового ресурса.
      * @return значение поля strResource.
      */

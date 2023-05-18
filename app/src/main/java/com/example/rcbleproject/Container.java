@@ -26,6 +26,7 @@ public class Container {
     public static final String chosenProfControlPrefKey = "chosen_profile_control";
     public static final String numOfElementsPrefKey = "number_of_elements_";
     public static final String numOfDisplaysPrefKey = "number_of_displays_";
+    public static final String imageUriKey = "image_uri_key";
 
     private static HashMap<String, BluetoothGatt> gatts = null;
     private static HashMap<BluetoothHub.HubTypes, UUID> serviceUUIDs = null,

@@ -1,11 +1,13 @@
 package com.example.rcbleproject.Model;
 
+import static com.example.rcbleproject.Container.imageUriKey;
 import static java.lang.Math.abs;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -14,17 +16,13 @@ import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
-import android.os.ParcelFileDescriptor;
-import android.provider.MediaStore;
 import android.util.Log;
 import android.view.MotionEvent;
 
 import com.example.rcbleproject.GridParams;
 import com.example.rcbleproject.R;
-import com.example.rcbleproject.ViewAndPresenter.BaseAppActivity;
 import com.example.rcbleproject.ViewAndPresenter.ProfileControlMenu.ProfileControlActivity;
 
-import java.io.FileDescriptor;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -83,11 +81,7 @@ public class Image extends BaseControlElement{
         settingsBoard = new Board();
 
         imageConfig = new ImageConfig();
-        /*imageConfig.bitmapImage = BitmapFactory
-                .decodeResource(context.getResources(), R.drawable.image_icon);
-        imageConfig.hwcoef = (float) imageConfig.bitmapImage.getHeight() / imageConfig
-                .bitmapImage.getWidth();*/
-        updateStrResource(strResource);
+        initBitmapImage(strResource);
 
         setElementSize(elementSize);
         if (isGridVisible) alignToTheGrid();
@@ -384,13 +378,20 @@ public class Image extends BaseControlElement{
     }
 
     /**
-     * Обновляет значение строкового ресурса и изменяет изображение.
-     * @param newResource - новое значение ресурса.
+     * Инициализирует изображение.
+     * @param strResourceVal - новое значение ресурса.
      */
-    @Override
-    public void updateStrResource(String newResource){
-        strResource = newResource;
-        if (imageConfig == null || newResource == null) return;
+    public void initBitmapImage(String strResourceVal){
+        String newUri = unpackNewUriFromPreferences();
+        if (newUri.length() <= 0) strResource = strResourceVal;
+        else strResource = newUri;
+
+        if (imageConfig == null) imageConfig = new ImageConfig();
+        if (strResource == null || strResource.length() <= 0) {
+            initDefaultBitmapImage();
+            return;
+        }
+
         Uri uri = Uri.parse(strResource);
         Log.v("APPTAG999999", "uri: " + uri);
         Log.v("APPTAG999999", "old bitmap: " + imageConfig.bitmapImage);
@@ -405,11 +406,10 @@ public class Image extends BaseControlElement{
             parcelFileDescriptor.close();*/
             inputStream = context.getContentResolver().openInputStream(uri);
             imgDrawable = Drawable.createFromStream(inputStream, uri.toString());
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             Log.e("APPTAG999999", "nooooo! " + e);
-            imageConfig.bitmapImage = BitmapFactory
-                    .decodeResource(context.getResources(), R.drawable.image_icon);
+            initDefaultBitmapImage();
         } finally {
             /*try {
                 if (parcelFileDescriptor != null) {
@@ -428,13 +428,42 @@ public class Image extends BaseControlElement{
         }
         if (imgDrawable != null){
             imageConfig.bitmapImage = ((BitmapDrawable)imgDrawable).getBitmap();
+            Log.v("APPTAG999999", "new bitmap: " + imageConfig.bitmapImage);
         }
-        Log.v("APPTAG999999", "new bitmap:"+imageConfig.bitmapImage);
-        Log.v("APPTAG999999", "old koeff:"+imageConfig.hwcoef);
+        calcHWCoefValue();
+        recalculateImageConfigParams();
+    }
+
+    /**
+     * Метод извлекает из SharedPreferences Uri последнего изображения, загруженного из галереи.
+     * @return строковое значение Uri.
+     */
+    @SuppressLint("ApplySharedPref")
+    private String unpackNewUriFromPreferences(){
+        SharedPreferences preferences = context.getSharedPreferences(imageUriKey, Context.MODE_PRIVATE);
+        String newUri = preferences.getString(displayID+"_"+elementID, "");
+        preferences.edit().remove(displayID+"_"+elementID).commit();
+        return newUri;
+    }
+
+    /**
+     * Метод инициализирует изображение по умолчанию для отображения
+     * в элементе, если bitmapImage пуст.
+     */
+    private void initDefaultBitmapImage(){
+        if (imageConfig == null || imageConfig.bitmapImage != null) return;
+        imageConfig.bitmapImage = BitmapFactory.decodeResource(context.getResources(),
+                R.drawable.image_icon);
+        Log.v("APPTAG999999", "default bitmap: " + imageConfig.bitmapImage);
+        calcHWCoefValue();
+    }
+
+    /**
+     * Метод рассчитывает коэффициент отношения высоты изображения к его ширине.
+     */
+    private void calcHWCoefValue(){
         imageConfig.hwcoef = (float) imageConfig.bitmapImage.getHeight() / imageConfig
                 .bitmapImage.getWidth();
-        Log.v("APPTAG999999", "new koeff:"+imageConfig.hwcoef);
-        recalculateImageConfigParams();
     }
 
     /**

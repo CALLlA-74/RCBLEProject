@@ -3,6 +3,7 @@ package com.example.rcbleproject.ViewAndPresenter.ProfileControlMenu;
 import static com.example.rcbleproject.Container.appPrefKey;
 import static com.example.rcbleproject.Container.chosenProfControlPrefKey;
 import static com.example.rcbleproject.Container.currDisIdPrefKey;
+import static com.example.rcbleproject.Container.imageUriKey;
 import static com.example.rcbleproject.Container.numOfDisplaysPrefKey;
 import static com.example.rcbleproject.Container.numOfElementsPrefKey;
 
@@ -43,7 +44,7 @@ import com.example.rcbleproject.ViewAndPresenter.IRemovable;
 import com.example.rcbleproject.databinding.ActivityProfileControlBinding;
 
 public class ProfileControlActivity extends BaseAppBluetoothActivity implements IRemovable {
-    private static final String galleryRequestCode = "gallery_request_code";
+    public static final String galleryRequestCode = "gallery_request_code";
 
     private long profileID;
     private GameControllersDrawer gameControllersDrawer;
@@ -220,6 +221,7 @@ public class ProfileControlActivity extends BaseAppBluetoothActivity implements 
     ActivityResultLauncher<Intent> galleryActivityResultLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             new ActivityResultCallback<ActivityResult>() {
+                @SuppressLint("ApplySharedPref")
                 @Override
                 public void onActivityResult(ActivityResult result) {
                     if (result.getResultCode() == Activity.RESULT_OK) {
@@ -230,7 +232,9 @@ public class ProfileControlActivity extends BaseAppBluetoothActivity implements 
                         SharedPreferences preferences = getSharedPreferences(galleryRequestCode, MODE_PRIVATE);
                         long elemId = preferences.getLong(galleryRequestCode, -1);
                         if (elemId != -1){
-                            gameControllersDrawer.updateElementResource(elemId, imageUri.toString());
+                            preferences = getSharedPreferences(imageUriKey, MODE_PRIVATE);
+                            String key = gameControllersDrawer.getCurrentDisplayID() + "_" + elemId;
+                            preferences.edit().putString(key, imageUri.toString()).commit();
                         }
                     }
                 }

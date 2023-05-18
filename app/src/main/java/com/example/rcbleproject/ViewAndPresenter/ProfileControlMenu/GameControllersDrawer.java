@@ -274,16 +274,6 @@ public class GameControllersDrawer extends SurfaceView implements SurfaceHolder.
     }
 
     /**
-     * Обновляет значений ресурса у элемента управления на текущем дисплее.
-     * @param elemId - идентификатор элемента управления.
-     * @param resource - новое значение ресурса.
-     */
-    public void updateElementResource(long elemId, String resource){
-        BaseControlElement element = getElementByID(elemId);
-        if (element != null && resource != null) element.updateStrResource(resource);
-    }
-
-    /**
      * Возвращает флаг необходимости в доступе к галерее для элемента управления под фокусом.
      * @return true - если нужен доступ к галерее.
      *         false - доступ не требуется.
@@ -416,6 +406,9 @@ public class GameControllersDrawer extends SurfaceView implements SurfaceHolder.
                                     element.onDraw(c, activity.getMode());
                             }
                         }
+                    }
+                    catch (Exception e){
+                        e.printStackTrace();
                     }
                     finally {
                         holder.unlockCanvasAndPost(c);
