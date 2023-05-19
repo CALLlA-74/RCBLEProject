@@ -15,7 +15,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -228,7 +227,7 @@ public class ProfileControlActivity extends BaseAppBluetoothActivity implements 
                         Intent data = result.getData();
                         if (data == null) return;
                         Uri imageUri = data.getData();
-                        Log.v("APPTAG999999", "img uri: " + imageUri);
+                        getContentResolver().takePersistableUriPermission(imageUri, Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
                         SharedPreferences preferences = getSharedPreferences(galleryRequestCode, MODE_PRIVATE);
                         long elemId = preferences.getLong(galleryRequestCode, -1);
                         if (elemId != -1){
@@ -337,7 +336,7 @@ public class ProfileControlActivity extends BaseAppBluetoothActivity implements 
 
     @SuppressLint({"ApplySharedPref", "IntentReset"})
     private void onBtLoadImageClick(){
-        Intent intent = new Intent(Intent.ACTION_PICK);
+        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
         intent.setType("image/*");
         intent.setData(MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         SharedPreferences preferences = getSharedPreferences(galleryRequestCode, MODE_PRIVATE);

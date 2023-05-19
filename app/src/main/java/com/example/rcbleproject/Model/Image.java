@@ -395,15 +395,9 @@ public class Image extends BaseControlElement{
         Uri uri = Uri.parse(strResource);
         Log.v("APPTAG999999", "uri: " + uri);
         Log.v("APPTAG999999", "old bitmap: " + imageConfig.bitmapImage);
-        //ParcelFileDescriptor parcelFileDescriptor = null;
         Drawable imgDrawable = null;
         InputStream inputStream = null;
         try {
-            /*parcelFileDescriptor =
-                    context.getContentResolver().openFileDescriptor(uri, "r");
-            FileDescriptor fileDescriptor = parcelFileDescriptor.getFileDescriptor();
-            imageConfig.bitmapImage = BitmapFactory.decodeFileDescriptor(fileDescriptor);
-            parcelFileDescriptor.close();*/
             inputStream = context.getContentResolver().openInputStream(uri);
             imgDrawable = Drawable.createFromStream(inputStream, uri.toString());
         } catch (Exception e) {
@@ -411,13 +405,6 @@ public class Image extends BaseControlElement{
             Log.e("APPTAG999999", "nooooo! " + e);
             initDefaultBitmapImage();
         } finally {
-            /*try {
-                if (parcelFileDescriptor != null) {
-                    parcelFileDescriptor.close();
-                }
-            } catch (IOException e) {
-                Log.e("APPTAG999999", "nooooo! nooo!" + e);
-            }*/
             if (inputStream != null) {
                 try {
                     inputStream.close();
