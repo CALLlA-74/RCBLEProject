@@ -159,16 +159,15 @@ public class ConnectedDevicesAdapter extends ArrayAdapter<BluetoothHub> implemen
     }
 
     @SuppressLint("MissingPermission")
-    public boolean setAvailability(boolean flag, BluetoothDevice device){
+    public void setAvailability(boolean flag, BluetoothDevice device){
         BluetoothHub hub = dbAdapter.findConnectedHubByAddress(device.getAddress());
-        if (hub == null) return false;
+        if (hub == null) return;
         if (flag && !hub.availability){
             Log.v("APP_TAG33333333333333", device.getName() + " " + hub.getName());
             hub.updateHubNameInDB(device.getName());
         }
         hub.availability = flag;
         notifyDataSetChanged();
-        return true;
     }
 
     public boolean getAvailability(View v){

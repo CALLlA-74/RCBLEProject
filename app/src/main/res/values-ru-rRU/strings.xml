@@ -44,6 +44,7 @@
     <string name="remove_element_control" translatable="true">Удалить элемент управления</string>
     <string name="element_blocking" translatable="true">Блокировка элемента</string>
     <string name="element_properties" translatable="true">Свойства элемента</string>
+    <string name="profile_parameters" translatable="true">Параметры профиля</string>
     <string name="element_size" translatable="true">Размер элемента</string>
     <string name="controlled_ports" translatable="true">Соединения портов</string>
     <string name="binding_ports" translatable="true">Привязать порты</string>
@@ -59,6 +60,9 @@
     <string name="back" translatable="true">В главное меню</string>
     <string name="editor" translatable="true">Редактор профиля</string>
     <string name="connecting" translatable="true">Подключение</string>
+    <string name="profile_not_ready" translatable="true">Профиль не готов</string>
+    <string name="no_port_connections" translatable="true">Для возможности использования профиля необходимо добавить хотя бы одно соединение порта.</string>
+    <string name="turn_on_hubs" translatable="true">Для управления моделью нужно подключить хабы.\nВключите хабы для подключения.</string>
 
     <string name="port_a" translatable="true">порт А</string>
     <string name="port_a_inv" translatable="true">порт А инверс.</string>

@@ -40,6 +40,7 @@
         <entry key="..\:/projects_for_Android/RCBLEProject/app/src/main/res/drawable/progress_for_element_size_changer_2.xml" value="0.1435" />
         <entry key="..\:/projects_for_Android/RCBLEProject/app/src/main/res/drawable/rect_blue_ncs_border.xml" value="0.1465" />
         <entry key="..\:/projects_for_Android/RCBLEProject/app/src/main/res/drawable/rect_white_border.xml" value="0.1465" />
+        <entry key="..\:/projects_for_Android/RCBLEProject/app/src/main/res/drawable/rect_white_border_color_indigo_dye_back.xml" value="0.1325" />
         <entry key="..\:/projects_for_Android/RCBLEProject/app/src/main/res/drawable/rect_with_color_prim_back.xml" value="0.1465" />
         <entry key="..\:/projects_for_Android/RCBLEProject/app/src/main/res/drawable/thumb_for_element_size_changer.xml" value="0.1125" />
         <entry key="..\:/projects_for_Android/RCBLEProject/app/src/main/res/drawable/thumb_for_element_size_changer_2.xml" value="0.1435" />
@@ -53,7 +54,7 @@
         <entry key="..\:/projects_for_Android/RCBLEProject/app/src/main/res/layout/activity_add_element_control.xml" value="0.25" />
         <entry key="..\:/projects_for_Android/RCBLEProject/app/src/main/res/layout/activity_adding_devices.xml" value="0.21715076071922546" />
         <entry key="..\:/projects_for_Android/RCBLEProject/app/src/main/res/layout/activity_adding_element_control.xml" value="0.16636446056210336" />
-        <entry key="..\:/projects_for_Android/RCBLEProject/app/src/main/res/layout/activity_profile_control.xml" value="0.15792474344355759" />
+        <entry key="..\:/projects_for_Android/RCBLEProject/app/src/main/res/layout/activity_profile_control.xml" value="0.28367875647668395" />
         <entry key="..\:/projects_for_Android/RCBLEProject/app/src/main/res/layout/activity_profiles.xml" value="0.2505091649694501" />
         <entry key="..\:/projects_for_Android/RCBLEProject/app/src/main/res/layout/activity_set_controlled_ports.xml" value="0.1" />
         <entry key="..\:/projects_for_Android/RCBLEProject/app/src/main/res/layout/activity_setting_controlled_ports.xml" value="0.25" />

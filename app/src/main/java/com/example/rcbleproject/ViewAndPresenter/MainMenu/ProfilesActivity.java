@@ -68,9 +68,9 @@ public class ProfilesActivity extends BaseAppActivity implements IRemovable {
 
         ((TextView)findViewById(R.id.tv_msg_empty_list)).setText(R.string.empty_profiles_list);
         btAddFirstProfile = findViewById(R.id.bt_empty_list);
+        btAddFirstProfile.setVisibility(View.GONE);
         btAddFirstProfile.setText(R.string.add_first_profile_control);
         btAddFirstProfile.setOnClickListener(v -> {
-            findViewById(R.id.inc_empty_list_label).setVisibility(View.GONE);
             addProfile();
         });
 
@@ -110,6 +110,7 @@ public class ProfilesActivity extends BaseAppActivity implements IRemovable {
     }
 
     private void addProfile(){
+        findViewById(R.id.inc_empty_list_label).setVisibility(View.GONE);
         lvAdapterProfilesControl.cancelEdit();
         long id = lvAdapterProfilesControl.addProfile(getResources().getString(R.string.default_profile_name));
         dbDisplays.insert(id, 0);

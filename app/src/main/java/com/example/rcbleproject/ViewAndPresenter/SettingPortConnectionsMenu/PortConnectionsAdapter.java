@@ -72,7 +72,7 @@ public class PortConnectionsAdapter extends ArrayAdapter<PortConnection> {
     public void setPortsActiveness(ViewHolder holder, boolean activeness){
         isPortsActive = activeness;
         if (isPortsActive){
-            holder.v_port.setBackground(activity.getDrawable(R.drawable.rect_white_border));
+            holder.v_port.setBackground(activity.getDrawable(R.drawable.rect_white_border_color_indigo_dye_back));
             holder.tv_port_name.setTextColor(activity.getColor(R.color.white));
             holder.v_port.setOnClickListener((View v) -> {
                 ViewHolder vh = (ViewHolder) ((View)v.getParent()).getTag();

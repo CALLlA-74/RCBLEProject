@@ -14,15 +14,15 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.rcbleproject.ViewAndPresenter.BaseAppBluetoothActivity;
+import com.example.rcbleproject.ViewAndPresenter.BluetoothLeService;
 import com.example.rcbleproject.BuildConfig;
 import com.example.rcbleproject.Container;
 import com.example.rcbleproject.R;
-import com.example.rcbleproject.databinding.ActivityAddingDevicesBinding;
+import com.example.rcbleproject.databinding.ActivityAddingHubsBinding;
 
 import java.util.ArrayList;
 
-public class AddingHubsActivity extends BaseAppBluetoothActivity implements IRemovableHub {
+public class AddingHubsActivity extends BluetoothLeService implements IRemovableHub {
     protected ConnectedDevicesAdapter lv_connected_devices_adapter;
     protected FoundDevicesAdapter devicesAdapter;
 
@@ -33,7 +33,7 @@ public class AddingHubsActivity extends BaseAppBluetoothActivity implements IRem
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        binding = ActivityAddingDevicesBinding.inflate(getLayoutInflater());
+        binding = ActivityAddingHubsBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         setSupportActionBar(binding.tbActivityAddDevices.getRoot());
         setFullscreenMode(binding.layoutContent);

@@ -9,7 +9,7 @@
     app:layout_constraintBottom_toBottomOf="parent"
     android:padding="10dp"
     android:layout_marginEnd="5dp"
-    android:background="@drawable/rect_white_border">
+    android:background="@drawable/rect_white_border_color_indigo_dye_back">
     <ImageView
         android:id="@+id/iv_menu_icon"
         android:layout_width="30dp"

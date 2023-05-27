@@ -2,7 +2,7 @@ package com.example.rcbleproject.Model;
 
 import android.content.Context;
 
-import com.example.rcbleproject.ViewAndPresenter.BaseAppBluetoothActivity;
+import com.example.rcbleproject.ViewAndPresenter.BluetoothLeService;
 import com.example.rcbleproject.R;
 import com.example.rcbleproject.ViewAndPresenter.SettingPortConnectionsMenu.BaseParam;
 
@@ -75,7 +75,7 @@ public class Port implements BaseParam {
 
     @Override
     public void act(Object obj){
-        hub.setOutputPortTestCommand((BaseAppBluetoothActivity) obj, this);
+        hub.setOutputPortTestCommand((BluetoothLeService) obj, this);
     }
 
     @Override

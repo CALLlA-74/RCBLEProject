@@ -43,13 +43,13 @@ import com.example.rcbleproject.Container;
 import com.example.rcbleproject.Database.DatabaseAdapterForHubs;
 import com.example.rcbleproject.Model.BluetoothHub;
 import com.example.rcbleproject.R;
-import com.example.rcbleproject.databinding.ActivityAddingDevicesBinding;
+import com.example.rcbleproject.databinding.ActivityAddingHubsBinding;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;
 
-public class BaseAppBluetoothActivity extends BaseAppActivity {
+public class BluetoothLeService extends BaseAppActivity {
     private IListViewAdapterForHubs lvAdapterConnectedDevices = Container.getDbForHubs(this);
     private IListViewAdapterForHubs lvAdapterFoundHubs;
 
@@ -63,12 +63,12 @@ public class BaseAppBluetoothActivity extends BaseAppActivity {
 
     protected BluetoothAdapter bluetoothAdapter;
     protected BluetoothLeScanner BLEScanner;
-    protected ActivityAddingDevicesBinding binding;
+    protected ActivityAddingHubsBinding binding;
 
     protected DatabaseAdapterForHubs dbHubsAdapter;
 
     protected static final HashMap<String, BluetoothGatt> gatts = Container.getGatts();
-    protected final BaseAppBluetoothActivity activity = this;
+    protected final BluetoothLeService activity = this;
 
     public void setLvAdapterConnectedDevices(IListViewAdapterForHubs adapter){
         lvAdapterConnectedDevices = adapter;
@@ -284,8 +284,10 @@ public class BaseAppBluetoothActivity extends BaseAppActivity {
                         return;
                     }
                     Log.v("APP_TAG6", device.getName());
-                    if (lvAdapterFoundHubs != null)
-                        runOnUiThread(() -> lvAdapterFoundHubs.addHub(new BluetoothHub(result, activity)));
+                    if (lvAdapterFoundHubs != null){
+                        runOnUiThread(() -> lvAdapterFoundHubs.addHub(
+                                new BluetoothHub(result, activity, false)));
+                    }
                 }
             }).start();
         }
@@ -381,7 +383,7 @@ public class BaseAppBluetoothActivity extends BaseAppActivity {
         }*/
         characteristic.setWriteType(WRITE_TYPE_NO_RESPONSE);
         characteristic.setValue(message);
-        bluetoothGatt.writeCharacteristic(characteristic);
+        while (!bluetoothGatt.writeCharacteristic(characteristic));
     }
 
     /*public void alarmNoPermissions(){

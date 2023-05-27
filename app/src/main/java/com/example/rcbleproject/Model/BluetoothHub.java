@@ -13,7 +13,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 
 import com.example.rcbleproject.BuildConfig;
-import com.example.rcbleproject.ViewAndPresenter.BaseAppBluetoothActivity;
+import com.example.rcbleproject.ViewAndPresenter.BluetoothLeService;
 import com.example.rcbleproject.Container;
 import com.example.rcbleproject.Database.DatabaseAdapterForHubs;
 import com.example.rcbleproject.R;
@@ -41,21 +41,25 @@ public class BluetoothHub implements BaseParam, Comparable<BluetoothHub>{
     public volatile boolean stateConnection = true;
 
     @SuppressLint("MissingPermission")
-    public BluetoothHub(@NonNull ScanResult result, @NonNull BaseAppBluetoothActivity context) {
+    public BluetoothHub(@NonNull ScanResult result, @NonNull BluetoothLeService context,
+                        boolean stateConnection) {
         BluetoothDevice device = result.getDevice();
         address = device.getAddress();
         serviceUuid = getServiceUuid(result, context);
         hubType = getHubType(context);
         name = loadName(device, context);
         characteristicUuid = Container.getCharacteristicUUIDs(context).get(hubType);
+        this.stateConnection = stateConnection;
     }
 
-    public BluetoothHub(String name, String address, int type, Context context){
+    public BluetoothHub(String name, String address, int type, Context context,
+                        boolean stateConnection){
         this.name = name;
         this.address = address;
         this.hubType = IntToHubTypes(type);
         serviceUuid = Container.getServiceUUIDs(context).get(hubType);
         characteristicUuid = Container.getCharacteristicUUIDs(context).get(hubType);
+        this.stateConnection = stateConnection;
     }
 
     @SuppressLint("MissingPermission")
@@ -79,7 +83,7 @@ public class BluetoothHub implements BaseParam, Comparable<BluetoothHub>{
     }
 
     @SuppressLint("MissingPermission")
-    private String loadName(BluetoothDevice device, BaseAppBluetoothActivity context) {
+    private String loadName(BluetoothDevice device, BluetoothLeService context) {
         switch (hubType){
             case PowerFunctionsHub:
                 DatabaseAdapterForHubs dbHubs = Container.getDbForHubs(context);
@@ -117,7 +121,7 @@ public class BluetoothHub implements BaseParam, Comparable<BluetoothHub>{
         }
     }
     
-    public void alarm(BaseAppBluetoothActivity activity){
+    public void alarm(BluetoothLeService activity){
         switch (hubType){
             case PowerFunctionsHub:
                 activity.writeCharacteristic(this, ("1").getBytes());
@@ -134,41 +138,39 @@ public class BluetoothHub implements BaseParam, Comparable<BluetoothHub>{
         }
     }
 
-    public void setOutputPortTestCommand(BaseAppBluetoothActivity activity, Port port){
+    public void setOutputPortTestCommand(BluetoothLeService leService, Port port){
         if (port == null) return;
         new Thread(() -> {
             port.portValue = 100;
-            setOutputPortCommand(activity, port);
+            setOutputPortCommand(leService, port);
             try {
                 Thread.sleep(500);
             } catch (InterruptedException e) { e.printStackTrace(); }
             port.portValue = 0;
-            setOutputPortCommand(activity, port);
+            setOutputPortCommand(leService, port);
         }).start();
     }
 
-    public void setOutputPortCommand(BaseAppBluetoothActivity activity, Port port){
+    public void setOutputPortCommand(BluetoothLeService leService, Port port){
         if (port == null) return;
         int portNum = port.portNum,
             speed = port.portValue,
             direction = port.getDirection();
         switch (hubType){
             case PowerFunctionsHub:
-                byte[] gecko_message = {'0', (byte) (2*portNum), 0,
-                                             (byte) (2*portNum + 1), 0};
-                direction*=speed;
-                speed = (int)(abs(speed) * 0.07f + 0.5);
-                gecko_message[(direction < 0? 2 : 0) + 2] = (byte) (Math.min(7, speed));
+                byte[] gecko_message = {'0', (byte) portNum, 0};
+                speed = (int)(speed * 0.07f + (speed < 0? -0.5 : 0.5));
+                gecko_message[2] = (byte) (Math.min(7, speed*direction));
                 if (BuildConfig.DEBUG)
-                    Log.v("APP_TAG777", "hub: " + address+" " + portNum+" "+speed);
-                activity.writeCharacteristic(this, gecko_message);
+                    Log.v("APP_TAG777", "hub: " + address+" " + portNum+" "+speed*direction);
+                leService.writeCharacteristic(this, gecko_message);
                 break;
             case PoweredUpHub:
                 byte[] pu_message = {0x05, 0x00, (byte) 0x81, (byte) portNum, 0x10, 0x01,
                         (byte) (speed*direction)};
                 if (BuildConfig.DEBUG)
                     Log.v("APP_TAG778", "hub: " + address+" " + portNum+" "+speed);
-                activity.writeCharacteristic(this, pu_message);
+                leService.writeCharacteristic(this, pu_message);
         }
     }
 
@@ -179,7 +181,7 @@ public class BluetoothHub implements BaseParam, Comparable<BluetoothHub>{
     }
 
     @SuppressLint("UseCompatLoadingForDrawables")
-    public boolean rename(String newName, BaseAppBluetoothActivity activity){
+    public boolean rename(String newName, BluetoothLeService activity){
         name = newName;
         if (hubType == HubTypes.PoweredUpHub) {
             byte[] name = newName.getBytes(StandardCharsets.UTF_8);
@@ -223,7 +225,7 @@ public class BluetoothHub implements BaseParam, Comparable<BluetoothHub>{
 
     @Override
     public void act(Object obj){
-        alarm((BaseAppBluetoothActivity) obj);
+        alarm((BluetoothLeService) obj);
     }
 
     public ArrayList<Port> getPorts(Context context) {

@@ -156,7 +156,7 @@ public class PortConnectionParamsDialog extends Dialog {
 
         @SuppressLint("NotifyDataSetChanged")
         @Override
-        public boolean setAvailability(boolean availability, BluetoothDevice device){
+        public void setAvailability(boolean availability, BluetoothDevice device){
             if (typeOfParam == ParamType.HUB){
                 BluetoothHub hub;
                 for (short idx = 0; idx < paramsList.size(); ++idx){
@@ -164,12 +164,10 @@ public class PortConnectionParamsDialog extends Dialog {
                     if (hub.address.equals(device.getAddress())){
                         hub.availability = availability;
                         notifyDataSetChanged();
-                        return true;
+                        break;
                     }
                 }
-                return true;
             }
-            return false;
         }
 
         @Override
@@ -216,7 +214,7 @@ public class PortConnectionParamsDialog extends Dialog {
                         holder.iv_menu_icon.setVisibility(View.GONE);
                         holder.parentView.setOnLongClickListener(null);
                     }
-                    holder.parentView.setBackground(activity.getDrawable(R.drawable.rect_white_border));
+                    holder.parentView.setBackground(activity.getDrawable(R.drawable.rect_white_border_color_indigo_dye_back));
                     holder.tv_name.setTextColor(activity.getColor(R.color.white));
                     holder.iv_menu_icon.setImageResource(param.getMenuIconId());
                     holder.iv_menu_icon.setOnClickListener((View v) -> param.act(activity));

@@ -118,7 +118,7 @@ public class FoundDevicesAdapter extends ArrayAdapter<BluetoothHub> implements I
         return null;
     }
 
-    public boolean setAvailability(boolean flag, BluetoothDevice device){ return true; }
+    public void setAvailability(boolean flag, BluetoothDevice device){}
 
     private int containsDevice(String address){
         for (int i = 0; i < hubs.size(); i++){

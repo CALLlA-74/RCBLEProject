@@ -55,12 +55,14 @@ public class GameControllersDrawer extends SurfaceView implements SurfaceHolder.
     private final DatabaseAdapterPortConnections dbPortConnections;
 
     private final long profileID;
+    private boolean isValid = false;
+    private volatile  boolean isSending = false;
     private int countOfDisplays;
     private BaseControlElement focusedElement = null;
     private final ProfileControlActivity activity;
     private final HashMap<Integer, BaseControlElement> touchedElements = new HashMap<>();
     private final TreeSet<BluetoothHub> hubsForProfileControl = new TreeSet<>();
-    private Timer timerSenderCommands;
+    private Thread threadSenderCommands;
 
     private volatile boolean isGridVisible;
     private volatile int currentDisplayIndex;
@@ -88,14 +90,12 @@ public class GameControllersDrawer extends SurfaceView implements SurfaceHolder.
         maxNumOfDisplays = activity.getResources().getInteger(R.integer.maxNumOfDisplays);
     }
 
-    public void startTimerSenderCmds(){
-        timerSenderCommands = new Timer();
-        timerSenderCommands.schedule(new TimerTask() {
-            @Override
-            public void run() {
+    public void startThreadSenderCmds(){
+        if (threadSenderCommands != null) return;
+        isSending = true;
+        threadSenderCommands = new Thread(() ->{
+            while (isSending){
                 for (PortConnection portConn : portConnections.get(currentDisplayIndex)){
-                    if (portConn.port == null || portConn.controllerAxis == null
-                        || portConn.hub == null) continue;
                     if (portConn.port.portValue != portConn.controllerAxis.axisValue){
                         portConn.port.portValue = portConn.controllerAxis.axisValue;
                         Port port = portConn.port;
@@ -103,11 +103,26 @@ public class GameControllersDrawer extends SurfaceView implements SurfaceHolder.
                     }
                 }
             }
-        }, 0, 1);
+        });
+        threadSenderCommands.start();
     }
 
-    public void stopTimerSenderCmds(){
-        timerSenderCommands.cancel();
+    public void stopThreadSenderCmds(){
+        if (threadSenderCommands != null){
+            isSending = false;
+            boolean retry = true;
+            while (retry){
+                try {
+                    threadSenderCommands.join();
+                    retry = false;
+                }
+                catch (InterruptedException e){
+                    if (BuildConfig.DEBUG)
+                        Log.e(getResources().getString(R.string.app_tag), e.toString());
+                }
+            }
+            threadSenderCommands = null;
+        }
     }
 
     public static ArrayList<ArrayList<BaseControlElement>> getElementsControl() {
@@ -148,6 +163,7 @@ public class GameControllersDrawer extends SurfaceView implements SurfaceHolder.
         controlElements = new ArrayList<>(maxNumOfDisplays);
         portConnections = new ArrayList<>(maxNumOfDisplays);
         controlElementTreeMap = new TreeMap<>();
+        isValid = false;
         for (Long displayID : displayIDs){
             ArrayList<BaseControlElement> elements = dbElementsControl.getElementsControlByDisplayID(
                     getContext(), displayID, gridParams, isGridVisible);
@@ -157,13 +173,23 @@ public class GameControllersDrawer extends SurfaceView implements SurfaceHolder.
 
             List<PortConnection> portConns = dbPortConnections.getPortConnectionsByDisplayID(
                     displayID, activity);
+            ArrayList<PortConnection> portConns2 = new ArrayList<>(portConns.size());
             for (PortConnection portConnection : portConns){
+                if (portConnection.hub != null && portConnection.port != null
+                        && portConnection.controllerAxis != null) {
+                    isValid = true;
+                    portConns2.add(portConnection);
+                }
                 if (portConnection.hub == null) continue;
                 hubsForProfileControl.add(portConnection.hub);
             }
-            portConnections.add((ArrayList) portConns);
+            portConnections.add(portConns2);
         }
         setFocusOnElementWithUpperIndex();
+    }
+
+    public boolean getIsValid(){
+        return isValid;
     }
 
     public TreeSet<BluetoothHub> getHubsForProfileControl(){
@@ -221,15 +247,15 @@ public class GameControllersDrawer extends SurfaceView implements SurfaceHolder.
     }
 
     public void nextDisplay(){
-        currentDisplayIndex++;
-        if (currentDisplayIndex >= countOfDisplays) currentDisplayIndex = 0;
+        if (currentDisplayIndex >= countOfDisplays - 1) currentDisplayIndex = 0;
+        else currentDisplayIndex++;
         ((ProfileControlActivity)getContext()).showCurrentDisplayNum(currentDisplayIndex, countOfDisplays);
         setFocusOnElementWithUpperIndex();
     }
 
     public void prevDisplay(){
-        currentDisplayIndex--;
-        if (currentDisplayIndex < 0) currentDisplayIndex = countOfDisplays - 1;
+        if (currentDisplayIndex <= 0) currentDisplayIndex = countOfDisplays - 1;
+        else currentDisplayIndex--;
         ((ProfileControlActivity)getContext()).showCurrentDisplayNum(currentDisplayIndex, countOfDisplays);
         setFocusOnElementWithUpperIndex();
     }

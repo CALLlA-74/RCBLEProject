@@ -1,11 +1,12 @@
 package com.example.rcbleproject.ViewAndPresenter.ProfileControlMenu;
 
+import static android.view.View.TEXT_ALIGNMENT_TEXT_START;
+
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +18,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.rcbleproject.Model.BluetoothHub;
+import com.example.rcbleproject.Model.Image;
 import com.example.rcbleproject.R;
 import com.example.rcbleproject.ViewAndPresenter.IListViewAdapterForHubs;
 
@@ -35,7 +37,7 @@ public class ConnectingToHubsDialog extends Dialog {
 
     private Timer checkAvailabilitiesTimer;
     private String strConnecting;
-    private TextView tvConnecting;
+    private TextView tvHeader;
 
     RecyclerView rvHubs;
 
@@ -70,34 +72,48 @@ public class ConnectingToHubsDialog extends Dialog {
             dismiss();
         });
 
-        tvConnecting = findViewById(R.id.tv_connecting);
-        strConnecting = activity.getString(R.string.connecting);
-        tvConnecting.setText(strConnecting+".");
+        tvHeader = findViewById(R.id.tv_header);
 
-        checkAvailabilitiesTimer = new Timer();
-        checkAvailabilitiesTimer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                if (checkAllAvailabilities())
-                    dismiss();
-                activity.runOnUiThread(() -> updateTextView());
-            }
-        }, 1, 500);
+        if (!activity.checkProfileValid()){
+            rvHubs.setVisibility(View.GONE);
+            TextView tvHeader = findViewById(R.id.tv_header);
+            TextView tvHint = findViewById(R.id.tv_hint);
+            ImageView ivIcon = findViewById(R.id.iv_icon);
+            tvHeader.setText(R.string.profile_not_ready);
+            tvHint.setText(R.string.no_port_connections);
+            //tvHint.setTextAlignment(TEXT_ALIGNMENT_TEXT_START);
+            ivIcon.setBackground(null);
+            ivIcon.setImageResource(android.R.drawable.ic_dialog_alert);
+        }
+        else {
+            strConnecting = activity.getString(R.string.connecting);
+            tvHeader.setText(strConnecting+".");
+
+            checkAvailabilitiesTimer = new Timer();
+            checkAvailabilitiesTimer.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    if (checkAllAvailabilities())
+                        dismiss();
+                    activity.runOnUiThread(() -> updateTextView());
+                }
+            }, 1, 500);
+        }
     }
 
     public void dismiss(){
         super.dismiss();
-        if (checkAvailabilitiesTimer != null)
+        if (activity.checkProfileValid() && checkAvailabilitiesTimer != null)
             checkAvailabilitiesTimer.cancel();
     }
 
     @SuppressLint("SetTextI18n")
     private void updateTextView(){
-        int cnt = tvConnecting.getText().length() - strConnecting.length();
+        int cnt = tvHeader.getText().length() - strConnecting.length();
         cnt = cnt >= 3? 1 : cnt+1;
         StringBuilder str = new StringBuilder();
         for (;cnt > 0; --cnt) str.append(".");
-        tvConnecting.setText(strConnecting + str);
+        tvHeader.setText(strConnecting + str);
     }
 
     private boolean checkAllAvailabilities(){
@@ -132,19 +148,18 @@ public class ConnectingToHubsDialog extends Dialog {
 
         @SuppressLint("NotifyDataSetChanged")
         @Override
-        public boolean setAvailability(boolean availability, BluetoothDevice device){
+        public void setAvailability(boolean availability, BluetoothDevice device){
             BluetoothHub hub;
             for (short idx = 0; idx < hubs.size(); ++idx){
-                hub = (BluetoothHub) hubs.get(idx);
+                hub = hubs.get(idx);
                 if (hub.address.equals(device.getAddress())){
                     hub.availability = availability;
                     notifyDataSetChanged();
-                    return true;
+                    break;
                 }
             }
             if (checkAllAvailabilities())
                 dialogContext.dismiss();
-            return true;
         }
 
         @Override
@@ -165,10 +180,12 @@ public class ConnectingToHubsDialog extends Dialog {
             if (hubs == null) return;
             BluetoothHub hub = hubs.get(position);
 
-            holder.iv_menu_icon.setVisibility(View.VISIBLE);
-
             holder.tv_name.setText(hub.getName());
             holder.iv_icon.setImageResource(hub.getIconId());
+            int ivMenuIconId;
+            if (hub.availability) ivMenuIconId = R.drawable.done;
+            else ivMenuIconId = R.drawable.wait;
+            holder.iv_menu_icon.setImageResource(ivMenuIconId);
         }
 
         class ViewHolder extends RecyclerView.ViewHolder{

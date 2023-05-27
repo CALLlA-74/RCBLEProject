@@ -8,7 +8,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 import com.example.rcbleproject.ViewAndPresenter.BaseAppActivity;
-import com.example.rcbleproject.ViewAndPresenter.BaseAppBluetoothActivity;
+import com.example.rcbleproject.ViewAndPresenter.BluetoothLeService;
 import com.example.rcbleproject.Model.BluetoothHub;
 import com.example.rcbleproject.ViewAndPresenter.IListViewAdapterForHubs;
 import com.example.rcbleproject.R;
@@ -158,14 +158,13 @@ public class DatabaseAdapterForHubs extends DatabaseAdapter implements IListView
     }
 
     @SuppressLint("MissingPermission")
-    public boolean setAvailability(boolean flag, BluetoothDevice device){
+    public void setAvailability(boolean flag, BluetoothDevice device){
         BluetoothHub hub = findConnectedHubByAddress(device.getAddress());
-        if (hub == null) return false;
+        if (hub == null) return;
         if (flag && !hub.availability){
             hub.updateHubNameInDB(device.getName());
         }
         hub.availability = flag;
-        return true;
     }
 
     public void updateHub(BluetoothHub hub, BaseAppActivity activity){
@@ -202,7 +201,7 @@ public class DatabaseAdapterForHubs extends DatabaseAdapter implements IListView
         return (hub != null) && hub.stateConnection;
     }
 
-    public void loadHubName(BluetoothHub hub, BaseAppBluetoothActivity activity){
+    public void loadHubName(BluetoothHub hub, BluetoothLeService activity){
         new LoadHubNameAsync(activity).execute(hub);
     }
 
@@ -224,10 +223,10 @@ public class DatabaseAdapterForHubs extends DatabaseAdapter implements IListView
                     String name = cursor.getString(hubNameIndex);
                     String address = cursor.getString(hubAddressIndex);
                     int hubType = cursor.getInt(hubTypeIndex);
-                    int stateConn = cursor.getInt(stateConnIndex);
-                    BluetoothHub hub = new BluetoothHub(name, address, hubType, context);
+                    boolean stateConn = cursor.getInt(stateConnIndex) == 1;
+                    BluetoothHub hub = new BluetoothHub(name, address, hubType, context, stateConn);
                     allHubs.put(address, hub);
-                    if (stateConn == 1) connectedHubs.add(hub);
+                    if (stateConn) connectedHubs.add(hub);
                 }
                 cursor.close();
             }
@@ -299,10 +298,10 @@ public class DatabaseAdapterForHubs extends DatabaseAdapter implements IListView
                          null);
                 if (c.moveToFirst()){
                     hub.rename(c.getString(c.getColumnIndexOrThrow(HUB_NAME)),
-                            (BaseAppBluetoothActivity) activity);
+                            (BluetoothLeService) activity);
                 }
                 else hub.rename(BluetoothHub.getDefaultHubName(context), (
-                        BaseAppBluetoothActivity) activity);
+                        BluetoothLeService) activity);
                 c.close();
             }
             return null;

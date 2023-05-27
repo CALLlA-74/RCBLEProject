@@ -14,7 +14,7 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.example.rcbleproject.ViewAndPresenter.BaseAppBluetoothActivity;
+import com.example.rcbleproject.ViewAndPresenter.BluetoothLeService;
 import com.example.rcbleproject.Container;
 import com.example.rcbleproject.Database.DatabaseAdapterPortConnections;
 import com.example.rcbleproject.Model.BluetoothHub;
@@ -29,7 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeMap;
 
-public class SettingPortConnectionsActivity extends BaseAppBluetoothActivity {
+public class SettingPortConnectionsActivity extends BluetoothLeService {
     private int currentDisplayIndex, numOfDisplays;
     private ArrayList<PortConnectionsAdapter> portConnectionsByDisplays;
     private ListView lv_controlled_ports;

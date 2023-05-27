@@ -45,6 +45,7 @@
     <string name="remove_element_control" translatable="true">Remove element control</string>
     <string name="element_blocking" translatable="true">Element blocking</string>
     <string name="element_properties" translatable="true">Element properties</string>
+    <string name="profile_parameters" translatable="true">Profile parameters</string>
     <string name="element_size" translatable="true">Element size</string>
     <string name="controlled_ports" translatable="true">Port connections</string>
     <string name="binding_ports" translatable="true">Bind ports</string>
@@ -60,6 +61,9 @@
     <string name="back" translatable="true">Back</string>
     <string name="editor" translatable="true">Profile editor</string>
     <string name="connecting" translatable="true">Connecting</string>
+    <string name="profile_not_ready" translatable="true">Profile is not ready</string>
+    <string name="no_port_connections" translatable="true">To be able to use the profile control, you need to add at least one port connection.</string>
+    <string name="turn_on_hubs" translatable="true">To control the model, you need to connect hubs.\nTurn on hubs to connect.</string>
 
     <string name="port_a" translatable="true">port A</string>
     <string name="port_a_inv" translatable="true">port А inverse</string>
