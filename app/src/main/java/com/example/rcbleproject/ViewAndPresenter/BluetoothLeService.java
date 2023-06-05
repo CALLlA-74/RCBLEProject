@@ -376,6 +376,17 @@ public class BluetoothLeService extends BaseAppActivity {
         BluetoothGattService service = bluetoothGatt.getService(hub.serviceUuid);
         BluetoothGattCharacteristic characteristic = service.getCharacteristic(hub.characteristicUuid);
 
+        byte[] value = characteristic.getValue();
+        if (value != null && value.length == message.length){
+            boolean isEqual = true;
+            for (int i = value.length - 1; i >= 0; --i)
+                if (value[i] != message[i]){
+                    isEqual = false;
+                    break;
+                }
+            if (isEqual) return;
+        }
+
         /*if((characteristic.getProperties() & PROPERTY_WRITE_NO_RESPONSE) == 0 ) {
             Log.e("APP_TAG22", "proterties " + (characteristic.getProperties() & PROPERTY_WRITE_NO_RESPONSE));
             Log.e("APP_TAG22", "ERROR: Characteristic does not support writeType '" + characteristic.getWriteType() + "'");

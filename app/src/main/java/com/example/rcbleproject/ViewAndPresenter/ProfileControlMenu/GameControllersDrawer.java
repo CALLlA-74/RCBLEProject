@@ -31,8 +31,6 @@ import com.example.rcbleproject.R;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
@@ -202,14 +200,21 @@ public class GameControllersDrawer extends SurfaceView implements SurfaceHolder.
                 .getSharedPreferences(appPrefKey, Context.MODE_PRIVATE);
         prefs.edit().putInt(currDisIdxPrefKey +profileID, currentDisplayIndex).commit();
 
-        for (int i = displayIDs.size() - 1; i >= 0; --i){
-            if (displayIDs.get(i) == null || displayIDs.get(i) < 0) dbDisplays.insert(profileID, i);
-            else dbDisplays.updateIndexByID(displayIDs.get(i), i);
-        }
+        saveDisplayIDs();
         for (ArrayList<BaseControlElement> display : controlElements)
             dbElementsControl.updateAllRows(display);
         dbProfilesControl.updateProfileGridAlignment(profileID, isGridVisible);
         dbProfilesControl.updateProfileNumOfDisplays(profileID, countOfDisplays);
+    }
+
+    private void saveDisplayIDs(){
+        for (int i = displayIDs.size() - 1; i >= 0; --i){
+            if (displayIDs.get(i) == null || displayIDs.get(i) < 0) {
+                long id = dbDisplays.insert(profileID, i);
+                displayIDs.set(i, id);
+            }
+            else dbDisplays.updateIndexByID(displayIDs.get(i), i);
+        }
     }
 
     public void removeElementControl(){
@@ -222,7 +227,9 @@ public class GameControllersDrawer extends SurfaceView implements SurfaceHolder.
 
     public void addDisplay(){
         countOfDisplays++;
-        displayIDs.add(currentDisplayIndex+1, dbDisplays.insert(profileID, currentDisplayIndex));
+        long dispId = dbDisplays.insert(profileID, currentDisplayIndex+1);
+        displayIDs.add(currentDisplayIndex+1, dispId);
+        if (dispId < 0) saveDisplayIDs();
         controlElements.add(currentDisplayIndex+1, new ArrayList<>());
         portConnections.add(new ArrayList<>());
         currentDisplayIndex++;

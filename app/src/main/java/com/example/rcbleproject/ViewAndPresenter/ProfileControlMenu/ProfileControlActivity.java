@@ -22,6 +22,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
@@ -49,6 +50,7 @@ public class ProfileControlActivity extends BluetoothLeService implements IRemov
     private GameControllersDrawer gameControllersDrawer;
     private ActivityProfileControlBinding binding;
     private MODE_TYPE mode;
+    private ConnectingToHubsDialog dialog = null;
 
     private int maxNumOfDisplays;
     private boolean isOnCreate = false;
@@ -173,11 +175,20 @@ public class ProfileControlActivity extends BluetoothLeService implements IRemov
     private void startConnectingToHubsDialog(){
         if (isOnCreate) return;
         if (mode == MODE_TYPE.GAME_MODE){
-            ConnectingToHubsDialog dialog = new ConnectingToHubsDialog(this,
+            dialog = new ConnectingToHubsDialog(this,
                     gameControllersDrawer.getHubsForProfileControl());
-            dialog.setOnDismissListener(dialog1 -> setFullscreenMode());
+            dialog.setOnDismissListener(dialog1 -> {
+                setFullscreenMode();
+                dialog = null;
+            });
             dialog.show();
         }
+    }
+
+    private void stopConnectingToHubsDialog(){
+        if (dialog == null) return;
+        dialog.dismiss();
+        dialog = null;
     }
 
     public MODE_TYPE getMode() { return mode; }
@@ -188,10 +199,10 @@ public class ProfileControlActivity extends BluetoothLeService implements IRemov
         else item.setIcon(R.drawable.baseline_grid_off_20);
 
         item = binding.nwMenuProfileControl.getMenu().findItem(R.id.item_add_display);
-        item.setEnabled(gameControllersDrawer.getCountOfDisplays() < maxNumOfDisplays);
+        item.setEnabled(true);
 
         item = binding.nwMenuProfileControl.getMenu().findItem(R.id.item_remove_display);
-        item.setEnabled(gameControllersDrawer.getCountOfDisplays() >= 2);
+        item.setEnabled(true);
     }
 
     @SuppressLint({"UseCompatLoadingForDrawables", "SetTextI18n"})
@@ -226,6 +237,7 @@ public class ProfileControlActivity extends BluetoothLeService implements IRemov
                 .putInt(numOfElementsPrefKey+profileID, gameControllersDrawer.getCountOfElements())
                 .putInt(numOfDisplaysPrefKey+profileID, gameControllersDrawer.getNumOfDisplays())
                 .commit();
+        stopConnectingToHubsDialog();
     }
 
     @Override
@@ -275,11 +287,19 @@ public class ProfileControlActivity extends BluetoothLeService implements IRemov
                 }
                 break;
             case R.id.item_add_display:
+                if (gameControllersDrawer.getCountOfDisplays() >= maxNumOfDisplays){
+                    Toast.makeText(this, R.string.prohibit_add_of_disp, Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 gameControllersDrawer.addDisplay();
                 menuItemsInit();
                 binding.dlMenuDrawer.closeDrawer(GravityCompat.END);
                 break;
             case R.id.item_remove_display:
+                if (gameControllersDrawer.getCountOfDisplays() < 2){
+                    Toast.makeText(this, R.string.prohibit_rem_of_disp, Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 ConfirmRemoveDialogFragment dialog1 = new ConfirmRemoveDialogFragment();
                 Bundle args1 = new Bundle();
                 args1.putLong("object_id", 0);

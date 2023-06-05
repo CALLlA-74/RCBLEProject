@@ -70,7 +70,6 @@ public class SettingPortConnectionsActivity extends BluetoothLeService {
             long id = dbPortConnections.insert(disId);
             adapter.portConnections.add(new PortConnection(id, disId));
             adapter.notifyDataSetChanged();
-            //Log.v("APP_TAG555", "" + adapter.portConnections.size());
         });
         findViewById(R.id.bt_last).setOnClickListener((View v) -> prevDisplay());
         findViewById(R.id.bt_next).setOnClickListener((View v) -> nextDisplay());

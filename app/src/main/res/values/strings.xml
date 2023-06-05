@@ -64,6 +64,8 @@
     <string name="profile_not_ready" translatable="true">Profile is not ready</string>
     <string name="no_port_connections" translatable="true">To be able to use the profile control, you need to add at least one port connection.</string>
     <string name="turn_on_hubs" translatable="true">To control the model, you need to connect hubs.\nTurn on hubs to connect.</string>
+    <string name="prohibit_rem_of_disp" translatable="true">Sorry, you can\'t delete the only display in the profile</string>
+    <string name="prohibit_add_of_disp" translatable="true">Sorry, you can\'t add a display. Max. number of displays in the profile: 5</string>
 
     <string name="port_a" translatable="true">port A</string>
     <string name="port_a_inv" translatable="true">port А inverse</string>

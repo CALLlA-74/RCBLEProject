@@ -33,7 +33,7 @@
     <string name="confirm_msg_hub" translatable="true">Отключиться от хаба</string>
     <string name="confirm_msg_display" translatable="true">Удалить текущий экран?</string>
     <string name="confirm_msg_element_control" translatable="true">Удалить выбранный элемент управления?</string>
-    <string name="elements_control" translatable="true">Выберете элемент для добавления</string>
+    <string name="elements_control" translatable="true">Выберите элемент для добавления</string>
     <string name="joystick_xy_name" translatable="true">2-осевой джойстик</string>
     <string name="joystick_x_name" translatable="true">1-осевой горизонтальный джойстик</string>
     <string name="joystick_y_name" translatable="true">1-осевой вертикальный джойстик</string>
@@ -54,15 +54,17 @@
     <string name="edit_profile" translatable="true">Редактировать профиль</string>
     <string name="too_long_name" translatable="true">Слишком длинное имя хаба!</string>
     <string name="alarm_no_permissions" translatable="true">Bluetooth или Геолокация не включены!</string>
-    <string name="unknown_hub_name" translatable="true">Выберете хаб</string>
-    <string name="unknown_port_name" translatable="true">Выберете порт</string>
-    <string name="unknown_controller_axis_name" translatable="true">Выберете элемент управления</string>
+    <string name="unknown_hub_name" translatable="true">Выберите хаб</string>
+    <string name="unknown_port_name" translatable="true">Выберите порт</string>
+    <string name="unknown_controller_axis_name" translatable="true">Выберите элемент управления</string>
     <string name="back" translatable="true">В главное меню</string>
     <string name="editor" translatable="true">Редактор профиля</string>
     <string name="connecting" translatable="true">Подключение</string>
     <string name="profile_not_ready" translatable="true">Профиль не готов</string>
     <string name="no_port_connections" translatable="true">Для возможности использования профиля необходимо добавить хотя бы одно соединение порта.</string>
     <string name="turn_on_hubs" translatable="true">Для управления моделью нужно подключить хабы.\nВключите хабы для подключения.</string>
+    <string name="prohibit_rem_of_disp" translatable="true">Нельзя удалить единственный дисплей в профиле</string>
+    <string name="prohibit_add_of_disp" translatable="true">Нельзя добавить дисплей. Макс. количество дисплеев в профиле: 5</string>
 
     <string name="port_a" translatable="true">порт А</string>
     <string name="port_a_inv" translatable="true">порт А инверс.</string>

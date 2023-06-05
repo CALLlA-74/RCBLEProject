@@ -1,7 +1,5 @@
 package com.example.rcbleproject.Model;
 
-import static java.lang.Math.abs;
-
 import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.le.ScanResult;
